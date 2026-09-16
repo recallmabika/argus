@@ -38,9 +38,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Template engine
+# Template engine & Static files
 templates_dir = os.path.join(os.path.dirname(__file__), "templates")
 templates = Jinja2Templates(directory=templates_dir)
+
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Register API v1 Routers
 app.include_router(telemetry_router, prefix=f"{settings.API_V1_STR}/telemetry", tags=["Telemetry"])

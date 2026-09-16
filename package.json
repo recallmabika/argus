@@ -1,0 +1,26 @@
+{
+  "name": "argus",
+  "version": "1.0.0",
+  "description": "<div align=\"center\">",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./backend/app/static/css/input.css -o ./backend/app/static/css/output.css --minify",
+    "watch:css": "tailwindcss -i ./backend/app/static/css/input.css -o ./backend/app/static/css/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/recallmabika/argus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/recallmabika/argus/issues"
+  },
+  "homepage": "https://github.com/recallmabika/argus#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
