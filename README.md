@@ -1,4 +1,21 @@
 # ARGUS // CyberSecOps SOC & Device Monitoring Platform
+<div align="center">
+
+# 🛡️ ARGUS // CyberSecOps Platform
+
+**Real-Time Threat Detection • Multi-Branch Device Monitoring • Signed Chain-of-Custody Incident Reporting**
+
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com)
+[![MITRE ATT&CK](https://img.shields.io/badge/Threat%20Model-MITRE%20ATT%26CK-red.svg)](https://attack.mitre.org)
+[![Cryptography](https://img.shields.io/badge/Signature-Ed25519%20%2B%20SHA--256-blue.svg)](https://cryptography.io)
+[![Telemetry](https://img.shields.io/badge/Telemetry-100%25%20Genuine%20OS-brightgreen.svg)]()
+
+</div>
+
+---
+
+### Overview
+Argus is an advanced CyberSecOps SOC and endpoint monitoring platform built for the **Cyberus Competitions (COSE)**. It unifies genuine host telemetry collection (processes, browser history, clipboard, print logs, and anomaly webcam capture) with a real-time MITRE ATT&CK detection engine, interactive branch geolocation mapping, and cryptographically verified, tamper-evident PDF incident response reports.
 
 Entry for the CyberSecOps competition (Cyberus Competitions).
 
