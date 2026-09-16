@@ -110,6 +110,15 @@ async def run_verification():
 
         # 6. Test User ID Autogeneration & Organization Multi-Tenancy
         print("\n[6/6] Testing User ID Autogeneration (AG-ORG01-0001 format)...")
+        # Ensure clean state for CBZ and Bizmark test entries
+        from app.core.database import AsyncSessionLocal
+        from app.models.models import Organization, User
+        from sqlalchemy import delete
+        async with AsyncSessionLocal() as db:
+            await db.execute(delete(User).where(User.email.in_(["t.moyo@cbz.co.zw", "c.ndlovu@cbz.co.zw", "d.mutasa@bizmarktech.com"])))
+            await db.execute(delete(Organization).where(Organization.code.in_(["CBZ", "BZT"])))
+            await db.commit()
+
         me_res = await client.get("/api/v1/users/me")
         assert me_res.status_code == 200
         me_data = me_res.json()
