@@ -11,6 +11,7 @@ def extract_org_code(org_name: str, preferred_code: Optional[str] = None) -> str
     - If preferred_code is given (e.g. 'CBZ'), uses it.
     - If parentheses exist like 'Commercial Bank of Zimbabwe (CBZ)', extracts 'CBZ'.
     - If 'Bizmark Technology', extracts 'BZT'.
+    - Filters common stop words like 'of', 'and', 'the' so 'Commercial Bank of Zimbabwe' -> 'CBZ'.
     - If multiple words, takes initials.
     - If single word like 'Argus', takes first 3 letters 'ARG'.
     """
@@ -24,7 +25,15 @@ def extract_org_code(org_name: str, preferred_code: Optional[str] = None) -> str
     if match:
         return match.group(1).upper()
 
-    words = [w for w in re.split(r'[\s\-_]+', org_name) if w]
+    # Strip out any parenthetical remarks before word splitting
+    stripped_name = re.sub(r'\([^\)]*\)', '', org_name).strip()
+
+    raw_words = [w for w in re.split(r'[\s\-_]+', stripped_name) if w]
+    stop_words = {"of", "and", "the", "for", "in", "at", "to", "a", "an", "&"}
+    words = [w for w in raw_words if w.lower() not in stop_words]
+    if not words:
+        words = raw_words
+
     if len(words) >= 3:
         code = "".join(w[0] for w in words[:3]).upper()
     elif len(words) == 2:
@@ -56,10 +65,18 @@ async def generate_user_id(
       - CBZ (1st registered org, 2nd user): AG-CBZ01-0002
       - Bizmark Technology (2nd registered org, 1st user): AG-BZT02-0001
     """
-    clean_org_name = org_name.strip()
+    # Clean org name and extract code
+    code = extract_org_code(org_name, preferred_code)
+    clean_org_name = re.sub(r'\s*\([A-Za-z0-9]{2,5}\)\s*', ' ', org_name).strip()
+    if not clean_org_name:
+        clean_org_name = org_name.strip()
 
-    # Check if organization already exists in database
-    stmt = select(Organization).where(func.lower(Organization.name) == clean_org_name.lower())
+    # Check if organization already exists in database (by clean name, original name, or unique code)
+    stmt = select(Organization).where(
+        (func.lower(Organization.name) == clean_org_name.lower()) |
+        (func.lower(Organization.name) == org_name.strip().lower()) |
+        (Organization.code == code)
+    )
     res = await db.execute(stmt)
     org = res.scalar_one_or_none()
 
@@ -68,7 +85,6 @@ async def generate_user_id(
         count_stmt = select(func.count(Organization.id))
         total_orgs = (await db.scalar(count_stmt)) or 0
         org_index = total_orgs + 1
-        code = extract_org_code(clean_org_name, preferred_code)
 
         org = Organization(
             name=clean_org_name,
