@@ -21,6 +21,11 @@
   .pulse-red {
     animation: pulse-border 1.5s infinite;
   }
+  .small-caps {
+    font-variant-caps: all-small-caps;
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+  }
 }
 
 @keyframes pulse-border {
