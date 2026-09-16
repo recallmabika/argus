@@ -145,6 +145,10 @@
                     <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2">
                         <span>SOC Operations Command</span>
                         <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-medium border border-emerald-500/20">LIVE MONITORING</span>
+                        <button onclick="resetLayout()" class="hidden md:flex items-center space-x-1 text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-cyber-700/60 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-mono transition border border-slate-200 dark:border-cyber-600" title="Reset dashboard panels to default layout">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>Reset Layout</span>
+                        </button>
                     </h2>
                 </div>
             </div>
@@ -257,7 +261,7 @@
             <!-- Metrics Ribbon -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
                 <!-- Active Threats -->
-                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-red-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Threats</span>
                         <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,7 +275,7 @@
                 </div>
 
                 <!-- Monitored Endpoints -->
-                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-blue-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monitored Endpoints</span>
                         <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,7 +289,7 @@
                 </div>
 
                 <!-- Critical / High -->
-                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-amber-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical / High</span>
                         <svg class="w-5 h-5 text-amber-500 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,7 +303,7 @@
                 </div>
 
                 <!-- Protected Branches -->
-                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-emerald-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Protected Branches</span>
                         <svg class="w-5 h-5 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,7 +317,7 @@
                 </div>
 
                 <!-- Audit Trail -->
-                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-indigo-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Audit Trail</span>
                         <svg class="w-5 h-5 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,78 +331,130 @@
                 </div>
             </div>
 
-            <!-- Upper Grid: Live Threat Alerts & Threat Analytics -->
+            <!-- Upper Section: Slots 1 & 2 (Slot 1 is the Primary 2-col Main Stage) -->
             <div id="threats" class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <!-- Live Alert Stream (2 cols) -->
-                <div class="lg:col-span-2 bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col h-[410px] shadow-sm dark:shadow-none">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
-                        <div class="flex items-center space-x-2">
-                            <span class="h-2.5 w-2.5 rounded-full bg-red-500 animate-ping"></span>
-                            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Live Incident & Threat Stream</h2>
+                <!-- Slot 1: Main Big Stage (2 cols) -->
+                <div id="slot-1" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'slot-1')" class="panel-slot lg:col-span-2 min-h-[420px] flex flex-col transition-all duration-200">
+                    <!-- Card 1: Live Alert Stream (Default in Main Stage) -->
+                    <div id="card-threats" draggable="true" ondragstart="handleDragStart(event, 'card-threats')" ondragend="handleDragEnd(event)" class="panel-card w-full h-full bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none flex-1 transition-all duration-200">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
+                            <div class="flex items-center space-x-2">
+                                <span class="drag-handle cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                                </span>
+                                <span class="h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
+                                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Live Incident & Threat Stream</h2>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] font-mono text-slate-400 hidden sm:inline">Auto-correlated MITRE</span>
+                                <button onclick="pullToMain('card-threats')" id="btn-pull-card-threats" class="pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 transition flex items-center space-x-1 font-semibold" title="Currently on Main Stage">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    <span class="label">Primary Stage</span>
+                                </button>
+                            </div>
                         </div>
-                        <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">Auto-correlated with MITRE ATT&CK</span>
-                    </div>
 
-                    <div id="alertContainer" class="flex-1 overflow-y-auto space-y-2.5 pt-3 custom-scrollbar">
-                        <div class="text-center py-20 text-slate-400 text-xs">
-                            Listening for telemetry events... Run agent or threat test to stream live incidents.
+                        <div id="alertContainer" class="flex-1 overflow-y-auto space-y-2.5 pt-3 custom-scrollbar min-h-[320px]">
+                            <div class="text-center py-20 text-slate-400 text-xs">
+                                Listening for telemetry events... Run agent or threat test to stream live incidents.
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- MITRE Tactic Distribution Chart (1 col) -->
-                <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col h-[410px] shadow-sm dark:shadow-none">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Threat Tactics Matrix</h2>
-                        <span class="text-[11px] text-blue-600 dark:text-blue-400 font-mono">MITRE Breakdown</span>
-                    </div>
-                    <div class="flex-1 relative p-2 flex items-center justify-center">
-                        <canvas id="mitreChart"></canvas>
+                <!-- Slot 2: Secondary Upper (1 col) -->
+                <div id="slot-2" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'slot-2')" class="panel-slot lg:col-span-1 min-h-[420px] flex flex-col transition-all duration-200">
+                    <!-- Card 2: MITRE Tactic Distribution Chart -->
+                    <div id="card-matrix" draggable="true" ondragstart="handleDragStart(event, 'card-matrix')" ondragend="handleDragEnd(event)" class="panel-card w-full h-full bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none flex-1 transition-all duration-200">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
+                            <div class="flex items-center space-x-2">
+                                <span class="drag-handle cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                                </span>
+                                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Threat Tactics Matrix</h2>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="pullToMain('card-matrix')" id="btn-pull-card-matrix" class="pull-btn px-2 py-0.5 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300" title="Pull into Main Big Stage">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    <span class="label">Pull to Main</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex-1 relative p-2 flex items-center justify-center min-h-[320px]">
+                            <canvas id="mitreChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Middle Grid: Device Monitoring Inventory & Branch Map -->
+            <!-- Lower Section: Slots 3 & 4 -->
             <div id="devices" class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <!-- Device Table (2 cols) -->
-                <div class="lg:col-span-2 bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
-                        <div>
-                            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Monitored Org Devices</h2>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Endpoint telemetry, access visibility, and composite risk scoring</p>
+                <!-- Slot 3: Lower Left (2 cols) -->
+                <div id="slot-3" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'slot-3')" class="panel-slot lg:col-span-2 min-h-[420px] flex flex-col transition-all duration-200">
+                    <!-- Card 3: Monitored Org Devices -->
+                    <div id="card-devices" draggable="true" ondragstart="handleDragStart(event, 'card-devices')" ondragend="handleDragEnd(event)" class="panel-card w-full h-full bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none flex-1 transition-all duration-200">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
+                            <div class="flex items-center space-x-2">
+                                <span class="drag-handle cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                                </span>
+                                <div>
+                                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Monitored Org Devices</h2>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Endpoint telemetry, access visibility, and composite risk scoring</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="pullToMain('card-devices')" id="btn-pull-card-devices" class="pull-btn px-2 py-0.5 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300" title="Pull into Main Big Stage">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    <span class="label">Pull to Main</span>
+                                </button>
+                            </div>
                         </div>
-                        <span class="text-[11px] font-mono text-slate-400">Refresh: Real-time</span>
-                    </div>
 
-                    <div class="overflow-x-auto mt-3">
-                        <table class="w-full text-left text-xs">
-                            <thead class="text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-cyber-800/80 uppercase font-semibold border-b border-slate-200 dark:border-cyber-700/60">
-                                <tr>
-                                    <th class="py-2.5 px-3">Device / Host</th>
-                                    <th class="py-2.5 px-3">OS</th>
-                                    <th class="py-2.5 px-3">Active User</th>
-                                    <th class="py-2.5 px-3">Branch</th>
-                                    <th class="py-2.5 px-3">Risk Score</th>
-                                    <th class="py-2.5 px-3">Status</th>
-                                    <th class="py-2.5 px-3 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="devicesTableBody" class="divide-y divide-slate-200 dark:divide-cyber-700/40 text-slate-700 dark:text-slate-300">
-                                <tr>
-                                    <td colspan="7" class="py-8 text-center text-slate-400">No devices connected yet. Launch agent-desktop to enroll.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="overflow-x-auto mt-3 flex-1 min-h-[300px]">
+                            <table class="w-full text-left text-xs">
+                                <thead class="text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-cyber-800/80 uppercase font-semibold border-b border-slate-200 dark:border-cyber-700/60">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Device / Host</th>
+                                        <th class="py-2.5 px-3">OS</th>
+                                        <th class="py-2.5 px-3">Active User</th>
+                                        <th class="py-2.5 px-3">Branch</th>
+                                        <th class="py-2.5 px-3">Risk Score</th>
+                                        <th class="py-2.5 px-3">Status</th>
+                                        <th class="py-2.5 px-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="devicesTableBody" class="divide-y divide-slate-200 dark:divide-cyber-700/40 text-slate-700 dark:text-slate-300">
+                                    <tr>
+                                        <td colspan="7" class="py-8 text-center text-slate-400">No devices connected yet. Launch agent-desktop to enroll.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Branch Geo-Map (1 col) -->
-                <div id="branches" class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Branch Threat Map</h2>
-                        <span class="text-[11px] text-slate-400 font-mono">Global Footprint</span>
+                <!-- Slot 4: Lower Right (1 col) -->
+                <div id="slot-4" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'slot-4')" class="panel-slot lg:col-span-1 min-h-[420px] flex flex-col transition-all duration-200">
+                    <!-- Card 4: Branch Geo-Map (Pullable to Main!) -->
+                    <div id="card-map" draggable="true" ondragstart="handleDragStart(event, 'card-map')" ondragend="handleDragEnd(event)" class="panel-card w-full h-full bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none flex-1 transition-all duration-200">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
+                            <div class="flex items-center space-x-2">
+                                <span class="drag-handle cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                                </span>
+                                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">Branch Threat Map</h2>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">Footprint</span>
+                                <button onclick="pullToMain('card-map')" id="btn-pull-card-map" class="pull-btn px-2 py-0.5 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300" title="Pull into Main Big Stage">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    <span class="label">Pull to Main</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="map" class="w-full flex-1 min-h-[320px] rounded-lg mt-3 border border-slate-200 dark:border-cyber-700/60 overflow-hidden"></div>
                     </div>
-                    <div id="map" class="flex-1 h-[280px] rounded-lg mt-3 border border-slate-200 dark:border-cyber-700/60 overflow-hidden"></div>
                 </div>
             </div>
 
@@ -589,6 +645,7 @@
             initTheme();
             initMap();
             initChart();
+            restoreLayoutState();
             initWebSocket();
             fetchUserProfile();
             fetchInitialData();
@@ -602,6 +659,175 @@
                 }
             });
         });
+
+        // ==========================================
+        // Modular Panel Pull & Drag-and-Drop System
+        // ==========================================
+        let draggedCardId = null;
+
+        function handleDragStart(e, cardId) {
+            draggedCardId = cardId;
+            e.dataTransfer.setData('text/plain', cardId);
+            e.dataTransfer.effectAllowed = 'move';
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.add('opacity-40', 'scale-[0.98]');
+            }
+        }
+
+        function handleDragEnd(e) {
+            if (draggedCardId) {
+                const card = document.getElementById(draggedCardId);
+                if (card) {
+                    card.classList.remove('opacity-40', 'scale-[0.98]');
+                }
+            }
+            document.querySelectorAll('.panel-slot').forEach(slot => {
+                slot.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+            });
+            draggedCardId = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const slot = e.currentTarget;
+            if (!slot.classList.contains('ring-2')) {
+                slot.classList.add('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+            }
+        }
+
+        function handleDragLeave(e) {
+            const slot = e.currentTarget;
+            slot.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+        }
+
+        function handleDrop(e, targetSlotId) {
+            e.preventDefault();
+            const targetSlot = document.getElementById(targetSlotId);
+            if (targetSlot) {
+                targetSlot.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+            }
+
+            const cardId = e.dataTransfer.getData('text/plain') || draggedCardId;
+            if (!cardId) return;
+
+            swapCardToSlot(cardId, targetSlotId);
+        }
+
+        function pullToMain(cardId) {
+            swapCardToSlot(cardId, 'slot-1');
+        }
+
+        function swapCardToSlot(cardId, targetSlotId) {
+            const cardToMove = document.getElementById(cardId);
+            const targetSlot = document.getElementById(targetSlotId);
+            if (!cardToMove || !targetSlot) return;
+
+            const sourceSlot = cardToMove.parentElement;
+            if (!sourceSlot || sourceSlot.id === targetSlotId) return; // already in this slot
+
+            const cardInTarget = targetSlot.firstElementChild;
+            if (!cardInTarget) {
+                targetSlot.appendChild(cardToMove);
+            } else {
+                // Swap the two cards
+                targetSlot.appendChild(cardToMove);
+                sourceSlot.appendChild(cardInTarget);
+            }
+
+            // Visual pulse feedback on newly positioned card
+            cardToMove.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2');
+            setTimeout(() => cardToMove.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2'), 800);
+
+            // Re-invalidate map and chart to re-render smoothly in their new dimensions
+            if (map) {
+                setTimeout(() => map.invalidateSize(), 150);
+                setTimeout(() => map.invalidateSize(), 400);
+            }
+            if (mitreChart) {
+                setTimeout(() => mitreChart.resize(), 150);
+            }
+
+            updatePullButtonLabels();
+            saveLayoutState();
+        }
+
+        function updatePullButtonLabels() {
+            const slot1 = document.getElementById('slot-1');
+            if (!slot1) return;
+            const mainCard = slot1.firstElementChild;
+            const mainCardId = mainCard ? mainCard.id : null;
+
+            ['card-threats', 'card-matrix', 'card-devices', 'card-map'].forEach(id => {
+                const btn = document.getElementById(`btn-pull-${id}`);
+                if (!btn) return;
+                const labelSpan = btn.querySelector('.label');
+                if (id === mainCardId) {
+                    btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 transition flex items-center space-x-1 font-semibold cursor-default';
+                    btn.title = 'Currently pinned on Primary Stage';
+                    if (labelSpan) labelSpan.innerText = 'Primary Stage';
+                } else {
+                    btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300';
+                    btn.title = 'Pull into Main Big Stage';
+                    if (labelSpan) labelSpan.innerText = 'Pull to Main';
+                }
+            });
+        }
+
+        function saveLayoutState() {
+            const layout = {
+                'slot-1': document.getElementById('slot-1')?.firstElementChild?.id,
+                'slot-2': document.getElementById('slot-2')?.firstElementChild?.id,
+                'slot-3': document.getElementById('slot-3')?.firstElementChild?.id,
+                'slot-4': document.getElementById('slot-4')?.firstElementChild?.id,
+            };
+            localStorage.setItem('argus-layout', JSON.stringify(layout));
+        }
+
+        function restoreLayoutState() {
+            const saved = localStorage.getItem('argus-layout');
+            if (!saved) {
+                updatePullButtonLabels();
+                return;
+            }
+            try {
+                const layout = JSON.parse(saved);
+                ['slot-1', 'slot-2', 'slot-3', 'slot-4'].forEach(slotId => {
+                    const cardId = layout[slotId];
+                    if (cardId) {
+                        const card = document.getElementById(cardId);
+                        const slot = document.getElementById(slotId);
+                        if (card && slot && card.parentElement !== slot) {
+                            slot.appendChild(card);
+                        }
+                    }
+                });
+                if (map) setTimeout(() => map.invalidateSize(), 200);
+                if (mitreChart) setTimeout(() => mitreChart.resize(), 200);
+            } catch(e) {
+                console.error('Failed to restore layout', e);
+            }
+            updatePullButtonLabels();
+        }
+
+        function resetLayout() {
+            localStorage.removeItem('argus-layout');
+            const defaultMapping = {
+                'slot-1': 'card-threats',
+                'slot-2': 'card-matrix',
+                'slot-3': 'card-devices',
+                'slot-4': 'card-map'
+            };
+            Object.entries(defaultMapping).forEach(([slotId, cardId]) => {
+                const card = document.getElementById(cardId);
+                const slot = document.getElementById(slotId);
+                if (card && slot) slot.appendChild(card);
+            });
+            if (map) setTimeout(() => map.invalidateSize(), 200);
+            if (mitreChart) setTimeout(() => mitreChart.resize(), 200);
+            updatePullButtonLabels();
+        }
 
         async function fetchUserProfile() {
             try {
