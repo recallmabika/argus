@@ -1,7 +1,7 @@
-# ARGUS // CyberSecOps SOC & Device Monitoring Platform
+# ARTIS // Advanced Real-Time Incident Security
 <div align="center">
 
-# 🛡️ ARGUS // CyberSecOps Platform
+# 🛡️ ARTIS // Advanced Real-Time Incident Security
 
 **Real-Time Threat Detection • Multi-Branch Device Monitoring • Signed Chain-of-Custody Incident Reporting**
 
@@ -15,17 +15,17 @@
 ---
 
 ### Overview
-Argus is an advanced CyberSecOps SOC and endpoint monitoring platform built for the **Cyberus Competitions (COSE)**. It unifies genuine host telemetry collection (processes, browser history, clipboard, print logs, and anomaly webcam capture) with a real-time MITRE ATT&CK detection engine, interactive branch geolocation mapping, and cryptographically verified, tamper-evident PDF incident response reports.
+**ARTIS** (**A**dvanced **R**eal-**T**ime **I**ncident **S**ecurity) is an enterprise CyberSecOps SOC and endpoint monitoring platform built for the **Cyberus Competitions (COSE)**. It unifies genuine host telemetry collection (processes, browser history, clipboard, print logs, and anomaly webcam capture) with a real-time MITRE ATT&CK detection engine, interactive branch geolocation mapping, and cryptographically verified, tamper-evident PDF incident response reports.
 
 Entry for the CyberSecOps competition (Cyberus Competitions).
 
-**Argus** provides unified threat detection, endpoint device monitoring across organization branches, real-time alerting, and tamper-evident signed PDF incident reports.
+**ARTIS** provides unified threat detection, endpoint device monitoring across organization branches, real-time alerting, and tamper-evident signed PDF incident reports.
 
 ---
 
 ## Key Features & Competition Compliance
 
-| Feature | Specification | Implementation in Argus |
+| Feature | Specification | Implementation in ARTIS |
 |---|---|---|
 | **Threat Detection & Reporting** | Detect threats, assess impact, suggest security measures, generate PDF report | Real-time **MITRE ATT&CK** rule evaluation engine (T1059, T1115, T1048, T1052, T1110, T1071). Generates signed, tamper-evident incident PDF reports with SHA-256 and Ed25519 digital signatures. |
 | **Device Monitoring across Branches** | Visibility into access, user activity, print logs, visited sites, clipboard, camera snapshots | Cross-platform desktop agent with live telemetry: active processes, SQLite shadow-copy browser history (Chrome/Edge), clipboard tracking, Windows Event 307 print spooling, and anomaly-triggered webcam snapshots. |
@@ -47,7 +47,7 @@ Entry for the CyberSecOps competition (Cyberus Competitions).
                 Batch Ingestion (HTTP) | Anomaly Snapshot (Multipart)
                                        v
                      +-----------------------------------+
-                     |           ARGUS BACKEND           |
+                     |           ARTIS BACKEND           |
                      |  FastAPI + SQLAlchemy + Async DB  |
                      +-----------------+-----------------+
                                        |
@@ -104,4 +104,4 @@ All incident reports generated through the Web Console or API are signed using a
 To verify any report:
 1. Click **Verify PDF** in the top navigation of the SOC Web Console.
 2. Upload the exported PDF file.
-3. The server computes the SHA-256 digest and validates the Ed25519 signature against the Argus public key, confirming document integrity and chain of custody.
+3. The server computes the SHA-256 digest and validates the Ed25519 signature against the ARTIS public key, confirming document integrity and chain of custody.
