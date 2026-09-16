@@ -100,7 +100,7 @@ async def run_verification():
         print("      [OK] PDF file downloaded and SHA-256 integrity strictly verified.")
 
         # 5. Test Audit Trail
-        print("\n[5/5] Auditing Access Logs...")
+        print("\n[5/6] Auditing Access Logs...")
         audit_res = await client.get("/api/v1/audit")
         assert audit_res.status_code == 200
         logs = audit_res.json()
@@ -108,8 +108,60 @@ async def run_verification():
         for l in logs[:2]:
             print(f"          - [{l['actor_username']}] {l['action']} on {l['target_resource']} at {l['timestamp']}")
 
+        # 6. Test User ID Autogeneration & Organization Multi-Tenancy
+        print("\n[6/6] Testing User ID Autogeneration (AG-ORG01-0001 format)...")
+        me_res = await client.get("/api/v1/users/me")
+        assert me_res.status_code == 200
+        me_data = me_res.json()
+        print(f"      [OK] Default SOC Lead: {me_data['full_name']} -> User ID: {me_data['user_id']}")
+        assert me_data['user_id'] == "AG-ARG01-0001", f"Expected AG-ARG01-0001, got {me_data['user_id']}"
+
+        # Register user in CBZ
+        cbz_res = await client.post("/api/v1/users/register", json={
+            "full_name": "Tafadzwa Moyo",
+            "email": "t.moyo@cbz.co.zw",
+            "organization_name": "Commercial Bank of Zimbabwe (CBZ)",
+            "role": "analyst"
+        })
+        assert cbz_res.status_code == 200, f"CBZ registration failed: {cbz_res.text}"
+        cbz_user = cbz_res.json()["user"]
+        print(f"      [OK] 1st User in CBZ: {cbz_user['full_name']} -> User ID: {cbz_user['user_id']}")
+        assert cbz_user['user_id'] == "AG-CBZ02-0001", f"Expected AG-CBZ02-0001, got {cbz_user['user_id']}"
+
+        # Register 2nd user in CBZ
+        cbz2_res = await client.post("/api/v1/users/register", json={
+            "full_name": "Chipo Ndlovu",
+            "email": "c.ndlovu@cbz.co.zw",
+            "organization_name": "Commercial Bank of Zimbabwe",
+            "role": "analyst"
+        })
+        assert cbz2_res.status_code == 200
+        cbz2_user = cbz2_res.json()["user"]
+        print(f"      [OK] 2nd User in CBZ: {cbz2_user['full_name']} -> User ID: {cbz2_user['user_id']}")
+        assert cbz2_user['user_id'] == "AG-CBZ02-0002", f"Expected AG-CBZ02-0002, got {cbz2_user['user_id']}"
+
+        # Register user in Bizmark Technology
+        bzt_res = await client.post("/api/v1/users/register", json={
+            "full_name": "David Mutasa",
+            "email": "d.mutasa@bizmarktech.com",
+            "organization_name": "Bizmark Technology",
+            "role": "analyst"
+        })
+        assert bzt_res.status_code == 200
+        bzt_user = bzt_res.json()["user"]
+        print(f"      [OK] 1st User in Bizmark Technology: {bzt_user['full_name']} -> User ID: {bzt_user['user_id']}")
+        assert bzt_user['user_id'] == "AG-BZT03-0001", f"Expected AG-BZT03-0001, got {bzt_user['user_id']}"
+
+        # Check organizations list
+        orgs_res = await client.get("/api/v1/users/organizations")
+        assert orgs_res.status_code == 200
+        orgs = orgs_res.json()
+        print(f"      [OK] Registered Organizations ({len(orgs)}):")
+        for o in orgs:
+            print(f"          - Org #{o['org_index']:02d} [{o['code']}]: {o['name']} ({o['user_counter']} users)")
+
     print("\n" + "=" * 60)
-    print("   ALL ARGUS SUBSYSTEMS PASSED VERIFICATION!")
+    print("   ALL ARGUS SUBSYSTEMS & USER ID AUTOGEN PASSED!")
     print("=" * 60)
 
 

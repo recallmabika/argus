@@ -4,83 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARGUS // CyberSecOps SOC Console</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        cyber: {
-                            900: '#070B14',
-                            800: '#0D1527',
-                            700: '#162038',
-                            600: '#233357',
-                            accent: '#3B82F6',
-                            danger: '#EF4444',
-                            warning: '#F59E0B',
-                            success: '#10B981',
-                            card: '#0F1A30'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Logo Favicon -->
+    <link rel="icon" type="image/png" href="/static/img/logo.png" />
+    <!-- Compiled Production Tailwind CSS (No inline CSS) -->
+    <link rel="stylesheet" href="/static/css/output.css" />
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #233357;
-            border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 3px;
-        }
-        .pulse-red {
-            animation: pulse-border 1.5s infinite;
-        }
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-    </style>
 </head>
-<body class="bg-slate-100 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex antialiased transition-colors duration-200">
+<body class="bg-slate-100 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden flex antialiased transition-colors duration-200">
 
     <!-- Mobile Sidebar Backdrop -->
     <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden lg:hidden"></div>
 
-    <!-- Collapsible Sidebar -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none">
+    <!-- Collapsible & Fixed Sidebar -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none">
         
         <!-- Sidebar Header / Brand -->
         <div class="p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="h-9 w-9 rounded-lg bg-blue-600/10 dark:bg-blue-600/20 border border-blue-500/30 dark:border-blue-500/40 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                </div>
+                <img src="/static/img/logo" alt="Argus Logo" class="h-auto w-14 rounded-full border border-slate-300 dark:border-cyber-600 object-cover shadow-md flex-shrink-0" />
                 <div>
-                    <h1 class="text-base font-black tracking-wider text-slate-900 dark:text-white flex items-center space-x-1.5">
-                        <span>ARGUS</span>
-                        <span class="text-[10px] text-blue-600 dark:text-blue-400 font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">SOC</span>
+                    <h1 class="text-xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
+                        ARGUS
                     </h1>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400">CyberSecOps Suite</p>
+                    <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">CyberSecOps Suite</p>
                 </div>
             </div>
             <!-- Close button for mobile screen -->
@@ -182,11 +132,11 @@
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+    <!-- Main Content Area (Fixed Header + Scrollable Main) -->
+    <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         
-        <!-- Top App Bar -->
-        <header class="bg-white/80 dark:bg-cyber-800/80 backdrop-blur border-b border-slate-200 dark:border-cyber-700/60 sticky top-0 z-30 px-4 py-2.5 flex items-center justify-between">
+        <!-- Pinned Top App Bar -->
+        <header class="flex-shrink-0 bg-white/90 dark:bg-cyber-800/90 backdrop-blur border-b border-slate-200 dark:border-cyber-700/60 z-30 px-4 py-2.5 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-cyber-700">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -199,7 +149,7 @@
                 </div>
             </div>
 
-            <!-- Action Buttons in Header -->
+            <!-- Action Buttons & User Profile in Header -->
             <div class="flex items-center space-x-2.5">
                 <button onclick="openReportModal()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-md shadow-blue-500/20 transition flex items-center space-x-1.5">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -214,11 +164,95 @@
                 <button onclick="toggleAuditDrawer()" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 border border-slate-300 dark:border-cyber-600 text-xs font-medium text-slate-700 dark:text-slate-300 transition">
                     Audit
                 </button>
+
+                <!-- Divider -->
+                <div class="h-6 w-px bg-slate-200 dark:bg-cyber-700/60 mx-1"></div>
+
+                <!-- User Profile Dropdown Button & Menu -->
+                <div class="relative" id="profileDropdownWrapper">
+                    <button onclick="toggleProfileDropdown(event)" id="profileBtn" class="flex items-center space-x-2 p-1 pr-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-cyber-700/60 transition focus:outline-none">
+                        <div class="relative flex-shrink-0">
+                            <img src="/static/img/avatar.svg" alt="User Avatar" class="w-8 h-8 rounded-full border border-blue-500/50 shadow-xs" />
+                            <span class="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-cyber-800"></span>
+                        </div>
+                        <div class="hidden sm:flex flex-col text-left leading-tight">
+                            <span id="topbarFullName" class="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[110px]">Alex Mercer</span>
+                            <span id="topbarUserId" class="text-[10px] font-mono text-blue-600 dark:text-blue-400 font-medium">AG-ARG01-0001</span>
+                        </div>
+                        <svg id="profileChevron" class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Profile Dropdown Card -->
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl shadow-2xl z-50 py-1.5 divide-y divide-slate-100 dark:divide-cyber-700/50 text-xs">
+                        <!-- Identity Card -->
+                        <div class="p-3.5 flex items-center space-x-3 bg-slate-50 dark:bg-cyber-800/40 rounded-t-2xl">
+                            <div class="relative flex-shrink-0">
+                                <img src="/static/img/avatar.svg" alt="Alex Mercer" class="w-11 h-11 rounded-full border-2 border-blue-500 shadow" />
+                                <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-cyber-card"></span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 id="menuFullName" class="font-bold text-sm text-slate-900 dark:text-white truncate">Alex Mercer</h4>
+                                <div class="flex items-center space-x-1 text-[11px] font-mono text-blue-600 dark:text-blue-400">
+                                    <span>ID:</span>
+                                    <span id="menuUserId" class="font-semibold">AG-ARG01-0001</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 mt-1">
+                                    <span id="menuRole" class="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">SOC ANALYST</span>
+                                    <span id="menuOrgName" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">Argus SecOps</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Theme Features inside Dropdown -->
+                        <div class="p-3 space-y-1.5">
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-0.5">
+                                <span>Theme Preference</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-cyber-800/80 p-1 rounded-lg text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                                <button id="menuThemeBtn-light" onclick="setTheme('light')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    <span>Light</span>
+                                </button>
+                                <button id="menuThemeBtn-dark" onclick="setTheme('dark')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                                    <span>Dark</span>
+                                </button>
+                                <button id="menuThemeBtn-system" onclick="setTheme('system')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                    <span>Auto</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Menu Options: Settings & Audit -->
+                        <div class="py-1 px-1 space-y-0.5">
+                            <button onclick="openSettingsModal(); closeProfileDropdown();" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span>SOC & Account Settings</span>
+                            </button>
+
+                            <button onclick="toggleAuditDrawer(); closeProfileDropdown();" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>My Audit Trail</span>
+                            </button>
+                        </div>
+
+                        <!-- Lock Session Action -->
+                        <div class="p-1">
+                            <button onclick="lockSession()" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-500/10 transition font-medium">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                <span>Lock Session</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
-        <!-- Main Dashboard View Container -->
-        <main class="p-4 sm:p-6 space-y-5 max-w-7xl w-full mx-auto">
+        <!-- Scrollable Main Dashboard View Container -->
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-5 w-full mx-auto">
             
             <!-- Metrics Ribbon -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
@@ -452,6 +486,75 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col text-xs">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">SOC Analyst & System Settings</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Security preferences, operator profile, and cryptographic status</p>
+                    </div>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <!-- User Profile Card in Settings -->
+                <div class="p-3.5 bg-slate-50 dark:bg-cyber-800/60 rounded-xl border border-slate-200 dark:border-cyber-700/50 flex items-center space-x-3.5">
+                    <img src="/static/img/avatar.svg" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-blue-500 shadow-sm" />
+                    <div>
+                        <h4 id="settingsFullName" class="text-sm font-bold text-slate-900 dark:text-white">Alex Mercer</h4>
+                        <div class="font-mono text-[11px] text-blue-600 dark:text-blue-400 font-semibold">User ID: <span id="settingsUserId">AG-ARG01-0001</span></div>
+                        <div id="settingsRoleOrg" class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Role: SecOps Lead Analyst • Org: Argus SecOps</div>
+                    </div>
+                </div>
+
+                <!-- SOC Alerts & Triggers -->
+                <div class="space-y-2.5">
+                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Automated Threat Triggers</h4>
+                    
+                    <label class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/50 cursor-pointer">
+                        <div>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">Auto-Snapshot on Critical Alert</span>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Commands endpoint webcam snapshot immediately when critical threats trigger.</p>
+                        </div>
+                        <input type="checkbox" checked class="rounded border-slate-300 dark:border-cyber-600 text-blue-600 focus:ring-blue-500 h-4 w-4">
+                    </label>
+
+                    <label class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/50 cursor-pointer">
+                        <div>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">Browser SQLite Shadow Copying</span>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Bypasses locked Chrome/Edge history files using shadow volume clones.</p>
+                        </div>
+                        <input type="checkbox" checked disabled class="rounded border-slate-300 dark:border-cyber-600 text-blue-600 focus:ring-blue-500 h-4 w-4">
+                    </label>
+                </div>
+
+                <!-- Cryptography Status -->
+                <div class="p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-500/20 rounded-xl space-y-1 text-[11px]">
+                    <div class="font-bold text-blue-600 dark:text-blue-400 flex items-center space-x-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <span>Chain-of-Custody Cryptography</span>
+                    </div>
+                    <div class="font-mono text-[10px] text-slate-600 dark:text-slate-400 break-all pt-1">
+                        <b>Root Authority:</b> Ed25519 Elliptic Curve Keypair<br>
+                        <b>Integrity Digest:</b> SHA-256 Checksum Engine (Active)
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 dark:bg-cyber-800/40 border-t border-slate-200 dark:border-cyber-700/60 flex justify-end">
+                <button onclick="closeSettingsModal()" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold">Done</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Core Console JavaScript -->
     <script>
         let ws;
@@ -467,9 +570,87 @@
             initMap();
             initChart();
             initWebSocket();
+            fetchUserProfile();
             fetchInitialData();
             setInterval(fetchInitialData, 10000); // 10s fallback poll
+
+            // Close profile dropdown when clicking outside
+            window.addEventListener('click', (e) => {
+                const wrapper = document.getElementById('profileDropdownWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    closeProfileDropdown();
+                }
+            });
         });
+
+        async function fetchUserProfile() {
+            try {
+                const res = await fetch('/api/v1/users/me');
+                if (!res.ok) return;
+                const user = await res.json();
+
+                // Topbar
+                const topbarName = document.getElementById('topbarFullName');
+                const topbarId = document.getElementById('topbarUserId');
+                if (topbarName) topbarName.innerText = user.full_name;
+                if (topbarId) topbarId.innerText = user.user_id;
+
+                // Dropdown Card
+                const menuName = document.getElementById('menuFullName');
+                const menuId = document.getElementById('menuUserId');
+                const menuOrg = document.getElementById('menuOrgName');
+                const menuRole = document.getElementById('menuRole');
+                if (menuName) menuName.innerText = user.full_name;
+                if (menuId) menuId.innerText = user.user_id;
+                if (menuOrg) menuOrg.innerText = user.organization_name;
+                if (menuRole) menuRole.innerText = user.role.toUpperCase();
+
+                // Settings Modal
+                const settingsName = document.getElementById('settingsFullName');
+                const settingsId = document.getElementById('settingsUserId');
+                const settingsRoleOrg = document.getElementById('settingsRoleOrg');
+                if (settingsName) settingsName.innerText = user.full_name;
+                if (settingsId) settingsId.innerText = user.user_id;
+                if (settingsRoleOrg) settingsRoleOrg.innerText = `Role: ${user.role} • Org: ${user.organization_name}`;
+            } catch (e) {
+                console.error('Failed to fetch user profile:', e);
+            }
+        }
+
+        // Profile Dropdown handlers
+        function toggleProfileDropdown(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('profileDropdown');
+            const chevron = document.getElementById('profileChevron');
+            const isHidden = dropdown.classList.contains('hidden');
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                dropdown.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        function closeProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            const chevron = document.getElementById('profileChevron');
+            if (dropdown) dropdown.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function lockSession() {
+            closeProfileDropdown();
+            alert('SOC Session Locked. Re-authenticate to access sensitive telemetry.');
+        }
 
         // Theme Management: Light, Dark, System
         function initTheme() {
@@ -487,13 +668,19 @@
             currentThemeSetting = mode;
             if (save) localStorage.setItem('argus-theme', mode);
 
-            // Update UI buttons in sidebar
+            // Update UI buttons in sidebar and profile dropdown
             ['light', 'dark', 'system'].forEach(m => {
                 const btn = document.getElementById(`themeBtn-${m}`);
-                if (m === mode) {
-                    btn.className = 'py-1 rounded bg-white dark:bg-cyber-600 text-blue-600 dark:text-white shadow font-semibold flex items-center justify-center space-x-1';
-                } else {
-                    btn.className = 'py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition';
+                if (btn) {
+                    btn.className = (m === mode)
+                        ? 'py-1 rounded bg-white dark:bg-cyber-600 text-blue-600 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
+                        : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition';
+                }
+                const menuBtn = document.getElementById(`menuThemeBtn-${m}`);
+                if (menuBtn) {
+                    menuBtn.className = (m === mode)
+                        ? 'py-1 rounded bg-white dark:bg-cyber-600 text-blue-600 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
+                        : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition';
                 }
             });
 
