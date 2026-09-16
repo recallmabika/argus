@@ -26,33 +26,41 @@ async def run_verification():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         
-        # 2. Test Ingestion API with genuine event payloads
+        # 2. Test Ingestion API & MITRE ATT&CK Engine with real host environment
         print("\n[2/5] Testing Ingestion API & MITRE ATT&CK Engine...")
+        import socket
+        import getpass
+        import platform
+        real_host = socket.gethostname()
+        real_user = getpass.getuser()
+        real_os = platform.system().lower()
+        dev_id = f"ARGUS-{real_host.upper()}"
+
         telemetry_payload = {
             "events": [
                 {
-                    "device_id": "TEST-DEVICE-WIN-01",
-                    "hostname": "WORKSTATION-CORP-42",
-                    "os_type": "windows",
-                    "username": "alice_secops",
-                    "branch_id": "BRANCH-NY-01",
-                    "branch_name": "New York Regional Office",
+                    "device_id": dev_id,
+                    "hostname": real_host,
+                    "os_type": real_os,
+                    "username": real_user,
+                    "branch_id": "BRANCH-HQ-01",
+                    "branch_name": "Headquarters - Tech Center",
                     "event_type": "PROCESS_START",
                     "severity_hint": "INFO",
                     "payload": {
-                        "pid": 4812,
+                        "pid": os.getpid(),
                         "process_name": "powershell.exe",
                         "command_line": "powershell.exe -enc V3JpdGUtSG9zdCAnSW5zaWRlciBUaHJlYXQn",
                         "parent_name": "cmd.exe"
                     }
                 },
                 {
-                    "device_id": "TEST-DEVICE-WIN-01",
-                    "hostname": "WORKSTATION-CORP-42",
-                    "os_type": "windows",
-                    "username": "alice_secops",
-                    "branch_id": "BRANCH-NY-01",
-                    "branch_name": "New York Regional Office",
+                    "device_id": dev_id,
+                    "hostname": real_host,
+                    "os_type": real_os,
+                    "username": real_user,
+                    "branch_id": "BRANCH-HQ-01",
+                    "branch_name": "Headquarters - Tech Center",
                     "event_type": "CLIPBOARD_SYNC",
                     "severity_hint": "INFO",
                     "payload": {
@@ -168,6 +176,14 @@ async def run_verification():
         print(f"      [OK] Registered Organizations ({len(orgs)}):")
         for o in orgs:
             print(f"          - Org #{o['org_index']:02d} [{o['code']}]: {o['name']} ({o['user_counter']} users)")
+
+        # Cleanup verification test records so live SOC dashboard remains clean
+        from app.models.models import Alert, TelemetryEvent, Device
+        async with AsyncSessionLocal() as db:
+            await db.execute(delete(Alert).where(Alert.device_id == dev_id))
+            await db.execute(delete(TelemetryEvent).where(TelemetryEvent.device_id == dev_id))
+            await db.execute(delete(Device).where(Device.id == dev_id))
+            await db.commit()
 
     print("\n" + "=" * 60)
     print("   ALL ARGUS SUBSYSTEMS & USER ID AUTOGEN PASSED!")

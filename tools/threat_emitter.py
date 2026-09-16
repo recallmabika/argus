@@ -42,14 +42,19 @@ def trigger_certutil_threat():
 
 
 def trigger_auth_brute_force():
+    import socket, getpass, platform
+    host = socket.gethostname()
+    user = getpass.getuser()
+    dev_id = f"ARGUS-{host.upper()}"
+
     print("\n[+] Triggering Auth Anomaly / Lockout Simulation (MITRE T1110.001)...")
     payload = {
         "events": [
             {
-                "device_id": "ARGUS-WORKSTATION-01",
-                "hostname": "SEC-DEV-HOST",
-                "os_type": "windows",
-                "username": "admin_test",
+                "device_id": dev_id,
+                "hostname": host,
+                "os_type": platform.system().lower(),
+                "username": user,
                 "branch_id": "BRANCH-HQ-01",
                 "branch_name": "Headquarters - Tech Center",
                 "event_type": "AUTH_FAILURE",
