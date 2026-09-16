@@ -88,9 +88,30 @@ class PDFReportGenerator:
 
         story = []
 
-        # Header Title
-        story.append(Paragraph(f"ARGUS // CYBERSECOPS INCIDENT REPORT", header_style))
-        story.append(Paragraph(f"Document Classification: RESTRICTED // Report Type: {report_type.upper()}", sub_style))
+        # Header Title with Official Logo
+        logo_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "static", "img", "logo.png"))
+        if os.path.exists(logo_path):
+            from reportlab.platypus import Image as RLImage
+            logo_img = RLImage(logo_path, width=44, height=44)
+            header_table = Table([[
+                logo_img,
+                [
+                    Paragraph(f"ARGUS // CYBERSECOPS INCIDENT REPORT", header_style),
+                    Paragraph(f"Document Classification: RESTRICTED // Report Type: {report_type.upper()}", sub_style)
+                ]
+            ]], colWidths=[52, 478])
+            header_table.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                ('TOPPADDING', (0, 0), (-1, -1), 0),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+            ]))
+            story.append(header_table)
+        else:
+            story.append(Paragraph(f"ARGUS // CYBERSECOPS INCIDENT REPORT", header_style))
+            story.append(Paragraph(f"Document Classification: RESTRICTED // Report Type: {report_type.upper()}", sub_style))
+
         story.append(Spacer(1, 10))
         story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#2563EB'), spaceAfter=15))
 
