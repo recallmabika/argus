@@ -256,53 +256,73 @@
             
             <!-- Metrics Ribbon -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-                <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between shadow-sm dark:shadow-none">
-                    <div>
-                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Threats</span>
-                        <h3 id="statActiveThreats" class="text-2xl font-bold text-red-600 dark:text-red-500 font-mono mt-0.5">0</h3>
+                <!-- Active Threats -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-red-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Threats</span>
+                        <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-red-500/10 text-red-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between shadow-sm dark:shadow-none">
-                    <div>
-                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monitored Endpoints</span>
-                        <h3 id="statEndpoints" class="text-2xl font-bold text-slate-900 dark:text-white font-mono mt-0.5">0</h3>
-                    </div>
-                    <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <div class="mt-2.5 flex items-baseline justify-between">
+                        <h3 id="statActiveThreats" class="text-2xl font-black text-red-600 dark:text-red-500 font-mono tracking-tight">0</h3>
+                        <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">LIVE FEED</span>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between shadow-sm dark:shadow-none">
-                    <div>
-                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical / High</span>
-                        <h3 id="statCriticalHigh" class="text-2xl font-bold text-amber-500 font-mono mt-0.5">0 / 0</h3>
+                <!-- Monitored Endpoints -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-blue-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monitored Endpoints</span>
+                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between shadow-sm dark:shadow-none">
-                    <div>
-                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Protected Branches</span>
-                        <h3 id="statBranches" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">1</h3>
-                    </div>
-                    <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <div class="mt-2.5 flex items-baseline justify-between">
+                        <h3 id="statEndpoints" class="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight">0</h3>
+                        <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">ONLINE</span>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between shadow-sm dark:shadow-none">
-                    <div>
-                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Audit Trail</span>
-                        <h3 id="statAuditCount" class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 font-mono mt-0.5">0</h3>
+                <!-- Critical / High -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-amber-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical / High</span>
+                        <svg class="w-5 h-5 text-amber-500 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-500">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <div class="mt-2.5 flex items-baseline justify-between">
+                        <h3 id="statCriticalHigh" class="text-2xl font-black text-amber-500 dark:text-amber-400 font-mono tracking-tight">0 / 0</h3>
+                        <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">SEV TIER</span>
+                    </div>
+                </div>
+
+                <!-- Protected Branches -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-emerald-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Protected Branches</span>
+                        <svg class="w-5 h-5 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <div class="mt-2.5 flex items-baseline justify-between">
+                        <h3 id="statBranches" class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">1</h3>
+                        <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">GEOLOCATED</span>
+                    </div>
+                </div>
+
+                <!-- Audit Trail -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 border-t-2 border-t-indigo-500 rounded-xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Audit Trail</span>
+                        <svg class="w-5 h-5 text-indigo-500 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="mt-2.5 flex items-baseline justify-between">
+                        <h3 id="statAuditCount" class="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono tracking-tight">0</h3>
+                        <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 font-mono">LOGGED</span>
                     </div>
                 </div>
             </div>
