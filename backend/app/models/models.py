@@ -9,16 +9,34 @@ def utc_now():
     return datetime.now(timezone.utc)
 
 
+class Organization(Base):
+    __tablename__ = "organizations"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = Column(String(128), unique=True, index=True, nullable=False)
+    code = Column(String(8), nullable=False)  # e.g., 'ARG', 'CBZ', 'BZT'
+    org_index = Column(Integer, nullable=False)  # 1, 2, 3... formatted as 01, 02
+    user_counter = Column(Integer, default=0, nullable=False)  # total users in this org
+    created_at = Column(DateTime(timezone=True), default=utc_now)
+
+    users = relationship("User", back_populates="organization", cascade="all, delete-orphan")
+
+
 class User(Base):
     __tablename__ = "users"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(32), unique=True, index=True, nullable=False)  # e.g., AG-CBZ01-0001
+    full_name = Column(String(128), nullable=False)
     username = Column(String(64), unique=True, index=True, nullable=False)
     email = Column(String(128), unique=True, index=True, nullable=False)
     hashed_password = Column(String(256), nullable=False)
     role = Column(String(32), default="analyst", nullable=False)  # analyst, admin, executive
+    org_id = Column(String(36), ForeignKey("organizations.id"), nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=utc_now)
+
+    organization = relationship("Organization", back_populates="users")
 
 
 class Device(Base):

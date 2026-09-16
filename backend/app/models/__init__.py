@@ -1,6 +1,7 @@
-from app.models.models import User, Device, TelemetryEvent, Alert, AuditLog, IncidentReport
+from app.models.models import Organization, User, Device, TelemetryEvent, Alert, AuditLog, IncidentReport
 
 __all__ = [
+    "Organization",
     "User",
     "Device",
     "TelemetryEvent",

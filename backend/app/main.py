@@ -13,6 +13,7 @@ from app.api.v1.devices import router as devices_router
 from app.api.v1.alerts import router as alerts_router
 from app.api.v1.reports import router as reports_router
 from app.api.v1.audit import router as audit_router
+from app.api.v1.users import router as users_router
 from app.services.websocket_manager import ws_manager
 
 
@@ -51,6 +52,7 @@ app.include_router(devices_router, prefix=f"{settings.API_V1_STR}/devices", tags
 app.include_router(alerts_router, prefix=f"{settings.API_V1_STR}/alerts", tags=["Alerts"])
 app.include_router(reports_router, prefix=f"{settings.API_V1_STR}/reports", tags=["Reports"])
 app.include_router(audit_router, prefix=f"{settings.API_V1_STR}/audit", tags=["Audit"])
+app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["Users"])
 
 
 @app.get("/", response_class=HTMLResponse)
