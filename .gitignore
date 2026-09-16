@@ -1,0 +1,70 @@
+# Byte-compiled / optimized Python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment configurations & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+storage/keys/*.pem
+
+# Local databases & buffers
+*.db
+*.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
+argus.db
+agent_buffer.db
+
+# Storage artifacts (preserve .gitkeep)
+storage/reports/*
+!storage/reports/.gitkeep
+storage/snapshots/*
+!storage/snapshots/.gitkeep
+storage/keys/*
+!storage/keys/.gitkeep
+
+# Temporary files & browser shadow caches
+*.tmp
+*.temp
+*shadow*
+argus_browser_shadow/
+
+# Editor & OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Mobile / Android / Flutter (for future companion app artifacts)
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+*.apk
+*.aab
+.gradle/
+local.properties

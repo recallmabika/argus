@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARGUS // CyberSecOps SOC Console</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            900: '#070B14',
+                            800: '#0D1527',
+                            700: '#162038',
+                            600: '#233357',
+                            accent: '#3B82F6',
+                            danger: '#EF4444',
+                            warning: '#F59E0B',
+                            success: '#10B981',
+                            card: '#0F1A30'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0D1527;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #233357;
+            border-radius: 3px;
+        }
+        .pulse-red {
+            animation: pulse-border 1.5s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-cyber-900 text-slate-100 font-sans min-h-screen flex flex-col">
+    <!-- Top Header -->
+    <header class="bg-cyber-800 border-b border-cyber-700/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="h-9 w-9 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black tracking-wider text-white">ARGUS <span class="text-xs text-blue-400 font-mono font-medium px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">SOC v1.0</span></h1>
+                    <p class="text-xs text-slate-400">CyberSecOps Threat Detection & Device Monitoring Platform</p>
+                </div>
+            </div>
+
+            <!-- Real-time Status Indicator & Actions -->
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-cyber-700/50 border border-cyber-600/40">
+                    <span id="wsStatusDot" class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span id="wsStatusText" class="text-xs font-mono font-medium text-slate-300">LIVE FEED CONNECTED</span>
+                </div>
+
+                <button onclick="openReportModal()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 transition flex items-center space-x-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Export Incident PDF</span>
+                </button>
+
+                <button onclick="openVerifyModal()" class="px-3 py-1.5 rounded-lg bg-cyber-700 hover:bg-cyber-600 border border-cyber-600 text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Verify PDF</span>
+                </button>
+
+                <button onclick="toggleAuditDrawer()" class="px-3 py-1.5 rounded-lg bg-cyber-700 hover:bg-cyber-600 border border-cyber-600 text-xs font-medium text-slate-300 transition">
+                    Audit Trail
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 space-y-5">
+        
+        <!-- Metrics Ribbon -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Threats</span>
+                    <h3 id="statActiveThreats" class="text-2xl font-bold text-red-500 font-mono mt-0.5">0</h3>
+                </div>
+                <div class="p-2.5 rounded-lg bg-red-500/10 text-red-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+            </div>
+
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Monitored Endpoints</span>
+                    <h3 id="statEndpoints" class="text-2xl font-bold text-white font-mono mt-0.5">0</h3>
+                </div>
+                <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </div>
+            </div>
+
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Critical / High</span>
+                    <h3 id="statCriticalHigh" class="text-2xl font-bold text-amber-400 font-mono mt-0.5">0 / 0</h3>
+                </div>
+                <div class="p-2.5 rounded-lg bg-amber-500/10 text-amber-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+            </div>
+
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Protected Branches</span>
+                    <h3 id="statBranches" class="text-2xl font-bold text-emerald-400 font-mono mt-0.5">1</h3>
+                </div>
+                <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+            </div>
+
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-3.5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Audit Trail Logs</span>
+                    <h3 id="statAuditCount" class="text-2xl font-bold text-indigo-400 font-mono mt-0.5">0</h3>
+                </div>
+                <div class="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upper Grid: Live Threat Alerts & Threat Analytics -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <!-- Live Alert Stream (2 cols) -->
+            <div class="lg:col-span-2 bg-cyber-card border border-cyber-700/60 rounded-xl p-4 flex flex-col h-[400px]">
+                <div class="flex items-center justify-between pb-3 border-b border-cyber-700/50">
+                    <div class="flex items-center space-x-2">
+                        <span class="h-2 w-2 rounded-full bg-red-500 animate-ping"></span>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Live Incident & Threat Stream</h2>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Auto-correlated with MITRE ATT&CK</span>
+                </div>
+
+                <div id="alertContainer" class="flex-1 overflow-y-auto space-y-2.5 pt-3 custom-scrollbar">
+                    <div class="text-center py-16 text-slate-500 text-xs">
+                        Listening for telemetry events... Run agent or threat test to stream live incidents.
+                    </div>
+                </div>
+            </div>
+
+            <!-- MITRE Tactic Distribution Chart (1 col) -->
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-4 flex flex-col h-[400px]">
+                <div class="flex items-center justify-between pb-3 border-b border-cyber-700/50">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Threat Tactics Matrix</h2>
+                    <span class="text-xs text-blue-400 font-mono">MITRE Breakdown</span>
+                </div>
+                <div class="flex-1 relative p-2 flex items-center justify-center">
+                    <canvas id="mitreChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Grid: Device Monitoring Inventory & Branch Map -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <!-- Device Table (2 cols) -->
+            <div class="lg:col-span-2 bg-cyber-card border border-cyber-700/60 rounded-xl p-4 flex flex-col">
+                <div class="flex items-center justify-between pb-3 border-b border-cyber-700/50">
+                    <div>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Monitored Org Devices</h2>
+                        <p class="text-xs text-slate-400">Endpoint telemetry, access visibility, and composite risk scoring</p>
+                    </div>
+                    <span class="text-xs font-mono text-slate-400">Refresh: Real-time</span>
+                </div>
+
+                <div class="overflow-x-auto mt-3">
+                    <table class="w-full text-left text-xs">
+                        <thead class="text-slate-400 bg-cyber-800/80 uppercase font-semibold border-b border-cyber-700/60">
+                            <tr>
+                                <th class="py-2.5 px-3">Device / Host</th>
+                                <th class="py-2.5 px-3">OS</th>
+                                <th class="py-2.5 px-3">Active User</th>
+                                <th class="py-2.5 px-3">Branch</th>
+                                <th class="py-2.5 px-3">Risk Score</th>
+                                <th class="py-2.5 px-3">Status</th>
+                                <th class="py-2.5 px-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devicesTableBody" class="divide-y divide-cyber-700/40 text-slate-300">
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-slate-500">No devices connected yet. Launch agent-desktop to enroll.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Branch Geo-Map (1 col) -->
+            <div class="bg-cyber-card border border-cyber-700/60 rounded-xl p-4 flex flex-col">
+                <div class="flex items-center justify-between pb-3 border-b border-cyber-700/50">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Branch Threat Map</h2>
+                    <span class="text-xs text-slate-400 font-mono">Global Footprint</span>
+                </div>
+                <div id="map" class="flex-1 h-[280px] rounded-lg mt-3 border border-cyber-700/60 overflow-hidden"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Device Details Modal (Telemetry Drilldown) -->
+    <div id="deviceModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cyber-card border border-cyber-700 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="px-5 py-4 border-b border-cyber-700/60 flex items-center justify-between">
+                <div>
+                    <h3 id="modalDeviceTitle" class="text-base font-bold text-white">Device Telemetry Inspector</h3>
+                    <p id="modalDeviceSub" class="text-xs text-slate-400"></p>
+                </div>
+                <button onclick="closeDeviceModal()" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Telemetry Tabs -->
+            <div class="px-5 pt-3 border-b border-cyber-700/60 flex space-x-3 text-xs font-semibold">
+                <button onclick="switchTab('processes')" id="tab-processes" class="pb-2 border-b-2 border-blue-500 text-blue-400">Processes</button>
+                <button onclick="switchTab('browser')" id="tab-browser" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Web History</button>
+                <button onclick="switchTab('clipboard')" id="tab-clipboard" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Clipboard Sync</button>
+                <button onclick="switchTab('print')" id="tab-print" class="pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200">Print Logs</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="modalTabContent" class="p-5 flex-1 overflow-y-auto custom-scrollbar text-xs">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Report Modal -->
+    <div id="reportModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cyber-card border border-cyber-700 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-white">Generate Signed Incident Report</h3>
+            <p class="text-xs text-slate-400">Produces an official cryptographic PDF incident assessment signed with Argus Ed25519 root authority.</p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Report Title</label>
+                    <input id="reportTitleInput" type="text" class="w-full bg-cyber-800 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500" value="Security Incident & Endpoint Monitoring Assessment">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Audience Template</label>
+                    <select id="reportTypeSelect" class="w-full bg-cyber-800 border border-cyber-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                        <option value="ANALYST">Technical Analyst Report (Full MITRE IOCs & Remediation)</option>
+                        <option value="EXECUTIVE">Executive Summary (Business Risk & Asset Impact)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="reportResultBlock" class="hidden p-3 bg-cyber-800/80 border border-blue-500/30 rounded-lg space-y-2 text-xs">
+                <div class="flex items-center space-x-2 text-emerald-400 font-semibold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Report Signed & Generated</span>
+                </div>
+                <div class="text-[10px] font-mono text-slate-400 break-all">
+                    <b>SHA-256:</b> <span id="reportShaSpan"></span>
+                </div>
+                <a id="reportDownloadBtn" href="#" target="_blank" class="block text-center w-full py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-md transition mt-2">
+                    Download Signed PDF
+                </a>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeReportModal()" class="px-3 py-1.5 bg-cyber-700 hover:bg-cyber-600 text-xs rounded-lg text-slate-300">Close</button>
+                <button id="btnSubmitGenerate" onclick="submitGenerateReport()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-xs font-semibold rounded-lg text-white">Generate & Sign</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verify Report Modal -->
+    <div id="verifyModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cyber-card border border-cyber-700 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-white">Verify PDF Chain of Custody</h3>
+            <p class="text-xs text-slate-400">Upload a report to verify its SHA-256 checksum and cryptographic Ed25519 signature.</p>
+
+            <input type="file" id="verifyFileInput" accept=".pdf" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+
+            <div id="verifyResultBox" class="hidden p-3 rounded-lg text-xs space-y-1.5">
+                <!-- Result populated dynamically -->
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeVerifyModal()" class="px-3 py-1.5 bg-cyber-700 hover:bg-cyber-600 text-xs rounded-lg text-slate-300">Close</button>
+                <button onclick="submitVerifyReport()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded-lg text-white">Verify Signature</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Drawer -->
+    <div id="auditDrawer" class="fixed inset-y-0 right-0 z-50 w-96 bg-cyber-card border-l border-cyber-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b border-cyber-700/60 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Access Audit Log</h3>
+            <button onclick="toggleAuditDrawer()" class="text-slate-400 hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="auditList" class="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scrollbar text-xs">
+            <p class="text-slate-500 text-center py-10">No audit events logged yet.</p>
+        </div>
+    </div>
+
+    <!-- Core Console JavaScript -->
+    <script>
+        let ws;
+        let map;
+        let markers = {};
+        let mitreChart;
+        let activeDeviceData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            initChart();
+            initWebSocket();
+            fetchInitialData();
+            setInterval(fetchInitialData, 10000); // 10s polling backup
+        });
+
+        function initMap() {
+            map = L.map('map').setView([40.7128, -74.0060], 4);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('mitreChart').getContext('2d');
+            mitreChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Execution', 'Collection', 'Exfiltration', 'Discovery', 'Initial Access'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#8B5CF6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94A3B8', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                document.getElementById('wsStatusDot').className = 'h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse';
+                document.getElementById('wsStatusText').innerText = 'LIVE FEED CONNECTED';
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'NEW_ALERT') {
+                    prependAlert(data.alert);
+                    updateStats();
+                } else if (data.type === 'DEVICE_UPDATE') {
+                    fetchDevices();
+                }
+            };
+
+            ws.onclose = () => {
+                document.getElementById('wsStatusDot').className = 'h-2.5 w-2.5 rounded-full bg-red-500';
+                document.getElementById('wsStatusText').innerText = 'DISCONNECTED (RECONNECTING...)';
+                setTimeout(initWebSocket, 3000);
+            };
+        }
+
+        async function fetchInitialData() {
+            await Promise.all([
+                fetchAlerts(),
+                fetchDevices(),
+                fetchStats(),
+                fetchAudit()
+            ]);
+        }
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/v1/alerts/stats/summary');
+                const stats = await res.json();
+                document.getElementById('statActiveThreats').innerText = stats.open || 0;
+                document.getElementById('statCriticalHigh').innerText = `${stats.critical} / ${stats.high}`;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function fetchAlerts() {
+            try {
+                const res = await fetch('/api/v1/alerts?limit=25');
+                const alerts = await res.json();
+                const container = document.getElementById('alertContainer');
+                if (alerts.length > 0) {
+                    container.innerHTML = '';
+                    const tacticCounts = { 'Execution': 0, 'Collection': 0, 'Exfiltration': 0, 'Discovery': 0, 'Initial Access': 0 };
+                    alerts.forEach(a => {
+                        appendAlertElement(container, a);
+                        if (a.mitre_tactic && tacticCounts.hasOwnProperty(a.mitre_tactic)) {
+                            tacticCounts[a.mitre_tactic]++;
+                        }
+                    });
+                    mitreChart.data.datasets[0].data = Object.values(tacticCounts);
+                    mitreChart.update();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function prependAlert(alert) {
+            const container = document.getElementById('alertContainer');
+            if (container.children.length === 1 && container.innerText.includes('Listening for telemetry')) {
+                container.innerHTML = '';
+            }
+            const el = createAlertElement(alert);
+            el.classList.add('pulse-red');
+            container.prepend(el);
+            setTimeout(() => el.classList.remove('pulse-red'), 4000);
+        }
+
+        function appendAlertElement(container, alert) {
+            container.appendChild(createAlertElement(alert));
+        }
+
+        function createAlertElement(alert) {
+            const div = document.createElement('div');
+            const sevColors = {
+                'CRITICAL': 'bg-red-500/10 border-red-500/40 text-red-400',
+                'HIGH': 'bg-amber-500/10 border-amber-500/40 text-amber-400',
+                'MEDIUM': 'bg-blue-500/10 border-blue-500/40 text-blue-400',
+                'LOW': 'bg-slate-700/30 border-slate-600/40 text-slate-300'
+            };
+            const borderBadge = sevColors[alert.severity] || sevColors['LOW'];
+
+            div.className = `p-3 rounded-lg border ${borderBadge} flex flex-col space-y-1.5 transition`;
+            div.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-1.5 py-0.5 rounded font-mono font-bold text-[10px] uppercase bg-black/40 border border-current">${alert.severity}</span>
+                        <span class="font-semibold text-slate-100">${alert.title}</span>
+                    </div>
+                    <span class="text-[10px] font-mono text-slate-400">${new Date(alert.detected_at).toLocaleTimeString()}</span>
+                </div>
+                <p class="text-xs text-slate-300">${alert.description}</p>
+                <div class="flex items-center justify-between pt-1 border-t border-cyber-700/40 text-[10px] text-slate-400">
+                    <div>
+                        <span class="font-mono text-blue-400">${alert.mitre_technique_id || 'TXXXX'}</span>: ${alert.mitre_technique_name || 'Generic'}
+                    </div>
+                    <div class="flex space-x-2">
+                        <span>Host: <b>${alert.hostname || alert.device_id}</b></span>
+                        <button onclick="resolveAlert('${alert.id}', this)" class="text-emerald-400 hover:underline">Mark Resolved</button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        async function resolveAlert(alertId, btn) {
+            try {
+                await fetch(`/api/v1/alerts/${alertId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'RESOLVED' })
+                });
+                btn.parentElement.innerHTML = '<span class="text-emerald-400 font-bold">Resolved</span>';
+                fetchStats();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function fetchDevices() {
+            try {
+                const res = await fetch('/api/v1/devices');
+                const devices = await res.json();
+                document.getElementById('statEndpoints').innerText = devices.length;
+
+                const tbody = document.getElementById('devicesTableBody');
+                if (devices.length > 0) {
+                    tbody.innerHTML = '';
+                    devices.forEach(d => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'hover:bg-cyber-800/50 transition';
+                        const statusBadge = d.status === 'COMPROMISED'
+                            ? '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/30">COMPROMISED</span>'
+                            : '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">ONLINE</span>';
+
+                        const riskColor = d.risk_score > 60 ? 'text-red-400' : (d.risk_score > 25 ? 'text-amber-400' : 'text-emerald-400');
+
+                        tr.innerHTML = `
+                            <td class="py-2.5 px-3 font-medium text-white">${d.hostname}</td>
+                            <td class="py-2.5 px-3 text-slate-400">${d.os_type}</td>
+                            <td class="py-2.5 px-3 font-mono text-slate-300">${d.current_user || 'system'}</td>
+                            <td class="py-2.5 px-3 text-slate-400">${d.branch_name}</td>
+                            <td class="py-2.5 px-3 font-mono font-bold ${riskColor}">${d.risk_score} / 100</td>
+                            <td class="py-2.5 px-3">${statusBadge}</td>
+                            <td class="py-2.5 px-3 text-right">
+                                <button onclick="openDeviceDetail('${d.id}')" class="px-2.5 py-1 rounded bg-cyber-700 hover:bg-cyber-600 text-blue-400 font-medium">Inspect</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+
+                        // Update Leaflet marker
+                        if (d.latitude && d.longitude) {
+                            if (!markers[d.id]) {
+                                markers[d.id] = L.marker([parseFloat(d.latitude), parseFloat(d.longitude)])
+                                    .addTo(map)
+                                    .bindPopup(`<b>${d.branch_name}</b><br>Device: ${d.hostname}<br>Risk: ${d.risk_score}`);
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function openDeviceDetail(deviceId) {
+            try {
+                const res = await fetch(`/api/v1/devices/${deviceId}`);
+                activeDeviceData = await res.json();
+
+                document.getElementById('modalDeviceTitle').innerText = `${activeDeviceData.device.hostname} — Telemetry Inspector`;
+                document.getElementById('modalDeviceSub').innerText = `OS: ${activeDeviceData.device.os_type} | User: ${activeDeviceData.device.current_user || 'unknown'} | Branch: ${activeDeviceData.device.branch_name}`;
+
+                switchTab('processes');
+                document.getElementById('deviceModal').classList.remove('hidden');
+                fetchAudit(); // Refresh audit since inspection logged an audit event
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function closeDeviceModal() {
+            document.getElementById('deviceModal').classList.add('hidden');
+        }
+
+        function switchTab(tabName) {
+            ['processes', 'browser', 'clipboard', 'print'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    btn.className = 'pb-2 border-b-2 border-blue-500 text-blue-400 font-bold';
+                } else {
+                    btn.className = 'pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200';
+                }
+            });
+
+            const contentDiv = document.getElementById('modalTabContent');
+            if (!activeDeviceData || !activeDeviceData.recent_events) {
+                contentDiv.innerHTML = '<p class="text-slate-500">No events logged.</p>';
+                return;
+            }
+
+            const events = activeDeviceData.recent_events;
+            if (tabName === 'processes') {
+                const procs = events.filter(e => e.event_type === 'PROCESS_START');
+                if (procs.length === 0) contentDiv.innerHTML = '<p class="text-slate-500">No process start events logged.</p>';
+                else {
+                    let html = '<div class="space-y-2">';
+                    procs.forEach(p => {
+                        html += `
+                            <div class="p-2.5 bg-cyber-800 rounded border border-cyber-700/50 flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-white">${p.payload.process_name || 'Process'}</span>
+                                    <span class="text-slate-400 font-mono text-[11px] ml-2">PID: ${p.payload.pid || '-'}</span>
+                                    <p class="font-mono text-slate-400 text-[10px] truncate max-w-xl mt-0.5">${p.payload.command_line || '-'}</p>
+                                </div>
+                                <span class="text-slate-500 text-[10px] font-mono">${new Date(p.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    contentDiv.innerHTML = html;
+                }
+            } else if (tabName === 'browser') {
+                const visits = events.filter(e => e.event_type === 'BROWSER_VISIT');
+                if (visits.length === 0) contentDiv.innerHTML = '<p class="text-slate-500">No browser visit events logged.</p>';
+                else {
+                    let html = '<div class="space-y-2">';
+                    visits.forEach(v => {
+                        html += `
+                            <div class="p-2.5 bg-cyber-800 rounded border border-cyber-700/50 flex justify-between items-center">
+                                <div class="truncate max-w-xl">
+                                    <span class="font-semibold text-white">${v.payload.title || 'Visited URL'}</span>
+                                    <p class="text-blue-400 font-mono text-[10px] truncate">${v.payload.url || '-'}</p>
+                                </div>
+                                <span class="text-slate-500 text-[10px] font-mono">${new Date(v.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    contentDiv.innerHTML = html;
+                }
+            } else if (tabName === 'clipboard') {
+                const clips = events.filter(e => e.event_type === 'CLIPBOARD_SYNC');
+                if (clips.length === 0) contentDiv.innerHTML = '<p class="text-slate-500">No clipboard sync events logged.</p>';
+                else {
+                    let html = '<div class="space-y-2">';
+                    clips.forEach(c => {
+                        html += `
+                            <div class="p-2.5 bg-cyber-800 rounded border border-cyber-700/50 flex justify-between items-center">
+                                <div class="truncate max-w-xl">
+                                    <span class="font-mono text-slate-200">${c.payload.content || '-'}</span>
+                                </div>
+                                <span class="text-slate-500 text-[10px] font-mono">${new Date(c.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    contentDiv.innerHTML = html;
+                }
+            } else if (tabName === 'print') {
+                const prints = events.filter(e => e.event_type === 'PRINT_JOB');
+                if (prints.length === 0) contentDiv.innerHTML = '<p class="text-slate-500">No print jobs logged.</p>';
+                else {
+                    let html = '<div class="space-y-2">';
+                    prints.forEach(pr => {
+                        html += `
+                            <div class="p-2.5 bg-cyber-800 rounded border border-cyber-700/50 flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-white">${pr.payload.document_name || 'Document'}</span>
+                                    <span class="text-slate-400 text-[11px] ml-2">Printer: ${pr.payload.printer_name} | Pages: ${pr.payload.pages}</span>
+                                </div>
+                                <span class="text-slate-500 text-[10px] font-mono">${new Date(pr.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    contentDiv.innerHTML = html;
+                }
+            }
+        }
+
+        function openReportModal() {
+            document.getElementById('reportResultBlock').classList.add('hidden');
+            document.getElementById('reportModal').classList.remove('hidden');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+        }
+
+        async function submitGenerateReport() {
+            const btn = document.getElementById('btnSubmitGenerate');
+            btn.innerText = 'Signing...';
+            btn.disabled = true;
+
+            const title = document.getElementById('reportTitleInput').value;
+            const reportType = document.getElementById('reportTypeSelect').value;
+
+            try {
+                const res = await fetch('/api/v1/reports/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, report_type: reportType })
+                });
+                const data = await res.json();
+                document.getElementById('reportShaSpan').innerText = data.sha256_hash;
+                document.getElementById('reportDownloadBtn').href = data.download_url;
+                document.getElementById('reportResultBlock').classList.remove('hidden');
+                fetchAudit();
+            } catch (e) {
+                alert('Error generating report: ' + e);
+            } finally {
+                btn.innerText = 'Generate & Sign';
+                btn.disabled = false;
+            }
+        }
+
+        function openVerifyModal() {
+            document.getElementById('verifyResultBox').classList.add('hidden');
+            document.getElementById('verifyModal').classList.remove('hidden');
+        }
+
+        function closeVerifyModal() {
+            document.getElementById('verifyModal').classList.add('hidden');
+        }
+
+        async function submitVerifyReport() {
+            const fileInput = document.getElementById('verifyFileInput');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please select a PDF file first.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const res = await fetch('/api/v1/reports/verify', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                const box = document.getElementById('verifyResultBox');
+                box.className = 'p-3 rounded-lg text-xs space-y-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300';
+                box.innerHTML = `
+                    <div class="font-bold flex items-center space-x-1.5 text-emerald-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>${data.status}</span>
+                    </div>
+                    <p class="text-slate-300">${data.message}</p>
+                    <div class="font-mono text-[10px] text-slate-400 pt-1">
+                        <b>SHA-256:</b> ${data.sha256_checksum}<br>
+                        <b>Key Fingerprint:</b> ${data.public_key_fingerprint}
+                    </div>
+                `;
+                box.classList.remove('hidden');
+            } catch (e) {
+                alert('Verification failed: ' + e);
+            }
+        }
+
+        function toggleAuditDrawer() {
+            const drawer = document.getElementById('auditDrawer');
+            drawer.classList.toggle('translate-x-full');
+            fetchAudit();
+        }
+
+        async function fetchAudit() {
+            try {
+                const res = await fetch('/api/v1/audit?limit=20');
+                const logs = await res.json();
+                document.getElementById('statAuditCount').innerText = logs.length;
+                const list = document.getElementById('auditList');
+                if (logs.length > 0) {
+                    list.innerHTML = '';
+                    logs.forEach(l => {
+                        const item = document.createElement('div');
+                        item.className = 'p-2.5 bg-cyber-800 rounded border border-cyber-700/50 space-y-1';
+                        item.innerHTML = `
+                            <div class="flex justify-between font-mono text-[10px] text-slate-400">
+                                <span class="font-semibold text-blue-400">${l.actor_username}</span>
+                                <span>${new Date(l.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                            <div class="font-semibold text-slate-200">${l.action}</div>
+                            <div class="text-[10px] text-slate-400">Target: ${l.target_resource} (${l.target_id || '-'})</div>
+                        `;
+                        list.appendChild(item);
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+</html>
