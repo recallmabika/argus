@@ -950,6 +950,7 @@ async function fetchAlerts() {
 }
 
 function prependAlert(alert) {
+    if (streamPaused) return; // Don't append new alerts when stream is paused
     const container = document.getElementById('alertContainer');
     if (!container) return;
     if (container.querySelector('.alert-skeleton') || container.innerText.includes('Listening for telemetry')) {
@@ -976,34 +977,74 @@ function appendAlertElement(container, alert) {
 
 function createAlertElement(alert) {
     const div = document.createElement('div');
-    const sevColors = {
-        'CRITICAL': 'bg-rose-500/10 border-rose-500/40 text-rose-600 dark:text-rose-400',
-        'HIGH': 'bg-orange-500/10 border-orange-500/40 text-orange-600 dark:text-orange-400 font-bold',
-        'MEDIUM': 'bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400 font-semibold',
-        'LOW': 'bg-slate-500/10 border-slate-400/30 text-slate-600 dark:text-slate-300 font-medium'
+    const sevBorder = {
+        'CRITICAL': 'border-l-rose-500',
+        'HIGH': 'border-l-orange-500',
+        'MEDIUM': 'border-l-amber-500',
+        'LOW': 'border-l-slate-400'
     };
-    const borderBadge = sevColors[alert.severity] || sevColors['LOW'];
+    const sevBadge = {
+        'CRITICAL': 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30',
+        'HIGH': 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30',
+        'MEDIUM': 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
+        'LOW': 'bg-slate-500/10 text-slate-600 dark:text-slate-300 border-slate-400/30'
+    };
+    const borderClass = sevBorder[alert.severity] || sevBorder['LOW'];
+    const badgeClass = sevBadge[alert.severity] || sevBadge['LOW'];
 
-    div.className = `p-3 rounded-sm border ${borderBadge} flex flex-col space-y-1.5 transition`;
+    const rawCmd = alert.raw_command || alert.process_command || '';
+    const mitreTactic = alert.mitre_tactic || '';
+    const mitreId = alert.mitre_technique_id || 'TXXXX';
+    const mitreName = alert.mitre_technique_name || 'Generic';
+    const hostName = alert.hostname || alert.device_id || '—';
+    const userName = alert.user || alert.username || '';
+    const timestamp = new Date(alert.detected_at).toLocaleTimeString();
+
+    div.className = `alert-card p-3 rounded-sm border border-slate-200 dark:border-cyber-700/50 border-l-[3px] ${borderClass} bg-white dark:bg-cyber-card flex flex-col transition hover:shadow-md hover:border-slate-300 dark:hover:border-cyber-600`;
+    div.setAttribute('data-severity', alert.severity || 'LOW');
+    div.setAttribute('data-host', hostName);
     div.innerHTML = `
+        <!-- Title Row -->
         <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <span class="px-1.5 py-0.5 rounded font-mono font-bold text-[10px] uppercase bg-black/10 dark:bg-black/40 border border-current">${alert.severity}</span>
-                <span class="font-semibold text-slate-900 dark:text-slate-100">${alert.title}</span>
+            <div class="flex items-center space-x-2 min-w-0">
+                <span class="px-1.5 py-0.5 rounded-sm font-mono font-bold text-[10px] uppercase border ${badgeClass} flex-shrink-0">${alert.severity}</span>
+                <span class="font-semibold text-xs text-slate-900 dark:text-slate-100 truncate">${alert.title}</span>
             </div>
-            <span class="text-[10px] font-mono text-slate-400">${new Date(alert.detected_at).toLocaleTimeString()}</span>
+            <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500 flex-shrink-0 ml-2">${timestamp}</span>
         </div>
-        <p class="text-xs text-slate-600 dark:text-slate-300">${alert.description}</p>
-        <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-cyber-700/40 text-[10px] text-slate-500 dark:text-slate-400">
-            <div>
-                <span class="font-mono text-slate-900 dark:text-white font-semibold">${alert.mitre_technique_id || 'TXXXX'}</span>: ${alert.mitre_technique_name || 'Generic'}
+
+        <!-- Description -->
+        <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed">${alert.description}</p>
+
+        ${rawCmd ? `
+        <!-- Raw Payload / Command -->
+        <div class="mt-2 border-t border-slate-100 dark:border-cyber-700/30 pt-2">
+            <div class="flex items-center justify-between mb-1">
+                <span class="text-[9px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500">Payload / Command</span>
+                <button onclick="copyPayload(this)" data-payload="${rawCmd.replace(/"/g, '&quot;')}" class="px-2 py-0.5 rounded-sm text-[9px] font-mono text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-cyber-700/50 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-cyber-600 transition" title="Copy to clipboard">COPY</button>
             </div>
-            <div class="flex items-center space-x-1.5">
-                <span class="mr-1 hidden sm:inline">Host: <b>${alert.hostname || alert.device_id}</b></span>
-                <button onclick="openAttackChain('${alert.id}')" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-[10px] transition">Attack Chain</button>
-                <button onclick="openDeviceDetail('${alert.device_id}')" class="px-2 py-0.5 rounded bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition">Remediate</button>
-                <button onclick="resolveAlert('${alert.id}', this)" class="text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white font-semibold text-[10px] underline ml-1">Resolve</button>
+            <pre class="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-cyber-900/40 p-2 rounded-sm border border-slate-100 dark:border-cyber-700/30 overflow-x-auto whitespace-pre-wrap break-all max-h-[60px] custom-scrollbar">${rawCmd}</pre>
+        </div>
+        ` : ''}
+
+        <!-- MITRE & Host Info -->
+        <div class="mt-2 border-t border-slate-100 dark:border-cyber-700/30 pt-2 flex items-center justify-between flex-wrap gap-1.5">
+            <div class="flex items-center space-x-1.5 flex-wrap gap-1">
+                <span class="px-1.5 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-slate-100 dark:bg-cyber-700/40 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-cyber-600/50">${mitreId}</span>
+                <span class="text-[10px] text-slate-500 dark:text-slate-400">${mitreName}</span>
+                ${mitreTactic ? `<span class="px-1.5 py-0.5 rounded-sm text-[9px] font-mono bg-slate-50 dark:bg-cyber-800/60 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-cyber-700/40">${mitreTactic}</span>` : ''}
             </div>
+            <div class="flex items-center space-x-2 text-[10px] text-slate-500 dark:text-slate-400">
+                <span class="font-mono">Host: <b class="text-slate-700 dark:text-slate-200">${hostName}</b></span>
+                ${userName ? `<span class="font-mono">User: <b class="text-slate-700 dark:text-slate-200">${userName}</b></span>` : ''}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-2 border-t border-slate-100 dark:border-cyber-700/30 pt-2 flex items-center justify-end space-x-2">
+            <button onclick="openAttackChain('${alert.id}')" class="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[90px] text-center border border-slate-300 dark:border-cyber-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 hover:text-slate-900 dark:hover:text-white transition">Attack Chain</button>
+            <button onclick="openDeviceDetail('${alert.device_id}')" class="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[90px] text-center border border-slate-300 dark:border-cyber-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 hover:text-slate-900 dark:hover:text-white transition">Remediate</button>
+            <button onclick="resolveAlert('${alert.id}', this)" class="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[70px] text-center border border-slate-300 dark:border-cyber-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 hover:text-slate-900 dark:hover:text-white transition">Resolve</button>
         </div>
     `;
     return div;
@@ -1020,6 +1061,84 @@ async function resolveAlert(alertId, btn) {
         fetchStats();
     } catch (e) {
         console.error(e);
+    }
+}
+
+// ── Threat Stream: Copy Payload ──
+function copyPayload(btn) {
+    const payload = btn.getAttribute('data-payload');
+    if (!payload) return;
+    navigator.clipboard.writeText(payload).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'COPIED';
+        btn.classList.add('text-slate-700', 'dark:text-slate-200');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('text-slate-700', 'dark:text-slate-200'); }, 1500);
+    }).catch(() => {
+        // Fallback for insecure contexts
+        const ta = document.createElement('textarea');
+        ta.value = payload;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const orig = btn.textContent;
+        btn.textContent = 'COPIED';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+    });
+}
+
+// ── Threat Stream: Filtering ──
+let streamPaused = false;
+let activeSevFilter = 'ALL';
+let activeHostFilter = '';
+
+function filterStreamCards() {
+    const container = document.getElementById('alertContainer');
+    if (!container) return;
+    const cards = container.querySelectorAll('.alert-card');
+    cards.forEach(card => {
+        const sev = card.getAttribute('data-severity') || '';
+        const host = (card.getAttribute('data-host') || '').toLowerCase();
+        const text = card.textContent.toLowerCase();
+        let show = true;
+        if (activeSevFilter !== 'ALL' && sev !== activeSevFilter) show = false;
+        if (activeHostFilter && !host.includes(activeHostFilter) && !text.includes(activeHostFilter)) show = false;
+        card.style.display = show ? '' : 'none';
+    });
+}
+
+function setStreamSevFilter(sev, btn) {
+    activeSevFilter = sev;
+    // Update active tab styling
+    const tabs = document.querySelectorAll('.stream-sev-tab');
+    tabs.forEach(t => {
+        t.classList.remove('bg-slate-200', 'dark:bg-cyber-700', 'text-slate-900', 'dark:text-white', 'font-bold');
+        t.classList.add('text-slate-500', 'dark:text-slate-400');
+    });
+    btn.classList.add('bg-slate-200', 'dark:bg-cyber-700', 'text-slate-900', 'dark:text-white', 'font-bold');
+    btn.classList.remove('text-slate-500', 'dark:text-slate-400');
+    filterStreamCards();
+}
+
+function toggleStreamPause() {
+    streamPaused = !streamPaused;
+    const btn = document.getElementById('streamPauseBtn');
+    const icon = document.getElementById('streamPauseIcon');
+    const label = document.getElementById('streamPauseLabel');
+    if (btn) {
+        if (streamPaused) {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+            if (label) label.textContent = 'Resume';
+            btn.classList.add('text-amber-600', 'dark:text-amber-400', 'border-amber-400/40');
+            btn.classList.remove('border-slate-200', 'dark:border-cyber-700/50');
+        } else {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+            if (label) label.textContent = 'Pause';
+            btn.classList.remove('text-amber-600', 'dark:text-amber-400', 'border-amber-400/40');
+            btn.classList.add('border-slate-200', 'dark:border-cyber-700/50');
+        }
     }
 }
 
