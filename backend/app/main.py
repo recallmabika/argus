@@ -48,6 +48,12 @@ templates = Jinja2Templates(directory=templates_dir)
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+# React + TypeScript SPA dist directory
+frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist"))
+frontend_assets = os.path.join(frontend_dist, "assets")
+if os.path.exists(frontend_assets):
+    app.mount("/assets", StaticFiles(directory=frontend_assets), name="frontend-assets")
+
 # Register API v1 Routers
 app.include_router(telemetry_router, prefix=f"{settings.API_V1_STR}/telemetry", tags=["Telemetry"])
 app.include_router(devices_router, prefix=f"{settings.API_V1_STR}/devices", tags=["Devices"])
@@ -62,24 +68,58 @@ app.include_router(spatial_router, prefix=f"{settings.API_V1_STR}/spatial", tags
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     """Serves the ARTIS platform favicon directly at the root."""
+    spa_favicon = os.path.join(frontend_dist, "favicon.svg")
+    if os.path.exists(spa_favicon):
+        return FileResponse(spa_favicon, media_type="image/svg+xml")
     favicon_path = os.path.join(static_dir, "img", "favicon.ico")
     if os.path.exists(favicon_path):
         return FileResponse(favicon_path, media_type="image/x-icon")
     return HTMLResponse(status_code=404)
 
 
+def _render_spa_or_template(request: Request, template_name: str):
+    spa_index = os.path.join(frontend_dist, "index.html")
+    if os.path.exists(spa_index):
+        return FileResponse(spa_index)
+    return templates.TemplateResponse(request=request, name=template_name)
+
+
 @app.get("/", response_class=HTMLResponse)
 @app.get("/landing", response_class=HTMLResponse)
 async def get_landing_page(request: Request):
-    """Renders the executive ARTIS landing page."""
-    return templates.TemplateResponse(request=request, name="landing.html")
+    """Renders the ARTIS landing page (React SPA or Jinja fallback)."""
+    return _render_spa_or_template(request, "landing.html")
 
 
 @app.get("/console", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
 async def get_dashboard(request: Request):
-    """Renders the operational SOC web console dashboard."""
+    """Renders the operational SOC dashboard (React SPA or Jinja fallback)."""
+    return _render_spa_or_template(request, "index.html")
+
+
+@app.get("/threats", response_class=HTMLResponse)
+async def get_threats_page(request: Request):
+    """Renders the dedicated real-time Threat Stream page (React SPA or Jinja fallback)."""
+    return _render_spa_or_template(request, "threats.html")
+
+
+# Legacy template routes
+@app.get("/legacy", response_class=HTMLResponse)
+@app.get("/legacy/landing", response_class=HTMLResponse)
+async def get_legacy_landing(request: Request):
+    return templates.TemplateResponse(request=request, name="landing.html")
+
+
+@app.get("/legacy/dashboard", response_class=HTMLResponse)
+@app.get("/legacy/console", response_class=HTMLResponse)
+async def get_legacy_dashboard(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.get("/legacy/threats", response_class=HTMLResponse)
+async def get_legacy_threats(request: Request):
+    return templates.TemplateResponse(request=request, name="threats.html")
 
 
 @app.websocket("/ws")
