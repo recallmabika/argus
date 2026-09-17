@@ -22,8 +22,11 @@ import psutil
 from typing import List, Dict, Any, Optional
 from PIL import Image, ImageGrab
 
+import ctypes
+
 try:
     import win32gui
+    import win32ui
     import win32api
     import win32con
     import win32service
@@ -284,6 +287,73 @@ class ForensicsManager:
 
         return windows
 
+    def _capture_window_by_hwnd(self, hwnd: int) -> Optional[Image.Image]:
+        """
+        Captures the visual contents of a specific window handle using Windows PrintWindow API
+        into an off-screen device context. This captures genuine window content even if the window
+        is occluded behind other applications (like the browser) and eliminates screen recursion.
+        """
+        if not HAS_WIN32:
+            return None
+        try:
+            if not win32gui.IsWindow(hwnd):
+                return None
+        except Exception:
+            return None
+
+        hwndDC = None
+        mfcDC = None
+        saveDC = None
+        saveBitMap = None
+        try:
+            rect = win32gui.GetWindowRect(hwnd)
+            w = max(10, rect[2] - rect[0])
+            h = max(10, rect[3] - rect[1])
+
+            hwndDC = win32gui.GetWindowDC(hwnd)
+            if not hwndDC:
+                return None
+            mfcDC = win32ui.CreateDCFromHandle(hwndDC)
+            saveDC = mfcDC.CreateCompatibleDC()
+            saveBitMap = win32ui.CreateBitmap()
+            saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+            saveDC.SelectObject(saveBitMap)
+
+            # PW_RENDERFULLCONTENT = 2 ensures modern DWM composited windows render client contents
+            PW_RENDERFULLCONTENT = 2
+            res = ctypes.windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), PW_RENDERFULLCONTENT)
+            if not res:
+                res = ctypes.windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 0)
+
+            bmpinfo = saveBitMap.GetInfo()
+            bmpstr = saveBitMap.GetBitmapBits(True)
+            img = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
+            return img
+        except Exception as e:
+            print(f"[Forensics] PrintWindow capture error on hwnd {hwnd}: {e}")
+            return None
+        finally:
+            if saveBitMap:
+                try:
+                    win32gui.DeleteObject(saveBitMap.GetHandle())
+                except Exception:
+                    pass
+            if saveDC:
+                try:
+                    saveDC.DeleteDC()
+                except Exception:
+                    pass
+            if mfcDC:
+                try:
+                    mfcDC.DeleteDC()
+                except Exception:
+                    pass
+            if hwndDC:
+                try:
+                    win32gui.ReleaseDC(hwnd, hwndDC)
+                except Exception:
+                    pass
+
     def get_screen_frame(self, device_id: str, window_id: Optional[str] = None, quality: int = 92) -> Optional[bytes]:
         """
         Captures a live, high-definition visual frame of the target device or chosen application window.
@@ -303,11 +373,13 @@ class ForensicsManager:
                             target_hwnd = None
                             if window_id == "active" and HAS_WIN32:
                                 target_hwnd = win32gui.GetForegroundWindow()
-                            elif HAS_WIN32 and str(window_id).isdigit():
-                                target_hwnd = int(window_id)
+                            elif HAS_WIN32 and str(window_id).strip().isdigit():
+                                target_hwnd = int(str(window_id).strip())
 
                             if target_hwnd and HAS_WIN32:
-                                if win32gui.IsWindow(target_hwnd):
+                                img = self._capture_window_by_hwnd(target_hwnd)
+                                # Secondary fallback: if PrintWindow produced nothing, attempt bbox grab
+                                if img is None and win32gui.IsWindow(target_hwnd):
                                     rect = win32gui.GetWindowRect(target_hwnd)
                                     left = max(0, rect[0])
                                     top = max(0, rect[1])
@@ -374,11 +446,22 @@ class ForensicsManager:
     def get_device_resolution(self, device_id: str, window_id: Optional[str] = None) -> Dict[str, int]:
         """Queries physical display dimensions of the target device or target window."""
         if device_id == "HOST-LOCAL-BRIDGE":
-            if window_id and str(window_id).isdigit() and HAS_WIN32:
+            target_hwnd = None
+            if window_id == "active" and HAS_WIN32:
                 try:
-                    hwnd = int(window_id)
-                    if win32gui.IsWindow(hwnd):
-                        rect = win32gui.GetWindowRect(hwnd)
+                    target_hwnd = win32gui.GetForegroundWindow()
+                except Exception:
+                    pass
+            elif window_id and str(window_id).strip().isdigit() and HAS_WIN32:
+                try:
+                    target_hwnd = int(str(window_id).strip())
+                except Exception:
+                    pass
+
+            if target_hwnd and HAS_WIN32:
+                try:
+                    if win32gui.IsWindow(target_hwnd):
+                        rect = win32gui.GetWindowRect(target_hwnd)
                         return {"width": max(100, rect[2] - rect[0]), "height": max(100, rect[3] - rect[1])}
                 except Exception:
                     pass
@@ -427,11 +510,22 @@ class ForensicsManager:
         if device_id == "HOST-LOCAL-BRIDGE":
             win_offset_x = 0
             win_offset_y = 0
-            if window_id and str(window_id).isdigit() and HAS_WIN32:
+            target_hwnd = None
+            if window_id == "active" and HAS_WIN32:
                 try:
-                    hwnd = int(window_id)
-                    if win32gui.IsWindow(hwnd):
-                        rect = win32gui.GetWindowRect(hwnd)
+                    target_hwnd = win32gui.GetForegroundWindow()
+                except Exception:
+                    pass
+            elif window_id and str(window_id).strip().isdigit() and HAS_WIN32:
+                try:
+                    target_hwnd = int(str(window_id).strip())
+                except Exception:
+                    pass
+
+            if target_hwnd and HAS_WIN32:
+                try:
+                    if win32gui.IsWindow(target_hwnd):
+                        rect = win32gui.GetWindowRect(target_hwnd)
                         win_offset_x = max(0, rect[0])
                         win_offset_y = max(0, rect[1])
                 except Exception:
@@ -447,11 +541,10 @@ class ForensicsManager:
             if sys.platform == "win32" and HAS_WIN32:
                 def _mouse_exec():
                     _attach_desktop_station()
-                    if window_id and str(window_id).isdigit():
+                    if target_hwnd and HAS_WIN32:
                         try:
-                            hwnd = int(window_id)
-                            if win32gui.IsWindow(hwnd) and not win32gui.IsIconic(hwnd):
-                                win32gui.SetForegroundWindow(hwnd)
+                            if win32gui.IsWindow(target_hwnd) and not win32gui.IsIconic(target_hwnd):
+                                win32gui.SetForegroundWindow(target_hwnd)
                         except Exception:
                             pass
 

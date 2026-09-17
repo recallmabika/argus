@@ -906,7 +906,7 @@
                             <div class="flex items-center space-x-1.5" id="windowSelectGroup">
                                 <span class="text-slate-600">•</span>
                                 <label for="forensicWindowSelect" class="text-[10px] text-slate-400 font-medium hidden sm:inline">Target Window:</label>
-                                <select id="forensicWindowSelect" onchange="onForensicWindowChange()" class="bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 rounded px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:border-cyan-500 max-w-[210px] truncate">
+                                <select id="forensicWindowSelect" onchange="onForensicWindowChange()" class="bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 rounded px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:border-cyan-500 max-w-[280px] sm:max-w-[340px] truncate">
                                     <option value="desktop">🖥️ Full Desktop (Display 1)</option>
                                     <option value="active">🪟 Active / Foreground Window</option>
                                 </select>
@@ -2411,7 +2411,7 @@ Connected to target subsystem. Type a shell command below or click a preset.
             const hint = document.getElementById('canvasGestureHint');
             if (hint) {
                 const selText = select ? select.options[select.selectedIndex]?.text : '';
-                hint.innerText = `Target stream changed to: ${selText}. Refreshing stream...`;
+                hint.innerHTML = `<span class="text-cyan-400 font-bold">Target:</span> <span class="text-white font-medium">${selText}</span> <span class="text-slate-600">•</span> <span class="text-emerald-400">Off-Screen Hardware DC Direct Capture</span>`;
             }
             fetchScreenFrame();
         }
