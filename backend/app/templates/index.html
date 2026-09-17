@@ -28,22 +28,13 @@
         
         <!-- Sidebar Header / Brand (Toggle button is positioned exclusively on top navigation) -->
         <div class="sidebar-header p-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
-            <div class="sidebar-brand-group relative flex items-center space-x-2.5 w-full cursor-pointer group" onclick="toggleSidebar()" title="ARTIS Incident Security">
+            <div class="sidebar-brand-group flex items-center space-x-2.5 w-full cursor-pointer group" onclick="toggleSidebar()">
                 <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-12 h-12 rounded-lg object-contain shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform" />
-                <div class="sidebar-text">
+                <div class="sidebar-brand-text">
                     <h1 class="text-xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
                         ARTIS
                     </h1>
                     <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Incident Security</p>
-                </div>
-
-                <!-- Floating Tooltip when Sidebar is Collapsed -->
-                <div class="sidebar-tooltip">
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold text-xs text-white">ARTIS</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">SOC</span>
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-normal">Incident Security Platform</span>
                 </div>
             </div>
         </div>

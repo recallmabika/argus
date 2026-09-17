@@ -58,9 +58,9 @@
   }
 }
 
-/* Collapsed Sidebar Rules: Centered Logo in Header, No Collapse Button */
+/* Collapsed Sidebar Rules: Centered Logo in Header Only, Zero Text, Zero Tooltip */
 #sidebar.sidebar-collapsed .sidebar-header {
-  padding: 0.75rem 0.25rem !important;
+  padding: 0.85rem 0.25rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -83,14 +83,9 @@
   object-fit: contain !important;
 }
 
-#sidebar.sidebar-collapsed .sidebar-text {
+#sidebar.sidebar-collapsed .sidebar-brand-text,
+#sidebar.sidebar-collapsed .sidebar-header .sidebar-text {
   display: none !important;
-}
-
-#sidebar.sidebar-collapsed .sidebar-brand-group:hover .sidebar-tooltip {
-  display: flex !important;
-  opacity: 1 !important;
-  transform: translateY(-50%) scale(1) !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-nav {
