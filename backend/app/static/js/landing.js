@@ -252,10 +252,10 @@ function initHeroMapCanvas() {
         ctx.clearRect(0, 0, width, height);
 
         const isDark = document.documentElement.classList.contains('dark');
-        const lineColor = isDark ? 'rgba(56, 189, 248, 0.18)' : 'rgba(2, 132, 199, 0.18)';
-        const packetColor = isDark ? 'rgba(34, 211, 238, 0.85)' : 'rgba(14, 165, 233, 0.85)';
-        const nodeColor = isDark ? 'rgba(56, 189, 248, 0.7)' : 'rgba(2, 132, 199, 0.7)';
-        const ringColor = isDark ? 'rgba(56, 189, 248, ' : 'rgba(2, 132, 199, ';
+        const lineColor = isDark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.15)';
+        const packetColor = isDark ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.85)';
+        const nodeColor = isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.75)';
+        const ringColor = isDark ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ';
 
         // 1. Draw static and curved network connection arcs
         CONNECTIONS.forEach(([fromIdx, toIdx]) => {
@@ -358,7 +358,7 @@ function setMapLevel(level) {
     buttons.forEach(btn => {
         const btnLevel = btn.getAttribute('data-level');
         if (btnLevel === level) {
-            btn.className = 'map-nav-btn px-4 py-1.5 rounded-lg text-xs font-normal tracking-wide transition bg-blue-600 text-white';
+            btn.className = 'map-nav-btn px-4 py-1.5 rounded-lg text-xs font-normal tracking-wide transition bg-slate-900 dark:bg-white text-white dark:text-black shadow-sm';
         } else {
             btn.className = 'map-nav-btn px-4 py-1.5 rounded-lg text-xs font-light tracking-wide transition text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600';
         }
@@ -391,7 +391,7 @@ function setMapLevel(level) {
             if (descEl) descEl.textContent = 'Continuous global attack surface intelligence and cross-border adversary vector correlation.';
             if (badgeEl) {
                 badgeEl.textContent = 'GLOBAL VISIBILITY';
-                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-slate-200/70 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             }
             inspectNode('world-af');
         } else if (level === 'africa') {
@@ -399,7 +399,7 @@ function setMapLevel(level) {
             if (descEl) descEl.textContent = 'Regional infrastructure security and unified inter-institutional threat intelligence across SADC.';
             if (badgeEl) {
                 badgeEl.textContent = 'CONTINENTAL MATRIX';
-                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-slate-200/70 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             }
             inspectNode('africa-sadc');
         } else if (level === 'zimbabwe') {
@@ -407,7 +407,7 @@ function setMapLevel(level) {
             if (descEl) descEl.textContent = 'Primary tactical command, commercial banking protection hubs, and high-security border gateway endpoints.';
             if (badgeEl) {
                 badgeEl.textContent = 'NATIONAL COMMAND';
-                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-slate-200/70 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             }
             inspectNode('zim-harare');
         }
@@ -434,11 +434,7 @@ function inspectNode(nodeKey) {
     if (regionEl) regionEl.textContent = node.region;
     if (statusEl) {
         statusEl.textContent = node.status;
-        if (node.status.includes('PRIMARY') || node.status.includes('ACTIVE')) {
-            statusEl.className = 'font-mono text-xs font-normal text-cyan-600 dark:text-cyan-400';
-        } else {
-            statusEl.className = 'font-mono text-xs font-normal text-emerald-600 dark:text-emerald-400';
-        }
+        statusEl.className = 'font-mono text-xs font-normal text-slate-900 dark:text-white';
     }
     if (latencyEl) latencyEl.textContent = node.latency;
     if (sensorsEl) sensorsEl.textContent = node.sensors;

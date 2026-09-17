@@ -90,7 +90,7 @@ function handleDragEnd(e) {
         }
     }
     document.querySelectorAll('.panel-slot').forEach(slot => {
-        slot.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+        slot.classList.remove('ring-2', 'ring-slate-900 dark:ring-white', 'bg-slate-900/10 dark:bg-white/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-slate-900 dark:border-white');
     });
     draggedCardId = null;
 }
@@ -100,20 +100,20 @@ function handleDragOver(e) {
     e.dataTransfer.dropEffect = 'move';
     const slot = e.currentTarget;
     if (!slot.classList.contains('ring-2')) {
-        slot.classList.add('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+        slot.classList.add('ring-2', 'ring-slate-900 dark:ring-white', 'bg-slate-900/10 dark:bg-white/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-slate-900 dark:border-white');
     }
 }
 
 function handleDragLeave(e) {
     const slot = e.currentTarget;
-    slot.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+    slot.classList.remove('ring-2', 'ring-slate-900 dark:ring-white', 'bg-slate-900/10 dark:bg-white/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-slate-900 dark:border-white');
 }
 
 function handleDrop(e, targetSlotId) {
     e.preventDefault();
     const targetSlot = document.getElementById(targetSlotId);
     if (targetSlot) {
-        targetSlot.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-500/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-blue-500');
+        targetSlot.classList.remove('ring-2', 'ring-slate-900 dark:ring-white', 'bg-slate-900/10 dark:bg-white/10', 'rounded-2xl', 'border-2', 'border-dashed', 'border-slate-900 dark:border-white');
     }
 
     const cardId = e.dataTransfer.getData('text/plain') || draggedCardId;
@@ -144,8 +144,8 @@ function swapCardToSlot(cardId, targetSlotId) {
     }
 
     // Visual pulse feedback on newly positioned card
-    cardToMove.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2');
-    setTimeout(() => cardToMove.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2'), 800);
+    cardToMove.classList.add('ring-2', 'ring-slate-900 dark:ring-white', 'ring-offset-2');
+    setTimeout(() => cardToMove.classList.remove('ring-2', 'ring-slate-900 dark:ring-white', 'ring-offset-2'), 800);
 
     // Re-invalidate map and chart to re-render smoothly in their new dimensions
     if (map) {
@@ -171,7 +171,7 @@ function updatePullButtonLabels() {
         if (!btn) return;
         const labelSpan = btn.querySelector('.label');
         if (id === mainCardId) {
-            btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 transition flex items-center space-x-1 font-semibold cursor-default';
+            btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900/10 dark:bg-white/10 text-blue-600 dark:text-blue-400 border border-slate-900 dark:border-white/30 transition flex items-center space-x-1 font-semibold cursor-default';
             btn.title = 'Currently pinned on Primary Stage';
             if (labelSpan) labelSpan.innerText = 'Primary Stage';
         } else {
@@ -412,28 +412,28 @@ function openArgusMessageBox({
         confirmBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold text-white shadow-md transition';
 
         if (type === 'success') {
-            accent.classList.add('bg-emerald-500', 'shadow-emerald-500/30');
-            iconWrapper.classList.add('bg-emerald-500/10', 'text-emerald-500', 'border-emerald-500/20');
-            confirmBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-500/20');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+            accent.classList.add('bg-slate-900', 'dark:bg-white');
+            iconWrapper.classList.add('bg-slate-200', 'dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-300', 'dark:border-white/20');
+            confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>';
         } else if (type === 'danger') {
-            accent.classList.add('bg-rose-500', 'shadow-rose-500/30');
-            iconWrapper.classList.add('bg-rose-500/10', 'text-rose-500', 'border-rose-500/20');
-            confirmBtn.classList.add('bg-rose-600', 'hover:bg-rose-500', 'shadow-rose-500/20');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+            accent.classList.add('bg-slate-900', 'dark:bg-white');
+            iconWrapper.classList.add('bg-slate-200', 'dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-300', 'dark:border-white/20');
+            confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>';
         } else if (type === 'warning') {
-            accent.classList.add('bg-amber-500', 'shadow-amber-500/30');
-            iconWrapper.classList.add('bg-amber-500/10', 'text-amber-500', 'border-amber-500/20');
-            confirmBtn.classList.add('bg-amber-600', 'hover:bg-amber-500', 'shadow-amber-500/20');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
+            accent.classList.add('bg-slate-900', 'dark:bg-white');
+            iconWrapper.classList.add('bg-slate-200', 'dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-300', 'dark:border-white/20');
+            confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
         } else {
-            accent.classList.add('bg-blue-500', 'shadow-blue-500/30');
-            iconWrapper.classList.add('bg-blue-500/10', 'text-blue-500', 'border-blue-500/20');
-            confirmBtn.classList.add('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/20');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+            accent.classList.add('bg-slate-900', 'dark:bg-white');
+            iconWrapper.classList.add('bg-slate-900/10 dark:bg-white/10', 'text-blue-500', 'border-slate-900 dark:border-white/20');
+            confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-900/10 dark:bg-white/10 text-blue-600 dark:text-blue-400 border border-slate-900 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
         }
 
@@ -516,14 +516,14 @@ function setTheme(mode, save = true) {
         const btn = document.getElementById(`themeBtn-${m}`);
         if (btn) {
             btn.className = (m === mode)
-                ? 'py-1 rounded bg-white dark:bg-cyber-600 text-blue-600 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
-                : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition';
+                ? 'py-1 rounded bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
+                : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition';
         }
         const menuBtn = document.getElementById(`menuThemeBtn-${m}`);
         if (menuBtn) {
             menuBtn.className = (m === mode)
-                ? 'py-1 rounded bg-white dark:bg-cyber-600 text-blue-600 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
-                : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition';
+                ? 'py-1 rounded bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
+                : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition';
         }
     });
 
@@ -654,7 +654,7 @@ function initChart() {
             labels: ['Execution', 'Collection', 'Exfiltration', 'Discovery', 'Initial Access'],
             datasets: [{
                 data: [0, 0, 0, 0, 0],
-                backgroundColor: ['#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#8B5CF6'],
+                backgroundColor: ['#FFFFFF', '#D1D5DB', '#9CA3AF', '#6B7280', '#374151'],
                 borderWidth: 0
             }]
         },
@@ -685,10 +685,10 @@ function initWebSocket() {
 
         const cDot = document.getElementById('wsStatusDotCollapsed');
         const cTxt = document.getElementById('wsStatusTextCollapsed');
-        if (cDot) cDot.className = 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse';
+        if (cDot) cDot.className = 'h-2 w-2 rounded-full bg-slate-900 dark:bg-white animate-pulse';
         if (cTxt) {
             cTxt.innerText = 'LIVE';
-            cTxt.className = 'text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-emerald-600 dark:text-emerald-400';
+            cTxt.className = 'text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-slate-900 dark:text-white';
         }
     };
 
@@ -928,8 +928,8 @@ function createAlertElement(alert) {
     const div = document.createElement('div');
     const sevColors = {
         'CRITICAL': 'bg-red-500/10 border-red-500/40 text-red-500 dark:text-red-400',
-        'HIGH': 'bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400',
-        'MEDIUM': 'bg-blue-500/10 border-blue-500/40 text-blue-600 dark:text-blue-400',
+        'HIGH': 'bg-slate-200 dark:bg-white/15 border-slate-400 dark:border-white/30 text-slate-900 dark:text-white font-bold',
+        'MEDIUM': 'bg-slate-900/10 dark:bg-white/10 border-slate-900 dark:border-white/40 text-blue-600 dark:text-blue-400',
         'LOW': 'bg-slate-200/50 dark:bg-slate-700/30 border-slate-300 dark:border-slate-600/40 text-slate-700 dark:text-slate-300'
     };
     const borderBadge = sevColors[alert.severity] || sevColors['LOW'];
@@ -946,7 +946,7 @@ function createAlertElement(alert) {
         <p class="text-xs text-slate-600 dark:text-slate-300">${alert.description}</p>
         <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-cyber-700/40 text-[10px] text-slate-500 dark:text-slate-400">
             <div>
-                <span class="font-mono text-blue-600 dark:text-blue-400 font-semibold">${alert.mitre_technique_id || 'TXXXX'}</span>: ${alert.mitre_technique_name || 'Generic'}
+                <span class="font-mono text-slate-900 dark:text-white font-semibold">${alert.mitre_technique_id || 'TXXXX'}</span>: ${alert.mitre_technique_name || 'Generic'}
             </div>
             <div class="flex space-x-2">
                 <span>Host: <b>${alert.hostname || alert.device_id}</b></span>
@@ -964,7 +964,7 @@ async function resolveAlert(alertId, btn) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: 'RESOLVED' })
         });
-        btn.parentElement.innerHTML = '<span class="text-emerald-500 font-bold">Resolved</span>';
+        btn.parentElement.innerHTML = '<span class="text-slate-500 dark:text-slate-400 font-bold">Resolved</span>';
         fetchStats();
     } catch (e) {
         console.error(e);
@@ -991,7 +991,7 @@ async function fetchDevices() {
                     ? '<span class="px-2 py-0.5 rounded bg-red-500/20 text-red-500 font-bold border border-red-500/30">COMPROMISED</span>'
                     : '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30">ONLINE</span>';
 
-                const riskColor = d.risk_score > 60 ? 'text-red-500' : (d.risk_score > 25 ? 'text-amber-500' : 'text-emerald-600 dark:text-emerald-400');
+                const riskColor = d.risk_score > 60 ? 'text-slate-900 dark:text-white font-bold' : (d.risk_score > 25 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-500 dark:text-slate-400');
 
                 tr.innerHTML = `
                     <td class="py-2.5 px-3 font-semibold text-slate-900 dark:text-white">${d.hostname}</td>
@@ -1056,7 +1056,7 @@ function switchTab(tabName) {
     ['processes', 'browser', 'clipboard', 'print'].forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         if (t === tabName) {
-            btn.className = 'pb-2 border-b-2 border-blue-500 text-blue-600 dark:text-blue-400 font-bold';
+            btn.className = 'pb-2 border-b-2 border-slate-900 dark:border-white text-blue-600 dark:text-blue-400 font-bold';
         } else {
             btn.className = 'pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200';
         }
@@ -1099,7 +1099,7 @@ function switchTab(tabName) {
                     <div class="p-2.5 bg-slate-100 dark:bg-cyber-800 rounded border border-slate-200 dark:border-cyber-700/50 flex justify-between items-center">
                         <div class="truncate max-w-xl">
                             <span class="font-semibold text-slate-900 dark:text-white">${v.payload.title || 'Visited URL'}</span>
-                            <p class="text-blue-600 dark:text-blue-400 font-mono text-[10px] truncate">${v.payload.url || '-'}</p>
+                            <p class="text-slate-700 dark:text-slate-300 font-mono text-[10px] truncate">${v.payload.url || '-'}</p>
                         </div>
                         <span class="text-slate-400 text-[10px] font-mono">${new Date(v.timestamp).toLocaleTimeString()}</span>
                     </div>
@@ -1223,7 +1223,7 @@ async function submitVerifyReport() {
         const box = document.getElementById('verifyResultBox');
         box.className = 'p-3 rounded-lg text-xs space-y-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300';
         box.innerHTML = `
-            <div class="font-bold flex items-center space-x-1.5 text-emerald-600 dark:text-emerald-400">
+            <div class="font-bold flex items-center space-x-1.5 text-slate-900 dark:text-white">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 <span>${data.status}</span>
             </div>
@@ -1268,7 +1268,7 @@ async function fetchAudit() {
                 item.className = 'p-2.5 bg-slate-100 dark:bg-cyber-800 rounded border border-slate-200 dark:border-cyber-700/50 space-y-1';
                 item.innerHTML = `
                     <div class="flex justify-between font-mono text-[10px] text-slate-500 dark:text-slate-400">
-                        <span class="font-semibold text-blue-600 dark:text-blue-400">${l.actor_username}</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">${l.actor_username}</span>
                         <span>${new Date(l.timestamp).toLocaleTimeString()}</span>
                     </div>
                     <div class="font-semibold text-slate-800 dark:text-slate-200">${l.action}</div>
@@ -1361,27 +1361,27 @@ async function fetchForensicDevices() {
         grid.innerHTML = '';
         devices.forEach(dev => {
             const card = document.createElement('div');
-            card.className = "p-4 bg-slate-50 dark:bg-cyber-800/50 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3 shadow-xs hover:border-cyan-500/50 transition flex flex-col justify-between";
+            card.className = "p-4 bg-slate-50 dark:bg-cyber-800/50 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3 shadow-xs hover:border-slate-400 dark:hover:border-white/40 transition flex flex-col justify-between";
 
             const isStorage = dev.type === 'storage' || dev.type === 'USB_STORAGE';
             const isHost = dev.type === 'host' || dev.type === 'HOST_WORKSTATION';
             const isWireless = dev.connection && (dev.connection.toLowerCase().includes('wireless') || dev.connection.toLowerCase().includes('wi-fi'));
 
             let typeBadgeClass = isWireless 
-                ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
+                ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'
                 : (isStorage
-                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                    ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'
                     : (isHost
-                        ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
-                        : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20'));
+                        ? 'bg-slate-900/10 dark:bg-white/10 text-blue-600 dark:text-blue-400 border-slate-900 dark:border-white/20'
+                        : 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'));
 
             let typeLabel = isWireless ? 'WI-FI ADB' : (isStorage ? 'MASS STORAGE' : (isHost ? 'LOCAL HOST' : 'USB CABLE'));
 
             let iconSvg = isStorage 
-                ? `<svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 2v4m4-4v4M7 6h10a1 1 0 011 1v13a2 2 0 01-2 2H8a2 2 0 01-2-2V7a1 1 0 011-1z"/></svg>`
+                ? `<svg class="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 2v4m4-4v4M7 6h10a1 1 0 011 1v13a2 2 0 01-2 2H8a2 2 0 01-2-2V7a1 1 0 011-1z"/></svg>`
                 : (isHost
-                    ? `<svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>`
-                    : `<svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>`);
+                    ? `<svg class="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>`
+                    : `<svg class="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>`);
 
             const platformName = dev.platform || (dev.details && (dev.details.os || dev.details.fstype)) || (isHost ? 'Windows Host' : (isStorage ? 'USB Storage' : 'Android'));
             const batteryText = typeof dev.battery === 'object' && dev.battery && dev.battery.level !== undefined 
@@ -1405,16 +1405,16 @@ async function fetchForensicDevices() {
                     </div>
 
                     <div class="pt-2 border-t border-slate-200/60 dark:border-cyber-700/40 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-600 dark:text-slate-400">
-                        <div>Status: <span class="text-emerald-500 font-semibold uppercase">${dev.status}</span></div>
+                        <div>Status: <span class="text-slate-900 dark:text-white font-semibold uppercase">${dev.status}</span></div>
                         <div class="truncate" title="${platformName}">Platform: <span class="text-slate-700 dark:text-slate-300 font-semibold">${platformName}</span></div>
-                        <div>Power: <span class="text-cyan-500 font-semibold">${batteryText}</span></div>
+                        <div>Power: <span class="text-slate-700 dark:text-slate-300 font-semibold">${batteryText}</span></div>
                         ${capacityText ? `<div class="truncate">Storage: <span class="text-slate-700 dark:text-slate-300 font-semibold">${capacityText}</span></div>` : ''}
                     </div>
                 </div>
 
                 <div class="pt-3 flex items-center space-x-2">
                     ${!isStorage ? `
-                        <button onclick="openForensicStudio('${dev.id}')" class="flex-1 py-1.5 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-sm shadow-cyan-500/20 whitespace-nowrap">
+                        <button onclick="openForensicStudio('${dev.id}')" class="flex-1 py-1.5 px-3 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-sm whitespace-nowrap">
                             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             <span>Open Studio & Control</span>
                         </button>
@@ -1469,7 +1469,7 @@ async function submitWirelessConnect() {
 
     if (!ip) {
         if (msg) {
-            msg.className = "p-2.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+            msg.className = "p-2.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-cyber-800 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20";
             msg.innerText = "Please provide target device IP address.";
         }
         return;
@@ -1477,7 +1477,7 @@ async function submitWirelessConnect() {
 
     if (btn) btn.disabled = true;
     if (msg) {
-        msg.className = "p-2.5 rounded-lg text-xs font-medium bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20";
+        msg.className = "p-2.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-cyber-800 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20";
         msg.innerText = `Attempting ADB handshake with ${ip}:${port}...`;
     }
 
@@ -1491,7 +1491,7 @@ async function submitWirelessConnect() {
         if (!res.ok) throw new Error(data.detail || "Connection failed");
 
         if (msg) {
-            msg.className = "p-2.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+            msg.className = "p-2.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-cyber-800 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20";
             msg.innerText = data.message || "Connected successfully!";
         }
 
@@ -1501,7 +1501,7 @@ async function submitWirelessConnect() {
         }, 1200);
     } catch (err) {
         if (msg) {
-            msg.className = "p-2.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+            msg.className = "p-2.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-cyber-800 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20";
             msg.innerText = err.message;
         }
     } finally {
@@ -1649,7 +1649,7 @@ function onForensicWindowChange() {
     const hint = document.getElementById('canvasGestureHint');
     if (hint) {
         const selText = select ? select.options[select.selectedIndex]?.text : '';
-        hint.innerHTML = `<span class="text-cyan-400 font-bold">Target:</span> <span class="text-white font-medium">${selText}</span> <span class="text-slate-600">•</span> <span class="text-emerald-400">Off-Screen Hardware DC Direct Capture</span>`;
+        hint.innerHTML = `<span class="text-white font-bold">Target:</span> <span class="text-white font-medium">${selText}</span> <span class="text-slate-600">•</span> <span class="text-emerald-400">Off-Screen Hardware DC Direct Capture</span>`;
     }
     fetchScreenFrame();
 }
@@ -1692,7 +1692,7 @@ function switchForensicTab(tab) {
 
     if (tab === 'screen') {
         if (paneScreen) paneScreen.classList.remove('hidden');
-        if (btnScreen) btnScreen.className = "px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-blue-600 dark:text-white shadow-xs";
+        if (btnScreen) btnScreen.className = "px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-slate-900 dark:text-white shadow-xs";
         const autoChk = document.getElementById('chkAutoStream');
         if (autoChk && autoChk.checked) toggleAutoStream(true);
         fetchScreenFrame();
@@ -1737,7 +1737,7 @@ function setupCanvasListeners() {
         // Update live coordinate readout in gesture hint bar
         const hint = document.getElementById('canvasGestureHint');
         if (hint) {
-            hint.innerHTML = `<span class="text-cyan-400 font-bold">X: ${Math.round(canvasX)}</span> <span class="text-slate-600">|</span> <span class="text-cyan-400 font-bold">Y: ${Math.round(canvasY)}</span> <span class="text-slate-600">•</span> <span>Left-Click to Select • Right-Click for Context • Scroll Wheel to Navigate</span>`;
+            hint.innerHTML = `<span class="text-white font-bold">X: ${Math.round(canvasX)}</span> <span class="text-slate-600">|</span> <span class="text-white font-bold">Y: ${Math.round(canvasY)}</span> <span class="text-slate-600">•</span> <span>Left-Click to Select • Right-Click for Context • Scroll Wheel to Navigate</span>`;
         }
     });
 
@@ -1966,7 +1966,7 @@ function showCanvasRightClickEffect(x, y) {
     ctx.fillStyle = 'rgba(245, 158, 11, 0.35)';
     ctx.fill();
     ctx.lineWidth = 2.5;
-    ctx.strokeStyle = '#f59e0b';
+    ctx.strokeStyle = '#ffffff';
     ctx.stroke();
     ctx.restore();
 }
@@ -2184,8 +2184,8 @@ async function loadForensicFiles(targetPath) {
             tr.className = "hover:bg-slate-50 dark:hover:bg-cyber-800/40 transition group";
             const isDir = item.is_dir !== undefined ? item.is_dir : (item.type === 'directory');
             const icon = isDir 
-                ? `<svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`
-                : `<svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
+                ? `<svg class="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`
+                : `<svg class="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
 
             const clickAction = isDir 
                 ? `onclick="loadForensicFiles('${item.path.replace(/\\/g, '/')}')"` 
@@ -2197,14 +2197,14 @@ async function loadForensicFiles(targetPath) {
             tr.innerHTML = `
                 <td class="py-2.5 px-4 flex items-center space-x-2 font-mono font-medium ${cursorClass} text-slate-800 dark:text-slate-200" ${clickAction}>
                     ${icon}
-                    <span class="truncate max-w-xs hover:text-cyan-500 transition">${item.name}</span>
+                    <span class="truncate max-w-xs hover:text-white transition">${item.name}</span>
                 </td>
                 <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400">${isDir ? 'Directory' : 'File'}</td>
                 <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400">${sizeText}</td>
                 <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400">${item.modified || '-'}</td>
                 <td class="py-2.5 px-4 text-right">
                     ${!isDir ? `
-                        <button onclick="downloadForensicFile('${item.path.replace(/\\/g, '/')}')" class="px-2 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-mono text-[10px] font-semibold border border-blue-500/20 transition flex items-center space-x-1 ml-auto">
+                        <button onclick="downloadForensicFile('${item.path.replace(/\\/g, '/')}')" class="px-2 py-1 rounded bg-slate-900/10 dark:bg-white/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-mono text-[10px] font-semibold border border-slate-900 dark:border-white/20 transition flex items-center space-x-1 ml-auto">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                             <span>SHA-256 Acquire</span>
                         </button>
@@ -2219,7 +2219,7 @@ async function loadForensicFiles(targetPath) {
         });
     } catch (err) {
         console.error("Load files error:", err);
-        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-500 font-mono text-xs">Error browsing files: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 font-mono text-xs">Error browsing files: ${err.message}</td></tr>`;
     }
 }
 
@@ -2356,7 +2356,7 @@ async function runForensicShell(presetCmd) {
 
     const term = document.getElementById('forensicShellOutput');
     if (term) {
-        term.innerHTML += `\n<span class="text-cyan-400">$ ${cmd}</span>\n<span class="text-slate-500">Executing on device subsystem...</span>`;
+        term.innerHTML += `\n<span class="text-white font-bold">$ ${cmd}</span>\n<span class="text-slate-500">Executing on device subsystem...</span>`;
         term.scrollTop = term.scrollHeight;
     }
 
@@ -2374,7 +2374,7 @@ async function runForensicShell(presetCmd) {
         }
     } catch (err) {
         if (term) {
-            term.innerHTML += `\n<span class="text-rose-400">Execution failed: ${err.message}</span>\n`;
+            term.innerHTML += `\n<span class="text-slate-300 font-semibold">Execution failed: ${err.message}</span>\n`;
             term.scrollTop = term.scrollHeight;
         }
     }

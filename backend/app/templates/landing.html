@@ -12,7 +12,7 @@
     <!-- Compiled Tailwind CSS (Zero inline styles) -->
     <link rel="stylesheet" href="/static/css/output.css">
 </head>
-<body class="bg-slate-50 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-cyan-500 selection:text-white">
+<body class="bg-slate-50 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
 
     <!-- Top Executive Navigation Bar (Revealed on scrolling past the hero) -->
     <!-- Top Executive Navigation Bar (Revealed on scrolling past the hero with smooth slide motion) -->
@@ -42,10 +42,10 @@
                 <button type="button" onclick="toggleLandingTheme()" class="px-3 py-1.5 text-[10px] font-light tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-cyber-800 rounded transition" title="Toggle Light/Dark Theme">
                     THEME
                 </button>
-                <button type="button" onclick="openDemoModal()" class="px-3.5 py-1.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-600 hover:border-cyan-500 text-slate-700 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition">
+                <button type="button" onclick="openDemoModal()" class="px-3.5 py-1.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-600 hover:border-slate-900 dark:hover:border-white text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition">
                     Request Demo
                 </button>
-                <a href="/console" class="px-5 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                <a href="/console" class="px-5 py-2.5 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition shadow-sm">
                     Launch SOC Console
                 </a>
             </div>
@@ -62,9 +62,10 @@
             
             <!-- Motion-Animated World Map Video-Like Background Layer -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
-                <!-- Cinematic panning/zooming world map layer (Clean, visible, reduced opacity restriction) -->
-                <div class="absolute -inset-12 hero-map-motion opacity-75 dark:opacity-70 flex items-center justify-center">
-                    <img src="/static/img/map_world_cyber_blue.png" alt="World Map Background" class="w-full h-full object-cover">
+                <!-- Cinematic panning/zooming world map layer (Monochrome Black & White) -->
+                <div class="absolute -inset-12 hero-map-motion opacity-75 dark:opacity-75 flex items-center justify-center">
+                    <img src="/static/img/map_world_clean_grey.png" alt="World Map Background" class="dark:hidden w-full h-full object-cover">
+                    <img src="/static/img/map_world_cyber_bw.png" alt="World Map Background" class="hidden dark:block w-full h-full object-cover">
                 </div>
                 <!-- Dynamic HTML5 canvas drawing real-time telemetry arcs, packet trails, and coordinate pings -->
                 <canvas id="heroMapCanvas" class="absolute inset-0 w-full h-full"></canvas>
@@ -96,9 +97,9 @@
 
                 <!-- Pushed Hero Content Block (Smoothly moves opposite to active logo panel) -->
                 <div id="heroContentBlock" class="relative z-10 w-full max-w-2xl lg:max-w-none space-y-6">
-                    <!-- Main Catchphrase (Ultra-thin, elegant) -->
+                    <!-- Main Catchphrase (Ultra-thin, elegant, monochrome silver gradient) -->
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extralight tracking-tight text-slate-900 dark:text-white leading-[1.12]">
-                        Continuous Threat Command Across <span class="font-light text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400">Global, Continental &amp; National</span> Horizons
+                        Continuous Threat Command Across <span class="font-light text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">Global, Continental &amp; National</span> Horizons
                     </h1>
 
                     <!-- Description (Justified text alignment, thin, clear, calm) -->
@@ -106,15 +107,15 @@
                         High-velocity ingestion telemetry, automated MITRE ATT&amp;CK correlation, remote hardware digital forensics, and cryptographically signed PDF evidence chain of custody across international nodes, Pan-African perimeters, and Zimbabwe national infrastructure.
                     </p>
 
-                    <!-- CTAs (Professional actions: Console, Request Demo, Inspect Matrix) -->
+                    <!-- CTAs (Professional actions: Console, Request Demo, Inspect Matrix in Monochrome) -->
                     <div class="hero-cta-group flex flex-wrap items-center gap-3 pt-2">
-                        <a href="/console" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                        <a href="/console" class="px-6 py-2.5 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition shadow-sm">
                             <span>Open Operational Console</span>
                         </a>
-                        <button type="button" onclick="openDemoModal()" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-cyan-600 hover:bg-cyan-500 text-white transition">
+                        <button type="button" onclick="openDemoModal()" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-white/30 hover:border-slate-900 dark:hover:border-white text-slate-900 dark:text-white bg-white/60 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-white/10 transition backdrop-blur-sm">
                             <span>Request a Demo</span>
                         </button>
-                        <a href="#geospatial-matrix" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-700 hover:border-slate-400 dark:hover:border-cyber-600 bg-white/50 dark:bg-cyber-800/40 backdrop-blur-sm text-slate-700 dark:text-slate-300 transition">
+                        <a href="#geospatial-matrix" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-700 hover:border-slate-400 dark:hover:border-cyber-600 bg-white/40 dark:bg-cyber-900/40 backdrop-blur-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
                             <span>Inspect Defense Matrix</span>
                         </a>
                     </div>
@@ -181,7 +182,7 @@
                 <div class="p-6 sm:p-8 border-b border-slate-200 dark:border-cyber-700/70 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div class="space-y-1">
                         <div class="flex items-center space-x-2">
-                            <span id="mapLevelBadge" class="text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                            <span id="mapLevelBadge" class="text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-slate-200/70 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">
                                 GLOBAL VISIBILITY
                             </span>
                             <span class="text-xs font-mono text-slate-400">TELEMETRY MATRIX</span>
@@ -194,9 +195,9 @@
                         </p>
                     </div>
 
-                    <!-- Tri-Level Segmented Controls (Clean, no icons, no shadows) -->
+                    <!-- Tri-Level Segmented Controls (Clean, monochrome) -->
                     <div class="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-cyber-900/80 border border-slate-200 dark:border-cyber-700 space-x-1 self-start lg:self-center">
-                        <button type="button" onclick="setMapLevel('world')" data-level="world" class="map-nav-btn px-4 py-1.5 rounded-lg text-xs font-normal tracking-wide transition bg-blue-600 text-white">
+                        <button type="button" onclick="setMapLevel('world')" data-level="world" class="map-nav-btn px-4 py-1.5 rounded-lg text-xs font-normal tracking-wide transition bg-slate-900 dark:bg-white text-white dark:text-black shadow-sm">
                             World Grid
                         </button>
                         <button type="button" onclick="setMapLevel('africa')" data-level="africa" class="map-nav-btn px-4 py-1.5 rounded-lg text-xs font-light tracking-wide transition text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600">
@@ -217,8 +218,8 @@
                         <!-- Map Loading Radar Acquisition Skeleton Overlay -->
                         <div id="mapLoadingSkeleton" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center space-y-4 opacity-0 pointer-events-none transition-opacity duration-200">
                             <div class="relative flex items-center justify-center w-16 h-16">
-                                <div class="w-16 h-16 rounded-full border-2 border-cyan-500/20 border-t-cyan-400 animate-spin"></div>
-                                <div class="w-8 h-8 rounded-full bg-cyan-500/20 animate-ping absolute"></div>
+                                <div class="w-16 h-16 rounded-full border-2 border-white/20 border-t-white animate-spin"></div>
+                                <div class="w-8 h-8 rounded-full bg-white/20 animate-ping absolute"></div>
                             </div>
                             <div class="text-center space-y-2">
                                 <div class="h-3 w-36 bg-slate-800/80 rounded animate-pulse mx-auto"></div>
@@ -226,104 +227,104 @@
                             </div>
                         </div>
 
-                        <!-- Map 1: Global World Threat Grid -->
+                        <!-- Map 1: Global World Threat Grid (Monochrome Black & White) -->
                         <div id="mapPanel-world" class="map-view-panel active w-full h-full flex items-center justify-center relative">
-                            <img src="/static/img/map_world_cyber_blue.png" alt="Global Threat Grid" class="w-full h-auto max-h-[520px] object-contain select-none rounded-xl">
+                            <img src="/static/img/map_world_cyber_bw.png" alt="Global Threat Grid" class="w-full h-auto max-h-[520px] object-contain select-none rounded-xl">
                             
                             <!-- Interactive World Hotspots -->
                             <div class="radar-pin top-[32%] left-[24%]" onclick="inspectNode('world-na')" title="North America Defense Gateway">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-cyan-500/30 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[28%] left-[52%]" onclick="inspectNode('world-eu')" title="European Union Cyber Cell">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-blue-500/30 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-blue-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[58%] left-[55%]" onclick="inspectNode('world-af')" title="African Continental Core Hub">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-8 h-8 rounded-full bg-emerald-500/40 radar-ping-ring absolute"></div>
-                                    <div class="w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-white"></div>
+                                    <div class="w-8 h-8 rounded-full bg-white/40 radar-ping-ring absolute"></div>
+                                    <div class="w-3.5 h-3.5 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[42%] left-[82%]" onclick="inspectNode('world-ap')" title="Asia-Pacific Telemetry Array">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-cyan-500/30 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Map 2: Pan-African Cyber Shield -->
+                        <!-- Map 2: Pan-African Cyber Shield (Monochrome Dotted Matrix) -->
                         <div id="mapPanel-africa" class="map-view-panel w-full h-full flex items-center justify-center relative">
-                            <img src="/static/img/map_africa_dots_blue.png" alt="Pan-African Cyber Shield" class="w-full h-auto max-h-[500px] object-contain select-none rounded-xl">
+                            <img src="/static/img/map_africa_dots_black.png" alt="Pan-African Cyber Shield" class="w-full h-auto max-h-[500px] object-contain select-none rounded-xl">
                             
                             <!-- Interactive African Hotspots -->
                             <div class="radar-pin top-[74%] left-[56%]" onclick="inspectNode('africa-sadc')" title="SADC Regional Security Matrix">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-8 h-8 rounded-full bg-emerald-500/50 radar-ping-ring absolute"></div>
-                                    <div class="w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-white"></div>
+                                    <div class="w-8 h-8 rounded-full bg-white/40 radar-ping-ring absolute"></div>
+                                    <div class="w-3.5 h-3.5 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[48%] left-[64%]" onclick="inspectNode('africa-east')" title="East African Financial Corridor">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-cyan-500/30 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[42%] left-[34%]" onclick="inspectNode('africa-west')" title="West African Infrastructure Node">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-blue-500/30 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-blue-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Map 3: Zimbabwe National SOC & Banking Command -->
+                        <!-- Map 3: Zimbabwe National SOC & Banking Command (Monochrome) -->
                         <div id="mapPanel-zimbabwe" class="map-view-panel w-full h-full flex items-center justify-center relative">
-                            <img src="/static/img/map_zimbabwe_nodes_cyber.png" alt="Zimbabwe National SOC Command" class="w-full h-auto max-h-[500px] object-contain select-none rounded-xl">
+                            <img src="/static/img/map_zimbabwe_nodes_bw.png" alt="Zimbabwe National SOC Command" class="w-full h-auto max-h-[500px] object-contain select-none rounded-xl">
                             
                             <!-- Interactive Zimbabwe Hotspots -->
                             <div class="radar-pin top-[36%] left-[62%]" onclick="inspectNode('zim-harare')" title="Harare National SOC HQ">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-9 h-9 rounded-full bg-cyan-400/50 radar-ping-ring absolute"></div>
-                                    <div class="w-4 h-4 rounded-full bg-cyan-300 border-2 border-white"></div>
+                                    <div class="w-9 h-9 rounded-full bg-white/40 radar-ping-ring absolute"></div>
+                                    <div class="w-4 h-4 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[68%] left-[38%]" onclick="inspectNode('zim-byo')" title="Bulawayo DR SOC">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-7 h-7 rounded-full bg-blue-500/40 radar-ping-ring absolute"></div>
-                                    <div class="w-3.5 h-3.5 rounded-full bg-blue-400 border-2 border-white"></div>
+                                    <div class="w-7 h-7 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3.5 h-3.5 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[54%] left-[49%]" onclick="inspectNode('zim-gweru')" title="Gweru Central Node">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-emerald-500/40 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-emerald-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[48%] left-[75%]" onclick="inspectNode('zim-mutare')" title="Mutare Border Gateway">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-cyan-500/40 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
 
                             <div class="radar-pin top-[46%] left-[26%]" onclick="inspectNode('zim-vicfalls')" title="Victoria Falls Gateway">
                                 <div class="relative flex items-center justify-center">
-                                    <div class="w-6 h-6 rounded-full bg-amber-500/40 radar-ping-ring absolute"></div>
-                                    <div class="w-3 h-3 rounded-full bg-amber-400 border-2 border-white"></div>
+                                    <div class="w-6 h-6 rounded-full bg-white/30 radar-ping-ring absolute"></div>
+                                    <div class="w-3 h-3 rounded-full bg-white border-2 border-black"></div>
                                 </div>
                             </div>
                         </div>
@@ -336,7 +337,7 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-cyber-700/60">
                                 <span class="text-[10px] font-mono font-light text-slate-400 uppercase tracking-widest">Node Inspector</span>
-                                <span class="text-[10px] font-mono font-light text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">LIVE LINK</span>
+                                <span class="text-[10px] font-mono font-medium text-slate-900 dark:text-white uppercase tracking-wider">LIVE LINK</span>
                             </div>
 
                             <div>
@@ -351,12 +352,12 @@
                             <div class="grid grid-cols-2 gap-2.5 pt-1">
                                 <div class="p-3 rounded-xl bg-white dark:bg-cyber-800 border border-slate-200 dark:border-cyber-700/60">
                                     <span class="block text-[10px] text-slate-400 uppercase tracking-wider font-mono font-light">Defense State</span>
-                                    <span id="nodeDetailStatus" class="font-mono text-xs font-normal text-cyan-600 dark:text-cyan-400">ACTIVE DEFENSE</span>
+                                    <span id="nodeDetailStatus" class="font-mono text-xs font-medium text-slate-900 dark:text-white">ACTIVE DEFENSE</span>
                                 </div>
 
                                 <div class="p-3 rounded-xl bg-white dark:bg-cyber-800 border border-slate-200 dark:border-cyber-700/60">
                                     <span class="block text-[10px] text-slate-400 uppercase tracking-wider font-mono font-light">Roundtrip Delay</span>
-                                    <span id="nodeDetailLatency" class="font-mono text-xs font-normal text-emerald-600 dark:text-emerald-400">12ms</span>
+                                    <span id="nodeDetailLatency" class="font-mono text-xs font-medium text-slate-900 dark:text-white">12ms</span>
                                 </div>
                             </div>
 
@@ -372,7 +373,7 @@
 
                         <!-- CTA into the Live Console (No icons, no shadows, thin text) -->
                         <div class="pt-4 border-t border-slate-200 dark:border-cyber-700/60">
-                            <a href="/console" class="w-full py-2 px-4 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition flex items-center justify-center">
+                            <a href="/console" class="w-full py-2 px-4 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition flex items-center justify-center shadow-sm">
                                 <span>Drilldown in SOC Console</span>
                             </a>
                         </div>
@@ -389,7 +390,7 @@
         <!-- =============================================================== -->
         <section id="capabilities" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-3">
-                <span class="text-[10px] font-mono uppercase tracking-widest text-blue-600 dark:text-cyan-400">Enterprise Security Architecture</span>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400">Enterprise Security Architecture</span>
                 <h2 class="text-2xl sm:text-3xl font-light tracking-tight text-slate-900 dark:text-white">Built for High-Stakes Threat Landscapes</h2>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-light">From low-level operating system registers to continental fiber interchanges, ARTIS provides uncompromising telemetry and defense enforcement.</p>
             </div>
@@ -398,7 +399,7 @@
                 
                 <!-- Card 1: MITRE ATT&CK Engine -->
                 <div class="p-6 rounded-xl bg-white dark:bg-cyber-800/80 border border-slate-200 dark:border-cyber-700/70 space-y-2.5 hover:border-slate-400 dark:hover:border-cyber-600 transition">
-                    <span class="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">Detection Engine</span>
+                    <span class="text-[10px] font-mono text-slate-900 dark:text-white uppercase tracking-wider font-medium">Detection Engine</span>
                     <h3 class="text-sm font-normal text-slate-900 dark:text-white">MITRE ATT&amp;CK Engine</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
                         Real-time threat detection mapping syslog and process execution directly to MITRE adversary techniques (T1059, T1115) with automated command response.
@@ -407,7 +408,7 @@
 
                 <!-- Card 2: Remote Forensics Studio -->
                 <div id="forensics" class="p-6 rounded-xl bg-white dark:bg-cyber-800/80 border border-slate-200 dark:border-cyber-700/70 space-y-2.5 hover:border-slate-400 dark:hover:border-cyber-600 transition">
-                    <span class="text-[10px] font-mono text-blue-600 dark:text-blue-400 uppercase tracking-wider">Hardware Studio</span>
+                    <span class="text-[10px] font-mono text-slate-900 dark:text-white uppercase tracking-wider font-medium">Hardware Studio</span>
                     <h3 class="text-sm font-normal text-slate-900 dark:text-white">Digital Forensics Studio</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
                         Off-screen Windows DC capture, ADB live stream mirroring, genuine registry triage, and platform-adaptive shell execution across endpoints.
@@ -416,7 +417,7 @@
 
                 <!-- Card 3: Cryptographic Custody -->
                 <div id="compliance" class="p-6 rounded-xl bg-white dark:bg-cyber-800/80 border border-slate-200 dark:border-cyber-700/70 space-y-2.5 hover:border-slate-400 dark:hover:border-cyber-600 transition">
-                    <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Chain of Custody</span>
+                    <span class="text-[10px] font-mono text-slate-900 dark:text-white uppercase tracking-wider font-medium">Chain of Custody</span>
                     <h3 class="text-sm font-normal text-slate-900 dark:text-white">Signed PDF Evidentiary Trail</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
                         Cryptographic Ed25519 root signatures with embedded SHA-256 verification and tamper-evident audit logs conforming to ISO/IEC 27037 standards.
@@ -425,7 +426,7 @@
 
                 <!-- Card 4: Spatial Telemetry -->
                 <div class="p-6 rounded-xl bg-white dark:bg-cyber-800/80 border border-slate-200 dark:border-cyber-700/70 space-y-2.5 hover:border-slate-400 dark:hover:border-cyber-600 transition">
-                    <span class="text-[10px] font-mono text-amber-600 dark:text-amber-400 uppercase tracking-wider">Spatial Intelligence</span>
+                    <span class="text-[10px] font-mono text-slate-900 dark:text-white uppercase tracking-wider font-medium">Spatial Intelligence</span>
                     <h3 class="text-sm font-normal text-slate-900 dark:text-white">Spatial &amp; Motion Tracking</h3>
                     <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light">
                         Hardware-fused mobile location tracking, sub-meter speed calculation (MPH), and dynamic contextual building geofencing triggers.
@@ -445,17 +446,17 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center justify-center pt-2">
                     <div class="p-4 rounded-xl bg-white dark:bg-cyber-900 border border-slate-200 dark:border-cyber-700 space-y-1">
                         <div class="text-sm font-normal text-slate-900 dark:text-white">Commercial Bank of Zimbabwe</div>
-                        <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-light">CBZ Financial Cyber Defense Hub</span>
+                        <span class="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-light">CBZ Financial Cyber Defense Hub</span>
                     </div>
 
                     <div class="p-4 rounded-xl bg-white dark:bg-cyber-900 border border-slate-200 dark:border-cyber-700 space-y-1">
                         <div class="text-sm font-normal text-slate-900 dark:text-white">Bizmark Technology</div>
-                        <span class="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-light">Telecom &amp; Cloud Infrastructure</span>
+                        <span class="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-light">Telecom &amp; Cloud Infrastructure</span>
                     </div>
 
                     <div class="p-4 rounded-xl bg-white dark:bg-cyber-900 border border-slate-200 dark:border-cyber-700 space-y-1">
                         <div class="text-sm font-normal text-slate-900 dark:text-white">Argus SecOps</div>
-                        <span class="text-[10px] font-mono text-blue-600 dark:text-blue-400 font-light">National SOC Lead Authority</span>
+                        <span class="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-light">National SOC Lead Authority</span>
                     </div>
                 </div>
             </div>
@@ -463,14 +464,14 @@
 
         <!-- Final Call-to-Action Bar (Clean, flat, thin typography) -->
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="p-8 sm:p-12 rounded-2xl bg-gradient-to-r from-blue-950/60 via-cyber-900 to-cyan-950/60 border border-blue-500/20 text-center space-y-5 relative overflow-hidden">
+            <div class="p-8 sm:p-12 rounded-2xl bg-slate-900 dark:bg-cyber-800 border border-slate-700/60 dark:border-cyber-700/70 text-center space-y-5 relative overflow-hidden">
                 <div class="relative z-10 space-y-3 max-w-2xl mx-auto">
                     <h2 class="text-2xl sm:text-3xl font-light text-white tracking-tight">Deploy Continuous Operational Command</h2>
                     <p class="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">
                         Access real-time telemetry streams, launch forensic endpoints, verify PDF incident signatures, and enforce threat mitigation policies now.
                     </p>
                     <div class="pt-2">
-                        <a href="/console" class="inline-block px-8 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                        <a href="/console" class="inline-block px-8 py-2.5 rounded text-xs font-medium tracking-wider uppercase bg-white dark:bg-white hover:bg-slate-200 dark:hover:bg-slate-200 text-black dark:text-black transition shadow-sm">
                             <span>Open Operational Console</span>
                         </a>
                     </div>
@@ -506,7 +507,7 @@
             <div class="flex items-start justify-between">
                 <div class="space-y-1">
                     <div class="flex items-center space-x-2">
-                        <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Executive Briefing</span>
+                        <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">Executive Briefing</span>
                         <span class="text-[10px] font-mono text-slate-400">SOC ARCHITECTURE</span>
                     </div>
                     <h3 class="text-xl font-light text-slate-900 dark:text-white">Schedule an ARTIS Platform Demo</h3>
@@ -521,22 +522,22 @@
             <form id="demoRequestForm" onsubmit="handleDemoSubmit(event)" class="space-y-4 text-xs font-light">
                 <div class="space-y-1">
                     <label for="demoName" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Full Name</label>
-                    <input type="text" id="demoName" required placeholder="e.g. Tendai Chikore" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                    <input type="text" id="demoName" required placeholder="e.g. Tendai Chikore" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-white focus:outline-none transition">
                 </div>
 
                 <div class="space-y-1">
                     <label for="demoEmail" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Official / Work Email</label>
-                    <input type="email" id="demoEmail" required placeholder="t.chikore@enterprise.co.zw" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                    <input type="email" id="demoEmail" required placeholder="t.chikore@enterprise.co.zw" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-white focus:outline-none transition">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="space-y-1">
                         <label for="demoOrg" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Organization / Agency</label>
-                        <input type="text" id="demoOrg" required placeholder="Commercial Bank / Agency" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                        <input type="text" id="demoOrg" required placeholder="Commercial Bank / Agency" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-white focus:outline-none transition">
                     </div>
                     <div class="space-y-1">
                         <label for="demoRole" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Role / Title</label>
-                        <select id="demoRole" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                        <select id="demoRole" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-white focus:outline-none transition">
                             <option value="ciso">CISO / Chief Security Officer</option>
                             <option value="soc_lead">Head of SOC / Lead Analyst</option>
                             <option value="it_director">IT Director / Infrastructure Lead</option>
@@ -548,14 +549,14 @@
 
                 <div class="space-y-1">
                     <label for="demoNotes" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Deployment Scope &amp; Focus Area</label>
-                    <textarea id="demoNotes" rows="2" placeholder="Describe primary interest: Pan-African perimeter telemetry, national SOC command, or forensic evidence integrity..." class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+                    <textarea id="demoNotes" rows="2" placeholder="Describe primary interest: Pan-African perimeter telemetry, national SOC command, or forensic evidence integrity..." class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-white focus:outline-none transition resize-none"></textarea>
                 </div>
 
                 <div class="pt-2 flex items-center justify-end space-x-3">
                     <button type="button" onclick="closeDemoModal()" class="px-4 py-2 rounded text-xs font-light text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
                         Cancel
                     </button>
-                    <button type="submit" class="px-5 py-2 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                    <button type="submit" class="px-5 py-2 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition shadow-sm">
                         Confirm Demo Request
                     </button>
                 </div>
@@ -563,7 +564,7 @@
 
             <!-- Success State Container (hidden by default) -->
             <div id="demoSuccessState" class="hidden text-center py-6 space-y-4">
-                <div class="w-12 h-12 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 flex items-center justify-center font-mono text-xl">
+                <div class="w-12 h-12 mx-auto rounded-full bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/30 text-slate-900 dark:text-white flex items-center justify-center font-mono text-xl">
                     ✓
                 </div>
                 <div class="space-y-1">
@@ -571,7 +572,7 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400 font-light max-w-sm mx-auto">Thank you. An ARTIS Lead Solutions Architect has been assigned and will reach out with credentials for your dedicated walkthrough sandbox.</p>
                 </div>
                 <div class="p-3 rounded-lg bg-slate-50 dark:bg-cyber-800/50 border border-slate-200 dark:border-cyber-700 text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                    Reference ID: <span id="demoRefId" class="text-blue-600 dark:text-cyan-400 font-semibold">ARTIS-DEMO-2026-X7</span>
+                    Reference ID: <span id="demoRefId" class="text-slate-900 dark:text-white font-semibold">ARTIS-DEMO-2026-X7</span>
                 </div>
                 <button type="button" onclick="closeDemoModal()" class="px-5 py-2 rounded text-xs font-light tracking-wider uppercase bg-slate-200 dark:bg-cyber-700 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-cyber-600 transition">
                     Close Window
