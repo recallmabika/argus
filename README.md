@@ -97,6 +97,30 @@ python tools/test_system.py
 
 ---
 
+## 🔬 Digital Forensics & Hardware Device Bridge
+
+ARTIS features an integrated **Digital Forensics Subsystem** enabling security administrators and forensic investigators to plug in hardware targets via cable (USB/ADB or mass storage) or pair wirelessly (Wi-Fi ADB / TCP/IP):
+
+1. **Dynamic Hardware & Wireless Discovery:**
+   - Detects attached USB mobile devices, flash drives, external forensic disks, and workstation endpoints via live hardware listeners.
+   - Built-in wireless pairing dialogue (`adb connect <ip>:<port>`).
+
+2. **Interactive Visual Remote Control & Screen Navigation:**
+   - Streams live framebuffer displays from attached targets directly into the SOC console.
+   - **Full PC Navigation:** Click on the screen to tap, drag across the canvas to swipe, navigate apps, and inspect target files.
+   - **Hardware Key Emulator:** Emulate Android physical buttons: `BACK` (key 4), `HOME` (key 3), `RECENTS/APPS` (key 187), `POWER` (key 26), and volume controls.
+   - **Remote Text & Keystroke Injection:** Send input directly into active device forms and passwords.
+
+3. **Forensic Evidence File Acquisition:**
+   - Deep file system browser for mobile storage (`/sdcard`, internal storage) and mounted volumes.
+   - One-click extraction with automated **SHA-256** and **MD5** cryptographic digest calculation preserving courtroom chain of custody.
+
+4. **Live System Triage & Forensic Shell:**
+   - Extracts installed package manifests, active processes, and network routing tables.
+   - Built-in interactive forensic terminal for direct command execution on target devices.
+
+---
+
 ## Security & Cryptographic Verification
 
 All incident reports generated through the Web Console or API are signed using an Ed25519 private key generated in `storage/keys/argus_ed25519.pem`.

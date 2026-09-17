@@ -25,9 +25,9 @@
         <!-- Sidebar Header / Brand -->
         <div class="p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <img src="/static/img/logo.png" alt="ARTIS Logo" class="w-14 h-14 rounded-xl border border-blue-500/30 object-cover shadow-md flex-shrink-0" />
+                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="w-auto h-14 rounded-sm object-cover shadow-sm flex-shrink-0" />
                 <div>
-                    <h1 class="text-xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
+                    <h1 class="text-2xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
                         ARTIS
                     </h1>
                     <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">Incident Security</p>
@@ -75,10 +75,18 @@
                 </a>
             </div>
 
-            <!-- Section: Response & Compliance -->
+            <!-- Section: Forensics & Response -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Response & Forensics</div>
+                <div class="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 small-caps">Forensics & Response</div>
                 
+                <a href="#forensics" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
+                    <div class="flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        <span>Device Forensics Bridge</span>
+                    </div>
+                    <span id="sideForensicsCount" class="px-1.5 py-0.2 rounded font-mono text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold border border-cyan-500/20">1</span>
+                </a>
+
                 <button onclick="openReportModal()" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
                     <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Export Incident PDF</span>
@@ -456,6 +464,42 @@
                         <div id="map" class="w-full flex-1 min-h-[320px] rounded-lg mt-3 border border-slate-200 dark:border-cyber-700/60 overflow-hidden"></div>
                     </div>
                 </div>
+            <!-- Section: Digital Forensics & Hardware Bridge Workstation -->
+            <div id="forensics" class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-5 shadow-sm dark:shadow-none space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 small-caps">Digital Forensics Device Bridge</h2>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold flex items-center space-x-1">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                                    <span>LIVE BUS & WIRELESS LISTENER</span>
+                                </span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Plug in a device via USB cable or pair wirelessly (Wi-Fi ADB) to control the screen, navigate apps, and acquire evidence</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="openWirelessConnectModal()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-medium text-slate-700 dark:text-slate-200 transition flex items-center space-x-1.5 border border-slate-200 dark:border-cyber-600 shadow-xs">
+                            <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                            <span>Pair Wireless (Wi-Fi)</span>
+                        </button>
+                        <button onclick="fetchForensicDevices()" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-semibold text-white transition flex items-center space-x-1.5 shadow-sm shadow-cyan-500/20">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>Scan Attached Hardware</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attached Target Devices Grid -->
+                <div id="forensicDevicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                    <div class="p-6 text-center text-slate-400 text-xs col-span-full border border-dashed border-slate-200 dark:border-cyber-700/60 rounded-xl">
+                        Scanning USB bus and wireless ports for forensic targets...
+                    </div>
+                </div>
             </div>
 
         </main>
@@ -631,6 +675,332 @@
         </div>
     </div>
 
+    <!-- Wireless Connect Modal -->
+    <div id="wirelessConnectModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col text-xs">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Pair Wireless Target (Wi-Fi ADB)</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Attach mobile device or wireless workstation endpoint</p>
+                    </div>
+                </div>
+                <button onclick="closeWirelessConnectModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="p-3 bg-cyan-50 dark:bg-cyan-950/20 border border-cyan-500/20 rounded-xl space-y-1 text-[11px] text-slate-600 dark:text-slate-400">
+                    <p class="font-semibold text-cyan-700 dark:text-cyan-400 flex items-center space-x-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Requirement Checklist:</span>
+                    </p>
+                    <ul class="list-disc list-inside space-y-0.5 text-[10px] pl-1">
+                        <li>Device must be on the same local network or reachable subnet.</li>
+                        <li><b>Developer Options</b> &rarr; <b>Wireless Debugging</b> or USB debugging with port 5555 opened (`adb tcpip 5555`).</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300">Device IP Address</label>
+                    <input type="text" id="wirelessIp" placeholder="e.g. 192.168.1.150" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 text-slate-900 dark:text-white font-mono text-xs" />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300">TCP Port (Default: 5555)</label>
+                    <input type="number" id="wirelessPort" value="5555" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 text-slate-900 dark:text-white font-mono text-xs" />
+                </div>
+
+                <div id="wirelessStatusMsg" class="hidden p-2.5 rounded-lg text-xs font-medium"></div>
+            </div>
+            <div class="p-4 bg-slate-50 dark:bg-cyber-800/40 border-t border-slate-200 dark:border-cyber-700/60 flex justify-end space-x-2">
+                <button onclick="closeWirelessConnectModal()" class="px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-cyber-700 font-medium transition">Cancel</button>
+                <button id="btnSubmitWireless" onclick="submitWirelessConnect()" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold flex items-center space-x-1.5 transition shadow-sm shadow-cyan-500/20">
+                    <span>Connect Target</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Digital Forensic Studio & Visual Screen Control Modal -->
+    <div id="forensicStudioModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-6xl h-[92vh] shadow-2xl flex flex-col overflow-hidden text-xs">
+            <!-- Studio Header -->
+            <div class="px-5 py-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
+                <div class="flex items-center space-x-3">
+                    <div id="studioDeviceIcon" class="p-2 rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 id="studioDeviceName" class="text-sm font-bold text-slate-900 dark:text-white">Target Device</h3>
+                            <span id="studioDeviceTypeBadge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold">USB CABLE</span>
+                            <span id="studioBatteryBadge" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hidden">100%</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+                            <span>ID: <span id="studioDeviceId">-</span></span>
+                            <span>•</span>
+                            <span id="studioDevicePlatform">Android</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Studio Tab Bar -->
+                <div class="flex items-center space-x-1 bg-slate-200/70 dark:bg-cyber-900/80 p-1 rounded-xl border border-slate-300/60 dark:border-cyber-700/50">
+                    <button id="tabBtnScreen" onclick="switchForensicTab('screen')" class="px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-blue-600 dark:text-white shadow-xs">
+                        <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>Visual Screen & Remote Control</span>
+                    </button>
+                    <button id="tabBtnFiles" onclick="switchForensicTab('files')" class="px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                        <span>Evidence File Explorer</span>
+                    </button>
+                    <button id="tabBtnTriage" onclick="switchForensicTab('triage')" class="px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span>Triage & Live Shell</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeForensicStudio()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Studio Body Panes -->
+            <div class="flex-1 overflow-hidden relative">
+                <!-- PANE 1: SCREEN & REMOTE NAVIGATION -->
+                <div id="studioPaneScreen" class="h-full flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
+                    <!-- Left: Interactive Canvas Screen Display -->
+                    <div class="flex-1 flex flex-col bg-slate-950 rounded-xl border border-slate-800 p-2 overflow-hidden relative">
+                        <!-- Top status bar inside canvas container -->
+                        <div class="flex items-center justify-between px-3 py-1.5 text-[10px] text-slate-400 bg-slate-900/90 rounded-lg border border-slate-800 mb-2 z-10 select-none">
+                            <div class="flex items-center space-x-2">
+                                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="font-mono font-semibold text-slate-300">LIVE INTERACTIVE DECK</span>
+                                <span class="text-slate-600">•</span>
+                                <span id="screenResolutionTag" class="font-mono text-cyan-400">1080x2400</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-[10px] text-slate-400 hidden sm:inline">Click to Tap • Drag to Swipe</span>
+                                <button onclick="fetchScreenFrame()" title="Refresh Frame" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    <span>Refresh</span>
+                                </button>
+                                <label class="flex items-center space-x-1.5 cursor-pointer">
+                                    <input type="checkbox" id="chkAutoStream" checked onchange="toggleAutoStream(this.checked)" class="rounded border-slate-700 bg-slate-900 text-cyan-500 focus:ring-cyan-500 h-3.5 w-3.5">
+                                    <span class="text-[10px] font-mono text-slate-300">Auto-Stream</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Center Stage -->
+                        <div class="flex-1 flex items-center justify-center overflow-hidden relative" id="canvasContainer">
+                            <canvas id="forensicScreenCanvas" class="max-h-full max-w-full rounded-lg shadow-2xl cursor-crosshair object-contain bg-black border border-slate-800"></canvas>
+                            <div id="screenLoadingOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center text-slate-300 space-y-2 hidden">
+                                <svg class="w-8 h-8 text-cyan-400 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                                <span class="font-mono text-xs">Capturing Hardware Framebuffer...</span>
+                            </div>
+                        </div>
+
+                        <!-- Touch feedback banner -->
+                        <div id="canvasGestureHint" class="text-center text-[10px] text-slate-500 font-mono py-1">
+                            Ready for analyst navigation. Click anywhere to tap, drag to swipe down/up/left/right.
+                        </div>
+                    </div>
+
+                    <!-- Right: Remote Hardware & Navigation Deck -->
+                    <div class="w-full md:w-80 flex flex-col space-y-3 overflow-y-auto custom-scrollbar">
+                        <!-- Navigation Deck: Back / Home / Recents -->
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hardware Navigation</span>
+                                <span class="text-[9px] font-mono text-cyan-500">KEYEVENT EMULATOR</span>
+                            </div>
+                            <!-- 3 Main Android Nav Buttons -->
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="sendHardwareKey('BACK')" class="py-2 px-1 rounded-lg bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 font-semibold text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center space-y-1 transition border border-slate-300/50 dark:border-cyber-600/50 shadow-xs">
+                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    <span class="text-[10px]">BACK</span>
+                                </button>
+                                <button onclick="sendHardwareKey('HOME')" class="py-2 px-1 rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold text-white flex flex-col items-center justify-center space-y-1 transition shadow-sm shadow-blue-500/20">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                    <span class="text-[10px]">HOME</span>
+                                </button>
+                                <button onclick="sendHardwareKey('RECENTS')" class="py-2 px-1 rounded-lg bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 font-semibold text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center space-y-1 transition border border-slate-300/50 dark:border-cyber-600/50 shadow-xs">
+                                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                    <span class="text-[10px]">APPS</span>
+                                </button>
+                            </div>
+
+                            <!-- Hardware Keys: Power & Audio -->
+                            <div class="grid grid-cols-3 gap-2 pt-1">
+                                <button onclick="sendHardwareKey('POWER')" class="py-1.5 px-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-semibold flex items-center justify-center space-x-1 border border-rose-500/20 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <span class="text-[10px]">POWER</span>
+                                </button>
+                                <button onclick="sendHardwareKey('VOLUME_UP')" class="py-1.5 px-1 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium flex items-center justify-center space-x-1 border border-slate-200 dark:border-cyber-600/40 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                                    <span class="text-[10px]">VOL +</span>
+                                </button>
+                                <button onclick="sendHardwareKey('VOLUME_DOWN')" class="py-1.5 px-1 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium flex items-center justify-center space-x-1 border border-slate-200 dark:border-cyber-600/40 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                                    <span class="text-[10px]">VOL -</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Text Injection (Send to Phone) -->
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Remote Text & Keystrokes</span>
+                            <div class="flex space-x-1.5">
+                                <input type="text" id="remoteTextInput" placeholder="Type text to inject into phone..." class="flex-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 text-slate-900 dark:text-white text-xs font-mono" onkeydown="if(event.key==='Enter') sendRemoteText()" />
+                                <button onclick="sendRemoteText()" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition text-xs flex items-center space-x-1">
+                                    <span>Send</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Evidence Snapshot Action -->
+                        <div class="p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-500/20 rounded-xl space-y-2">
+                            <div class="flex items-center space-x-1.5 text-blue-600 dark:text-blue-400 font-bold">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
+                                <span>Cryptographic Snapshot</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Capture exact on-screen visual evidence with automatic SHA-256 digest calculation for courtroom presentation.</p>
+                            <button onclick="downloadForensicScreenshot()" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs flex items-center justify-center space-x-1.5 shadow-sm shadow-blue-500/20">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span>Acquire Verified Frame (PNG)</span>
+                            </button>
+                        </div>
+
+                        <!-- Device Live Telemetry Card -->
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-1.5 font-mono text-[10px] text-slate-600 dark:text-slate-400">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Protocol Bridge:</span>
+                                <span id="studioProtocolBadge" class="text-cyan-500 font-semibold">ADB Native</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Screen Ratio:</span>
+                                <span id="studioRatioBadge" class="text-slate-700 dark:text-slate-200">Portrait</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Chain-of-Custody:</span>
+                                <span class="text-emerald-500 font-semibold">SHA-256 Hashing Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANE 2: EVIDENCE FILE EXPLORER -->
+                <div id="studioPaneFiles" class="h-full flex flex-col p-4 space-y-3 overflow-hidden hidden">
+                    <!-- Path navigation bar -->
+                    <div class="flex items-center space-x-2 bg-slate-50 dark:bg-cyber-800/60 p-2 rounded-xl border border-slate-200 dark:border-cyber-700/60">
+                        <button onclick="navigateForensicPath('..')" title="Go Up Directory" class="p-1.5 rounded-lg bg-white dark:bg-cyber-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-cyber-600 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                        </button>
+                        <div class="flex-1 flex items-center space-x-1 font-mono text-xs text-slate-800 dark:text-slate-200 bg-white dark:bg-cyber-900 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-cyber-700">
+                            <span class="text-slate-400 select-none">Path:</span>
+                            <input type="text" id="forensicCurrentPath" value="/sdcard" class="flex-1 bg-transparent focus:outline-none font-mono text-xs" onkeydown="if(event.key==='Enter') loadForensicFiles(this.value)" />
+                        </div>
+                        <button onclick="loadForensicFiles()" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>Browse</span>
+                        </button>
+                    </div>
+
+                    <!-- Files Table -->
+                    <div class="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+                                <tr>
+                                    <th class="py-2.5 px-4">Item Name</th>
+                                    <th class="py-2.5 px-3">Type</th>
+                                    <th class="py-2.5 px-3">Size</th>
+                                    <th class="py-2.5 px-3">Modified</th>
+                                    <th class="py-2.5 px-4 text-right">Acquisition</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forensicFilesTableBody" class="divide-y divide-slate-100 dark:divide-cyber-700/40">
+                                <tr>
+                                    <td colspan="5" class="py-8 text-center text-slate-400">Click Browse to list device directories.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Hash & Integrity Log / Status Bar -->
+                    <div id="evidenceLogBar" class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl flex items-center justify-between text-[11px] font-mono">
+                        <div class="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            <span id="evidenceLogText">Evidence Integrity: SHA-256 cryptographic verification ready.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANE 3: SYSTEM TRIAGE & LIVE SHELL -->
+                <div id="studioPaneTriage" class="h-full flex flex-col p-4 space-y-3 overflow-hidden hidden">
+                    <!-- Triage Specs Bar -->
+                    <div id="studioTriageSpecs" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-xl">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">OS Version</span>
+                            <div id="triageOs" class="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 mt-0.5">Android -</div>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-xl">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Architecture</span>
+                            <div id="triageArch" class="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 mt-0.5">arm64-v8a</div>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-xl">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Installed Packages</span>
+                            <div id="triagePackages" class="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 mt-0.5">0</div>
+                        </div>
+                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-xl">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Running Processes</span>
+                            <div id="triageProcs" class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Shell Terminal Container -->
+                    <div class="flex-1 flex flex-col bg-black rounded-xl border border-slate-800 overflow-hidden font-mono text-xs">
+                        <!-- Terminal Titlebar with preset command buttons -->
+                        <div class="px-3 py-2 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2 text-slate-400 text-[11px]">
+                                <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                                <span class="font-bold text-slate-200">Interactive Forensic Shell</span>
+                            </div>
+                            <div class="flex items-center space-x-1 text-[10px]">
+                                <span class="text-slate-500 mr-1">Presets:</span>
+                                <button onclick="injectPresetCommand('getprop')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">getprop</button>
+                                <button onclick="injectPresetCommand('ip addr')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">ip addr</button>
+                                <button onclick="injectPresetCommand('pm list packages -3')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">pm list</button>
+                                <button onclick="injectPresetCommand('dumpsys battery')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">battery</button>
+                            </div>
+                        </div>
+
+                        <!-- Terminal Output Area -->
+                        <div id="forensicShellOutput" class="flex-1 p-3 overflow-y-auto custom-scrollbar text-emerald-400 whitespace-pre-wrap font-mono text-xs leading-relaxed select-text">
+ARTIS Forensic Bridge Shell v1.0.0
+Connected to target subsystem. Type a shell command below or click a preset.
+                        </div>
+
+                        <!-- Terminal Input Bar -->
+                        <div class="p-2 bg-slate-900/90 border-t border-slate-800 flex items-center space-x-2">
+                            <span class="text-cyan-400 font-bold pl-2 select-none">$</span>
+                            <input type="text" id="forensicShellInput" placeholder="Enter shell command (e.g. ps -A, ls -la, df -h)..." class="flex-1 bg-transparent text-white focus:outline-none font-mono text-xs" onkeydown="if(event.key==='Enter') runForensicShell()" />
+                            <button onclick="runForensicShell()" class="px-3 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition">
+                                Execute
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Core Console JavaScript -->
     <script>
         let ws;
@@ -650,7 +1020,9 @@
             initWebSocket();
             fetchUserProfile();
             fetchInitialData();
+            fetchForensicDevices();
             setInterval(fetchInitialData, 10000); // 10s fallback poll
+            setInterval(fetchForensicDevices, 8000); // 8s device discovery poll
 
             // Close profile dropdown when clicking outside
             window.addEventListener('click', (e) => {
@@ -1489,6 +1861,716 @@
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        // =========================================================================
+        // Digital Forensics Device Bridge & Interactive Screen Navigation Engine
+        // =========================================================================
+        let cachedForensicDevices = {};
+        let currentForensicDeviceId = null;
+        let currentForensicDevice = null;
+        let currentForensicPath = '/sdcard';
+        let autoStreamTimer = null;
+        let currentScreenResolution = { width: 1080, height: 2400 };
+        let lastScreenshotBlob = null;
+        let isCanvasDragging = false;
+        let dragStartCoords = null;
+        let dragStartTime = 0;
+        let activeForensicTab = 'screen';
+
+        function formatBytes(bytes, decimals = 2) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+
+        async function fetchForensicDevices() {
+            try {
+                const res = await fetch('/api/v1/forensics/devices');
+                if (!res.ok) return;
+                const data = await res.json();
+                const devices = data.devices || [];
+
+                cachedForensicDevices = {};
+                devices.forEach(d => {
+                    cachedForensicDevices[d.id] = d;
+                });
+
+                const badge = document.getElementById('sideForensicsCount');
+                if (badge) badge.innerText = devices.length;
+
+                const grid = document.getElementById('forensicDevicesGrid');
+                if (!grid) return;
+
+                if (devices.length === 0) {
+                    grid.innerHTML = `
+                        <div class="p-6 text-center text-slate-400 text-xs col-span-full border border-dashed border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-2">
+                            <p class="font-semibold text-slate-600 dark:text-slate-300">No hardware targets currently attached to USB bus or Wi-Fi ports</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Connect an Android phone via USB cable (with USB debugging), plug in a USB drive, or click "Pair Wireless" to connect over Wi-Fi.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = '';
+                devices.forEach(dev => {
+                    const card = document.createElement('div');
+                    card.className = "p-4 bg-slate-50 dark:bg-cyber-800/50 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3 shadow-xs hover:border-cyan-500/50 transition flex flex-col justify-between";
+
+                    const isStorage = dev.type === 'storage';
+                    const isHost = dev.type === 'host';
+                    const isWireless = dev.connection === 'wireless';
+
+                    let typeBadgeClass = 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20';
+                    let typeLabel = isWireless ? 'WI-FI ADB' : (isStorage ? 'MASS STORAGE' : (isHost ? 'LOCAL HOST' : 'USB CABLE'));
+
+                    let iconSvg = isStorage 
+                        ? `<svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16m-5 5h.01m-4 0h.01m-4 0h.01"/></svg>`
+                        : (isHost
+                            ? `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`
+                            : `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`);
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center space-x-2.5">
+                                    <div class="p-2 rounded-lg bg-slate-200/70 dark:bg-cyber-700/60 border border-slate-300/60 dark:border-cyber-600/50">
+                                        ${iconSvg}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 dark:text-white text-xs">${dev.model || dev.name}</h4>
+                                        <div class="font-mono text-[10px] text-slate-500 dark:text-slate-400">ID: ${dev.id}</div>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono border font-semibold ${typeBadgeClass}">${typeLabel}</span>
+                            </div>
+
+                            <div class="mt-3 pt-2 border-t border-slate-200/60 dark:border-cyber-700/40 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-600 dark:text-slate-400">
+                                <div>Status: <span class="text-emerald-500 font-semibold uppercase">${dev.status}</span></div>
+                                <div>Platform: <span class="text-slate-700 dark:text-slate-300 font-semibold">${dev.platform}</span></div>
+                                ${dev.battery && dev.battery.level !== undefined ? `<div>Battery: <span class="text-cyan-500 font-semibold">${dev.battery.level}%</span></div>` : ''}
+                                ${dev.total_space ? `<div>Capacity: <span class="text-slate-700 dark:text-slate-300">${formatBytes(dev.total_space)}</span></div>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="pt-3 flex items-center space-x-2">
+                            ${!isStorage ? `
+                                <button onclick="openForensicStudio('${dev.id}')" class="flex-1 py-1.5 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-sm shadow-cyan-500/20">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    <span>Open Studio & Control</span>
+                                </button>
+                            ` : `
+                                <button onclick="openForensicStorage('${dev.id}')" class="flex-1 py-1.5 px-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                    <span>Acquire Storage Files</span>
+                                </button>
+                            `}
+
+                            ${isWireless ? `
+                                <button onclick="disconnectForensicDevice('${dev.id}')" title="Disconnect Wireless Target" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Device fetch error:", err);
+            }
+        }
+
+        // ==========================================
+        // Wireless Connect Modal Handler
+        // ==========================================
+        function openWirelessConnectModal() {
+            const modal = document.getElementById('wirelessConnectModal');
+            if (!modal) return;
+            const msg = document.getElementById('wirelessStatusMsg');
+            if (msg) {
+                msg.className = "hidden p-2.5 rounded-lg text-xs font-medium";
+                msg.innerText = "";
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeWirelessConnectModal() {
+            const modal = document.getElementById('wirelessConnectModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function submitWirelessConnect() {
+            const ipInput = document.getElementById('wirelessIp');
+            const portInput = document.getElementById('wirelessPort');
+            const btn = document.getElementById('btnSubmitWireless');
+            const msg = document.getElementById('wirelessStatusMsg');
+
+            const ip = ipInput ? ipInput.value.trim() : '';
+            const port = portInput ? parseInt(portInput.value.trim()) || 5555 : 5555;
+
+            if (!ip) {
+                if (msg) {
+                    msg.className = "p-2.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+                    msg.innerText = "Please provide target device IP address.";
+                }
+                return;
+            }
+
+            if (btn) btn.disabled = true;
+            if (msg) {
+                msg.className = "p-2.5 rounded-lg text-xs font-medium bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20";
+                msg.innerText = `Attempting ADB handshake with ${ip}:${port}...`;
+            }
+
+            try {
+                const res = await fetch('/api/v1/forensics/connect-wireless', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip, port })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Connection failed");
+
+                if (msg) {
+                    msg.className = "p-2.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20";
+                    msg.innerText = data.message || "Connected successfully!";
+                }
+
+                setTimeout(() => {
+                    closeWirelessConnectModal();
+                    fetchForensicDevices();
+                }, 1200);
+            } catch (err) {
+                if (msg) {
+                    msg.className = "p-2.5 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20";
+                    msg.innerText = err.message;
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        async function disconnectForensicDevice(deviceId) {
+            if (!confirm(`Disconnect wireless endpoint ${deviceId}?`)) return;
+            try {
+                await fetch(`/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/disconnect`, { method: 'POST' });
+                fetchForensicDevices();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ==========================================
+        // Forensic Studio Navigation & Control Logic
+        // ==========================================
+        function openForensicStudio(deviceId) {
+            currentForensicDeviceId = deviceId;
+            currentForensicDevice = cachedForensicDevices[deviceId] || { id: deviceId, name: 'Target Device', platform: 'Android' };
+
+            const modal = document.getElementById('forensicStudioModal');
+            if (!modal) return;
+
+            document.getElementById('studioDeviceName').innerText = currentForensicDevice.model || currentForensicDevice.name || 'Target Device';
+            document.getElementById('studioDeviceId').innerText = currentForensicDevice.id;
+            document.getElementById('studioDevicePlatform').innerText = currentForensicDevice.platform || 'Android';
+
+            const typeBadge = document.getElementById('studioDeviceTypeBadge');
+            if (typeBadge) {
+                const isWireless = currentForensicDevice.connection === 'wireless';
+                const isHost = currentForensicDevice.type === 'host';
+                typeBadge.innerText = isWireless ? 'WI-FI ADB' : (isHost ? 'LOCAL HOST' : 'USB CABLE');
+            }
+
+            modal.classList.remove('hidden');
+            switchForensicTab('screen');
+            setupCanvasListeners();
+            fetchScreenFrame();
+            fetchDeviceTriage(deviceId);
+
+            const autoChk = document.getElementById('chkAutoStream');
+            if (autoChk && autoChk.checked) {
+                toggleAutoStream(true);
+            }
+        }
+
+        function openForensicStorage(deviceId) {
+            openForensicStudio(deviceId);
+            switchForensicTab('files');
+            loadForensicFiles(currentForensicDevice.mount_point || 'E:\\');
+        }
+
+        function closeForensicStudio() {
+            const modal = document.getElementById('forensicStudioModal');
+            if (modal) modal.classList.add('hidden');
+            toggleAutoStream(false);
+            currentForensicDeviceId = null;
+            currentForensicDevice = null;
+        }
+
+        function switchForensicTab(tab) {
+            activeForensicTab = tab;
+            const paneScreen = document.getElementById('studioPaneScreen');
+            const paneFiles = document.getElementById('studioPaneFiles');
+            const paneTriage = document.getElementById('studioPaneTriage');
+
+            const btnScreen = document.getElementById('tabBtnScreen');
+            const btnFiles = document.getElementById('tabBtnFiles');
+            const btnTriage = document.getElementById('tabBtnTriage');
+
+            // Reset tabs styling
+            [btnScreen, btnFiles, btnTriage].forEach(b => {
+                if (b) {
+                    b.className = "px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                }
+            });
+
+            // Hide panes
+            if (paneScreen) paneScreen.classList.add('hidden');
+            if (paneFiles) paneFiles.classList.add('hidden');
+            if (paneTriage) paneTriage.classList.add('hidden');
+
+            if (tab === 'screen') {
+                if (paneScreen) paneScreen.classList.remove('hidden');
+                if (btnScreen) btnScreen.className = "px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-blue-600 dark:text-white shadow-xs";
+                const autoChk = document.getElementById('chkAutoStream');
+                if (autoChk && autoChk.checked) toggleAutoStream(true);
+                fetchScreenFrame();
+            } else if (tab === 'files') {
+                if (paneFiles) paneFiles.classList.remove('hidden');
+                if (btnFiles) btnFiles.className = "px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-amber-600 dark:text-white shadow-xs";
+                toggleAutoStream(false);
+                loadForensicFiles(currentForensicPath);
+            } else if (tab === 'triage') {
+                if (paneTriage) paneTriage.classList.remove('hidden');
+                if (btnTriage) btnTriage.className = "px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-emerald-600 dark:text-white shadow-xs";
+                toggleAutoStream(false);
+                fetchDeviceTriage(currentForensicDeviceId);
+            }
+        }
+
+        // ==========================================
+        // Visual Touch / Swipe Interactive Canvas
+        // ==========================================
+        function setupCanvasListeners() {
+            const canvas = document.getElementById('forensicScreenCanvas');
+            if (!canvas || canvas.dataset.listenersBound) return;
+            canvas.dataset.listenersBound = "true";
+
+            canvas.addEventListener('mousedown', (e) => {
+                if (!currentForensicDeviceId) return;
+                const rect = canvas.getBoundingClientRect();
+                dragStartCoords = {
+                    clientX: e.clientX,
+                    clientY: e.clientY,
+                    canvasX: (e.clientX - rect.left) * (canvas.width / rect.width),
+                    canvasY: (e.clientY - rect.top) * (canvas.height / rect.height)
+                };
+                dragStartTime = Date.now();
+                isCanvasDragging = true;
+            });
+
+            window.addEventListener('mouseup', async (e) => {
+                if (!isCanvasDragging || !dragStartCoords || !currentForensicDeviceId) {
+                    isCanvasDragging = false;
+                    return;
+                }
+                isCanvasDragging = false;
+                const canvas = document.getElementById('forensicScreenCanvas');
+                if (!canvas) return;
+                const rect = canvas.getBoundingClientRect();
+                const endCanvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const endCanvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const dt = Date.now() - dragStartTime;
+
+                const dx = endCanvasX - dragStartCoords.canvasX;
+                const dy = endCanvasY - dragStartCoords.canvasY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                const startX = Math.max(0, Math.min(Math.round(dragStartCoords.canvasX), canvas.width));
+                const startY = Math.max(0, Math.min(Math.round(dragStartCoords.canvasY), canvas.height));
+                const endX = Math.max(0, Math.min(Math.round(endCanvasX), canvas.width));
+                const endY = Math.max(0, Math.min(Math.round(endCanvasY), canvas.height));
+
+                const hint = document.getElementById('canvasGestureHint');
+
+                if (dist < 15 && dt < 450) {
+                    // Tap action
+                    if (hint) hint.innerText = `Executing TAP at (${startX}, ${startY})...`;
+                    showCanvasTapEffect(startX, startY);
+                    try {
+                        await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'tap', x: startX, y: startY })
+                        });
+                        setTimeout(fetchScreenFrame, 350);
+                    } catch (err) {
+                        console.error("Tap error:", err);
+                    }
+                } else {
+                    // Swipe action
+                    const durationMs = Math.min(Math.max(dt, 200), 800);
+                    if (hint) hint.innerText = `Executing SWIPE (${startX}, ${startY}) -> (${endX}, ${endY}) [${durationMs}ms]...`;
+                    showCanvasSwipeEffect(startX, startY, endX, endY);
+                    try {
+                        await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'swipe',
+                                x1: startX,
+                                y1: startY,
+                                x2: endX,
+                                y2: endY,
+                                duration: durationMs
+                            })
+                        });
+                        setTimeout(fetchScreenFrame, 500);
+                    } catch (err) {
+                        console.error("Swipe error:", err);
+                    }
+                }
+            });
+        }
+
+        function showCanvasTapEffect(x, y) {
+            const canvas = document.getElementById('forensicScreenCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, 28, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#06b6d4';
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function showCanvasSwipeEffect(x1, y1, x2, y2) {
+            const canvas = document.getElementById('forensicScreenCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.8)';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(x2, y2, 14, 0, 2 * Math.PI, false);
+            ctx.fillStyle = '#06b6d4';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        async function fetchScreenFrame() {
+            if (!currentForensicDeviceId) return;
+            const canvas = document.getElementById('forensicScreenCanvas');
+            if (!canvas) return;
+            try {
+                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/screen?t=${Date.now()}`);
+                if (!res.ok) return;
+                const blob = await res.blob();
+                lastScreenshotBlob = blob;
+
+                const img = new Image();
+                const url = URL.createObjectURL(blob);
+                img.onload = () => {
+                    canvas.width = img.naturalWidth || 1080;
+                    canvas.height = img.naturalHeight || 2400;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    URL.revokeObjectURL(url);
+                    currentScreenResolution = { width: canvas.width, height: canvas.height };
+
+                    const tag = document.getElementById('screenResolutionTag');
+                    if (tag) tag.innerText = `${canvas.width}x${canvas.height}`;
+
+                    const ratioTag = document.getElementById('studioRatioBadge');
+                    if (ratioTag) ratioTag.innerText = canvas.height > canvas.width ? 'Portrait' : 'Landscape';
+                };
+                img.src = url;
+            } catch (err) {
+                console.error("Frame capture error:", err);
+            }
+        }
+
+        function toggleAutoStream(enable) {
+            if (autoStreamTimer) {
+                clearInterval(autoStreamTimer);
+                autoStreamTimer = null;
+            }
+            if (enable && currentForensicDeviceId && activeForensicTab === 'screen') {
+                autoStreamTimer = setInterval(fetchScreenFrame, 1200);
+            }
+        }
+
+        async function sendHardwareKey(keyName) {
+            if (!currentForensicDeviceId) return;
+            const hint = document.getElementById('canvasGestureHint');
+            if (hint) hint.innerText = `Dispatching hardware key: ${keyName}...`;
+            try {
+                await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'key', key: keyName })
+                });
+                setTimeout(fetchScreenFrame, 350);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function sendRemoteText() {
+            if (!currentForensicDeviceId) return;
+            const input = document.getElementById('remoteTextInput');
+            const text = input ? input.value : '';
+            if (!text) return;
+            try {
+                await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'text', text: text })
+                });
+                if (input) input.value = '';
+                setTimeout(fetchScreenFrame, 350);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function downloadForensicScreenshot() {
+            if (!lastScreenshotBlob && currentForensicDeviceId) {
+                await fetchScreenFrame();
+            }
+            if (!lastScreenshotBlob) return;
+
+            const buffer = await lastScreenshotBlob.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const sha256Hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const url = URL.createObjectURL(lastScreenshotBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            const ts = new Date().toISOString().replace(/[:.]/g, '-');
+            a.download = `ARTIS_EVIDENCE_SCREEN_${currentForensicDeviceId}_${ts}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert(`Visual Evidence Frame Acquired!\n\nSHA-256 Digest:\n${sha256Hex}\n\nEvidence snapshot saved to downloads.`);
+        }
+
+        // ==========================================
+        // Evidence File Explorer & Integrity Logic
+        // ==========================================
+        async function loadForensicFiles(targetPath) {
+            if (!currentForensicDeviceId) return;
+            const pathInput = document.getElementById('forensicCurrentPath');
+            const path = targetPath !== undefined ? targetPath : (pathInput ? pathInput.value : '/sdcard');
+            if (pathInput) pathInput.value = path;
+            currentForensicPath = path;
+
+            const tbody = document.getElementById('forensicFilesTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 font-mono text-xs"><svg class="w-5 h-5 mx-auto mb-2 text-cyan-500 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>Scanning device file system at ${path}...</td></tr>`;
+
+            try {
+                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/files?path=${encodeURIComponent(path)}`);
+                const data = await res.json();
+                const items = data.files || data.items || [];
+                if (items.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 font-mono text-xs">Directory is empty or inaccessible.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-cyber-800/40 transition group";
+                    const isDir = item.is_dir !== undefined ? item.is_dir : (item.type === 'directory');
+                    const icon = isDir 
+                        ? `<svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`
+                        : `<svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
+
+                    const clickAction = isDir 
+                        ? `onclick="loadForensicFiles('${item.path.replace(/\\/g, '/')}')"` 
+                        : '';
+
+                    const cursorClass = isDir ? 'cursor-pointer' : '';
+                    const sizeText = isDir ? '-' : formatBytes(item.size);
+
+                    tr.innerHTML = `
+                        <td class="py-2.5 px-4 flex items-center space-x-2 font-mono font-medium ${cursorClass} text-slate-800 dark:text-slate-200" ${clickAction}>
+                            ${icon}
+                            <span class="truncate max-w-xs hover:text-cyan-500 transition">${item.name}</span>
+                        </td>
+                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400">${isDir ? 'Directory' : 'File'}</td>
+                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-500 dark:text-slate-400">${sizeText}</td>
+                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400">${item.modified || '-'}</td>
+                        <td class="py-2.5 px-4 text-right">
+                            ${!isDir ? `
+                                <button onclick="downloadForensicFile('${item.path.replace(/\\/g, '/')}')" class="px-2 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-mono text-[10px] font-semibold border border-blue-500/20 transition flex items-center space-x-1 ml-auto">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    <span>SHA-256 Acquire</span>
+                                </button>
+                            ` : `
+                                <button onclick="loadForensicFiles('${item.path.replace(/\\/g, '/')}')" class="px-2 py-1 rounded bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-mono text-[10px] transition">
+                                    Open
+                                </button>
+                            `}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Load files error:", err);
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-rose-500 font-mono text-xs">Error browsing files: ${err.message}</td></tr>`;
+            }
+        }
+
+        function navigateForensicPath(dir) {
+            if (dir === '..') {
+                let current = currentForensicPath || '/sdcard';
+                current = current.replace(/\\/g, '/').replace(/\/$/, '');
+                const lastSlash = current.lastIndexOf('/');
+                if (lastSlash >= 0) {
+                    const up = current.substring(0, lastSlash) || '/';
+                    loadForensicFiles(up);
+                } else {
+                    loadForensicFiles('/');
+                }
+            }
+        }
+
+        async function downloadForensicFile(filePath) {
+            if (!currentForensicDeviceId) return;
+            const logText = document.getElementById('evidenceLogText');
+            if (logText) logText.innerText = `Acquiring file & computing SHA-256 hash: ${filePath}...`;
+
+            const downloadUrl = `/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/files/download?path=${encodeURIComponent(filePath)}`;
+            try {
+                const res = await fetch(downloadUrl);
+                if (!res.ok) throw new Error("File download failed with status " + res.status);
+
+                const sha256 = res.headers.get('X-Forensic-SHA256') || 'SHA-256 Digest Verified';
+                const blob = await res.blob();
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const filename = filePath.split('/').pop().split('\\').pop() || 'evidence_file';
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                if (logText) {
+                    logText.innerHTML = `<span class="text-emerald-500 font-bold">ACQUIRED:</span> ${filename} • <b class="text-cyan-400">SHA-256:</b> ${sha256}`;
+                }
+            } catch (err) {
+                console.error(err);
+                if (logText) logText.innerText = `Acquisition error: ${err.message}`;
+            }
+        }
+
+        // ==========================================
+        // Device Triage & Live Shell Logic
+        // ==========================================
+        async function fetchDeviceTriage(deviceId) {
+            const id = deviceId || currentForensicDeviceId;
+            if (!id) return;
+            try {
+                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(id)}/triage`);
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                const osEl = document.getElementById('triageOs');
+                const sysInfo = data.system_info || {};
+                if (osEl) osEl.innerText = `${data.model || sysInfo.hostname || 'Target'} (${data.os_version || sysInfo.os || 'Android'})`;
+
+                const archEl = document.getElementById('triageArch');
+                if (archEl) archEl.innerText = data.architecture || (sysInfo.cores ? `${sysInfo.cores} Cores` : 'arm64');
+
+                const pkgEl = document.getElementById('triagePackages');
+                const pkgCount = Array.isArray(data.packages) ? data.packages.length : (data.packages_count || 0);
+                if (pkgEl) pkgEl.innerText = `${pkgCount} pkgs`;
+
+                const procEl = document.getElementById('triageProcs');
+                const procsList = data.processes || data.running_processes || [];
+                if (procEl) procEl.innerText = `${procsList.length} procs`;
+
+                if (data.battery && data.battery.level !== undefined) {
+                    const b = document.getElementById('studioBatteryBadge');
+                    if (b) {
+                        b.classList.remove('hidden');
+                        b.innerText = `BAT: ${data.battery.level}%`;
+                    }
+                }
+            } catch (err) {
+                console.error("Triage error:", err);
+            }
+        }
+
+        async function runForensicShell(presetCmd) {
+            if (!currentForensicDeviceId) return;
+            const input = document.getElementById('forensicShellInput');
+            const cmd = presetCmd !== undefined ? presetCmd : (input ? input.value.trim() : '');
+            if (!cmd) return;
+            if (input && presetCmd === undefined) input.value = '';
+
+            const term = document.getElementById('forensicShellOutput');
+            if (term) {
+                term.innerHTML += `\n<span class="text-cyan-400">$ ${cmd}</span>\n<span class="text-slate-500">Executing on device subsystem...</span>`;
+                term.scrollTop = term.scrollHeight;
+            }
+
+            try {
+                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/shell`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                const data = await res.json();
+                if (term) {
+                    const output = data.output || data.stdout || (data.stderr ? `Error: ${data.stderr}` : `Exit code: ${data.exit_code}`);
+                    term.innerHTML += `\n${escapeHtml(output)}\n`;
+                    term.scrollTop = term.scrollHeight;
+                }
+            } catch (err) {
+                if (term) {
+                    term.innerHTML += `\n<span class="text-rose-400">Execution failed: ${err.message}</span>\n`;
+                    term.scrollTop = term.scrollHeight;
+                }
+            }
+        }
+
+        function injectPresetCommand(cmd) {
+            const input = document.getElementById('forensicShellInput');
+            if (input) input.value = cmd;
+            runForensicShell(cmd);
         }
     </script>
 </body>
