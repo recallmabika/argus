@@ -27,7 +27,7 @@ export const MessageBoxModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[90] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/80 rounded-sm w-full max-w-md p-6 shadow-2xl space-y-4 text-xs">
         <div className="flex items-start space-x-3">
           <div className="p-2 rounded-sm bg-slate-100 dark:bg-cyber-800 text-slate-800 dark:text-slate-200 flex-shrink-0">

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Copy, Check, ShieldAlert, Laptop, CheckCircle2 } from 'lucide-react';
 import { Alert } from '../../types';
 import { SeverityBadge } from '../common/Badge';
@@ -49,9 +49,9 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
 
   return (
     <div
-      className={`p-4 rounded-sm border border-slate-200 dark:border-cyber-700/60 border-l-[3px] ${
+      className={`p-4 rounded-sm border-l-[3px] ${
         borderStyles[alert.severity] || borderStyles.LOW
-      } bg-white dark:bg-cyber-card transition-all hover:shadow-md hover:border-slate-300 dark:hover:border-cyber-600 text-xs flex flex-col space-y-2`}
+      } bg-white dark:bg-cyber-card transition-all shadow-xs hover:shadow-md text-xs flex flex-col space-y-2`}
     >
       {/* Title & Time Row */}
       <div className="flex items-center justify-between">
@@ -61,7 +61,7 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
             {alert.title}
           </span>
           {isResolved && (
-            <span className="px-1.5 py-0.2 rounded font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 text-slate-500 dark:text-slate-400 font-bold">
+            <span className="px-1.5 py-0.2 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 text-slate-500 dark:text-slate-400 font-bold">
               RESOLVED
             </span>
           )}
@@ -85,13 +85,13 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
             </span>
             <button
               onClick={handleCopy}
-              className="px-2 py-0.5 rounded-sm text-[9px] font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700/60 flex items-center space-x-1 transition"
+              className="px-2 py-0.5 rounded-sm text-[9px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 flex items-center space-x-1 transition cursor-pointer"
             >
               {copied ? <Check className="w-2.5 h-2.5 text-emerald-500" /> : <Copy className="w-2.5 h-2.5" />}
               <span>{copied ? 'COPIED' : 'COPY'}</span>
             </button>
           </div>
-          <pre className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-cyber-900/40 p-2 rounded-sm border border-slate-200 dark:border-cyber-700/40 overflow-x-auto whitespace-pre-wrap break-all max-h-20 custom-scrollbar">
+          <pre className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-cyber-900/40 p-2 rounded-sm overflow-x-auto whitespace-pre-wrap break-all max-h-20 custom-scrollbar">
             {rawCmd}
           </pre>
         </div>
@@ -101,7 +101,7 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
       <div className="border-t border-slate-100 dark:border-cyber-700/40 pt-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center space-x-1.5 flex-wrap gap-1">
           {alert.mitre_technique_id && (
-            <span className="px-1.5 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-slate-100 dark:bg-cyber-700/60 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-cyber-600/50">
+            <span className="px-1.5 py-0.5 rounded-sm text-[9px] font-mono font-bold bg-slate-100 dark:bg-cyber-700/60 text-slate-800 dark:text-slate-200">
               {alert.mitre_technique_id}
             </span>
           )}
@@ -111,7 +111,7 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
             </span>
           )}
           {alert.mitre_tactic && (
-            <span className="px-1.5 py-0.5 rounded-sm text-[9px] font-mono bg-slate-50 dark:bg-cyber-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-cyber-700/50">
+            <span className="px-1.5 py-0.5 rounded-sm text-[9px] font-mono bg-slate-100 dark:bg-cyber-800 text-slate-600 dark:text-slate-400">
               {alert.mitre_tactic}
             </span>
           )}
@@ -129,13 +129,13 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
       <div className="border-t border-slate-100 dark:border-cyber-700/40 pt-2 flex items-center justify-end space-x-2">
         <button
           onClick={() => openAttackChain(alert.id)}
-          className="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[90px] border border-slate-300 dark:border-cyber-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 hover:text-slate-900 dark:hover:text-white transition"
+          className="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[90px] bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
         >
           Attack Chain
         </button>
         <button
           onClick={() => openDeviceDetail(alert.device_id)}
-          className="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[85px] border border-slate-300 dark:border-cyber-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 hover:text-slate-900 dark:hover:text-white transition"
+          className="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[85px] bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
         >
           Remediate
         </button>
@@ -143,7 +143,7 @@ export const AlertCard: React.FC<AlertCardProps> = ({ alert, onResolved }) => {
           <button
             onClick={handleResolve}
             disabled={resolving}
-            className="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[70px] border border-slate-300 dark:border-cyber-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 hover:text-slate-900 dark:hover:text-white transition"
+            className="px-3 py-1 rounded-sm text-[10px] font-semibold min-w-[70px] bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
           >
             {resolving ? 'Resolving...' : 'Resolve'}
           </button>

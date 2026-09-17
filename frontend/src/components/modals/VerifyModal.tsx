@@ -36,7 +36,7 @@ export const VerifyModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[80] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-sm w-full max-w-md p-6 shadow-2xl space-y-4 text-xs">
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-cyber-700/60 pb-3">
           <div className="flex items-center space-x-2.5">
