@@ -17,7 +17,7 @@
     background: transparent;
   }
   .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #233357;
+    background: #27272a;
     border-radius: 3px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -200,9 +200,9 @@
 }
 
 .dark .sidebar-tooltip {
-  background-color: rgba(13, 21, 39, 0.98);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px -3px rgba(59, 130, 246, 0.25);
+  background-color: rgba(18, 18, 21, 0.98);
+  border: 1px solid rgba(60, 60, 68, 0.6);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.95), 0 0 12px -2px rgba(255, 255, 255, 0.05);
 }
 
 /* Tooltip Caret / Pointer Arrow */
@@ -218,7 +218,7 @@
 }
 
 .dark .sidebar-tooltip::before {
-  border-color: transparent rgba(13, 21, 39, 0.98) transparent transparent;
+  border-color: transparent rgba(18, 18, 21, 0.98) transparent transparent;
 }
 
 #sidebar.sidebar-collapsed .sidebar-link:hover .sidebar-tooltip {
@@ -286,7 +286,7 @@
 
 /* Executive dark mode filter for OpenStreetMap tiles without requiring third-party API key */
 .dark #map .leaflet-tile-pane {
-  filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.25) brightness(0.75);
+  filter: brightness(0.6) invert(1) contrast(2.2) grayscale(1) brightness(0.7);
 }
 
 /* =========================================================================
@@ -336,8 +336,8 @@
 
 .dark .cyber-grid-bg {
   background-image: 
-    linear-gradient(to right, rgba(35, 51, 87, 0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(35, 51, 87, 0.35) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
 }
 
 /* Map View Transition Fade */
