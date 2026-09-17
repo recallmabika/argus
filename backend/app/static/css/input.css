@@ -413,6 +413,24 @@
   will-change: transform, opacity;
 }
 
+/* Navbar Anchor Links Active State */
+.nav-link {
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link.active {
+  color: #0f172a !important;
+  background-color: rgba(241, 245, 249, 0.9) !important;
+  font-weight: 600 !important;
+}
+
+.dark .nav-link.active {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  font-weight: 600 !important;
+}
+
 /* Impressive Dynamic Crest Reveal */
 @keyframes artisCrestReveal {
   0% {

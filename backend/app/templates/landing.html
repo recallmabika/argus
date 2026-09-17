@@ -14,13 +14,12 @@
 </head>
 <body class="bg-slate-50 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-slate-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
 
-    <!-- Top Executive Navigation Bar (Revealed on scrolling past the hero) -->
     <!-- Top Executive Navigation Bar (Revealed on scrolling past the hero with smooth slide motion) -->
     <header id="mainNav" class="landing-nav-sliding fixed top-0 left-0 right-0 z-50 transform -translate-y-full opacity-0 pointer-events-none bg-white/95 dark:bg-cyber-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-cyber-800/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
             
             <!-- Brand Identity: Big ARTIS Logo + Professional Typography -->
-            <a href="/" class="flex items-center space-x-3 group">
+            <a href="/" class="flex items-center space-x-3 group rounded-xl p-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white transition">
                 <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="h-12 sm:h-14 w-auto rounded-lg object-contain flex-shrink-0 group-hover:scale-105 transition-transform" />
                 <div class="flex flex-col">
                     <span class="text-xl sm:text-2xl font-black tracking-widest text-slate-900 dark:text-white leading-none">ARTIS</span>
@@ -28,24 +27,25 @@
                 </div>
             </a>
 
-            <!-- Navigation Anchor Links (Very thin text, no icons) -->
-            <nav class="hidden md:flex items-center space-x-8 text-xs font-light tracking-wide text-slate-500 dark:text-slate-400">
-                <a href="#overview" class="hover:text-slate-900 dark:hover:text-white transition">Overview</a>
-                <a href="#geospatial-matrix" class="hover:text-slate-900 dark:hover:text-white transition">Geospatial Defense</a>
-                <a href="#capabilities" class="hover:text-slate-900 dark:hover:text-white transition">Core Capabilities</a>
-                <a href="#forensics" class="hover:text-slate-900 dark:hover:text-white transition">Forensic Studio</a>
-                <a href="#compliance" class="hover:text-slate-900 dark:hover:text-white transition">Custody &amp; Trust</a>
+            <!-- Navigation Anchor Links (With high-contrast hover & focus states) -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 text-xs font-medium text-slate-500 dark:text-slate-400" id="landingNavLinks">
+                <a href="#overview" class="nav-link px-3 py-1.5 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:text-slate-900 dark:focus-visible:text-white">Overview</a>
+                <a href="#platform-stats" class="nav-link px-3 py-1.5 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:text-slate-900 dark:focus-visible:text-white">Telemetry</a>
+                <a href="#geospatial-matrix" class="nav-link px-3 py-1.5 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:text-slate-900 dark:focus-visible:text-white">Geospatial Defense</a>
+                <a href="#capabilities" class="nav-link px-3 py-1.5 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:text-slate-900 dark:focus-visible:text-white">Core Capabilities</a>
+                <a href="#forensics" class="nav-link px-3 py-1.5 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:text-slate-900 dark:focus-visible:text-white">Forensic Studio</a>
+                <a href="#compliance" class="nav-link px-3 py-1.5 rounded-lg transition-all hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:text-slate-900 dark:focus-visible:text-white">Custody &amp; Trust</a>
             </nav>
 
-            <!-- Actions: Theme Switcher, Demo Request & Console Launch -->
-            <div class="flex items-center space-x-3">
-                <button type="button" onclick="toggleLandingTheme()" class="px-3 py-1.5 text-[10px] font-light tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-cyber-800 rounded transition" title="Toggle Light/Dark Theme">
+            <!-- Actions: Theme Switcher, Demo Request & Console Launch with Hover + Focus -->
+            <div class="flex items-center space-x-2.5">
+                <button type="button" onclick="toggleLandingTheme()" class="px-3 py-1.5 text-[10px] font-medium tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-cyber-800 hover:border-slate-900 dark:hover:border-white rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white" title="Toggle Light/Dark Theme">
                     THEME
                 </button>
-                <button type="button" onclick="openDemoModal()" class="px-3.5 py-1.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-600 hover:border-slate-900 dark:hover:border-white text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition">
+                <button type="button" onclick="openDemoModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-medium tracking-wider uppercase border border-slate-300 dark:border-white/30 hover:border-slate-900 dark:hover:border-white text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white">
                     Request Demo
                 </button>
-                <a href="/console" class="px-5 py-2.5 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition shadow-sm">
+                <a href="/console" class="px-5 py-2.5 rounded-lg text-xs font-semibold tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition-all shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white focus-visible:ring-offset-2 dark:focus-visible:ring-offset-cyber-900">
                     Launch SOC Console
                 </a>
             </div>
@@ -53,12 +53,12 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="space-y-20 pb-20">
+    <main class="pb-20">
 
         <!-- =============================================================== -->
-        <!-- Hero Section: Full Window Coverage, Dynamic Crest Reveal & Stats -->
+        <!-- Hero Section: Full Window Coverage (100vh / h-screen)          -->
         <!-- =============================================================== -->
-        <section id="overview" class="relative min-h-screen flex flex-col justify-between items-center pt-16 sm:pt-20 overflow-hidden">
+        <section id="overview" class="relative w-full h-screen min-h-[640px] flex items-center justify-center overflow-hidden">
             
             <!-- Motion-Animated World Map Video-Like Background Layer -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
@@ -77,11 +77,8 @@
                 <div class="absolute inset-0 cyber-grid-bg opacity-20"></div>
             </div>
 
-            <!-- Top breathing spacer -->
-            <div class="w-full h-4 sm:h-8"></div>
-
             <!-- Hero Main Interactive Arena: Alternating Chevron Logo Panel & Content Push System -->
-            <div id="heroArena" class="relative z-10 w-full my-auto px-4 sm:px-8 lg:px-12 flex items-center min-h-[520px] lg:min-h-[580px] overflow-hidden state-left">
+            <div id="heroArena" class="relative z-10 w-full px-4 sm:px-8 lg:px-12 flex items-center justify-center min-h-[480px] lg:min-h-[540px] overflow-hidden state-left">
                 
                 <!-- Left Dynamic Box Logo Panel -->
                 <div id="heroLeftPanel" class="hero-box-panel hero-chevron-panel hero-panel-left active w-[92%] sm:w-[400px] lg:w-[460px] xl:w-[500px] h-[360px] sm:h-[400px] lg:h-[460px] xl:h-[500px] border border-slate-300/30 dark:border-white/10 overflow-hidden flex items-center justify-center p-0 m-0">
@@ -109,13 +106,13 @@
 
                     <!-- CTAs (Professional actions: Console, Request Demo, Inspect Matrix in Monochrome) -->
                     <div class="hero-cta-group flex flex-wrap items-center gap-3 pt-2">
-                        <a href="/console" class="px-6 py-2.5 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition shadow-sm">
+                        <a href="/console" class="px-6 py-2.5 rounded text-xs font-medium tracking-wider uppercase bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black transition shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white">
                             <span>Open Operational Console</span>
                         </a>
-                        <button type="button" onclick="openDemoModal()" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-white/30 hover:border-slate-900 dark:hover:border-white text-slate-900 dark:text-white bg-white/60 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-white/10 transition backdrop-blur-sm">
+                        <button type="button" onclick="openDemoModal()" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-white/30 hover:border-slate-900 dark:hover:border-white text-slate-900 dark:text-white bg-white/60 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-white/10 transition backdrop-blur-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white">
                             <span>Request a Demo</span>
                         </button>
-                        <a href="#geospatial-matrix" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-700 hover:border-slate-400 dark:hover:border-cyber-600 bg-white/40 dark:bg-cyber-900/40 backdrop-blur-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                        <a href="#geospatial-matrix" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-700 hover:border-slate-400 dark:hover:border-cyber-600 bg-white/40 dark:bg-cyber-900/40 backdrop-blur-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 dark:focus-visible:ring-white">
                             <span>Inspect Defense Matrix</span>
                         </a>
                     </div>
@@ -123,11 +120,22 @@
 
             </div>
 
-            <!-- Real-Time Telemetry Metrics Ribbon (Seamless border-separated grid filling page width, zero div radius, anchored to bottom with zero bottom gap, reduced margin-x) -->
-            <div class="relative z-10 w-full border-t border-slate-200/70 dark:border-cyber-700/70 bg-white/40 dark:bg-cyber-900/60 backdrop-blur-xs">
-                <div class="w-full px-2 sm:px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/70 dark:divide-cyber-700/70">
+            <!-- Subtle Scroll Prompt Anchor at Bottom of 100vh Hero -->
+            <a href="#platform-stats" class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center group focus:outline-none opacity-60 hover:opacity-100 transition duration-200" title="Scroll to Platform Telemetry">
+                <span class="text-[9px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white mb-1">Scroll</span>
+                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </a>
+
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- Platform Real-Time Telemetry Metrics Ribbon (Positioned Below Hero) -->
+        <!-- =============================================================== -->
+        <section id="platform-stats" class="relative z-10 w-full border-y border-slate-200/80 dark:border-cyber-700/80 bg-white/60 dark:bg-cyber-900/80 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="w-full grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/80 dark:divide-cyber-700/80">
                     
-                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-6 sm:p-7 lg:p-8 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Active Endpoints
                         </div>
@@ -137,7 +145,7 @@
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">Real Hardware Discovered</p>
                     </div>
 
-                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-6 sm:p-7 lg:p-8 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Active Threats
                         </div>
@@ -147,7 +155,7 @@
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">MITRE ATT&amp;CK Correlated</p>
                     </div>
 
-                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-6 sm:p-7 lg:p-8 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Root Authority
                         </div>
@@ -157,7 +165,7 @@
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">SHA-256 PDF Verified</p>
                     </div>
 
-                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-6 sm:p-7 lg:p-8 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Organizations
                         </div>
@@ -170,6 +178,9 @@
                 </div>
             </div>
         </section>
+
+        <!-- Body sections wrapper with consistent 80px vertical spacing -->
+        <div class="space-y-20 pt-16 sm:pt-20">
 
         <!-- =============================================================== -->
         <!-- Tri-Level Interactive Geospatial Defense Matrix Section        -->
@@ -479,6 +490,7 @@
             </div>
         </section>
 
+        </div>
     </main>
 
     <!-- Executive Footer -->

@@ -112,6 +112,7 @@ const NODE_TELEMETRY = {
 document.addEventListener('DOMContentLoaded', () => {
     initLandingTheme();
     initNavScrollTrigger();
+    initScrollSpy();
     initHeroMapCanvas();
     initHeroAlternatingLogo();
     fetchLivePlatformStats();
@@ -162,8 +163,8 @@ function initNavScrollTrigger() {
     if (!nav) return;
 
     const onScroll = () => {
-        // When user scrolls down past 220px (leaving top of hero)
-        if (window.scrollY > 220) {
+        // When user scrolls down past 160px
+        if (window.scrollY > 160) {
             nav.classList.remove('-translate-y-full', 'opacity-0', 'pointer-events-none');
             nav.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
         } else {
@@ -174,6 +175,50 @@ function initNavScrollTrigger() {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+}
+
+// =========================================================================
+// Navbar ScrollSpy: Highlights active link as user navigates sections
+// =========================================================================
+function initScrollSpy() {
+    const navLinks = document.querySelectorAll('#landingNavLinks .nav-link');
+    if (!navLinks.length) return;
+
+    const sections = [
+        document.getElementById('overview'),
+        document.getElementById('platform-stats'),
+        document.getElementById('geospatial-matrix'),
+        document.getElementById('capabilities'),
+        document.getElementById('forensics'),
+        document.getElementById('compliance')
+    ].filter(Boolean);
+
+    function updateActiveLink() {
+        const scrollPosition = window.scrollY + 160;
+        let currentId = '';
+
+        for (let i = 0; i < sections.length; i++) {
+            const section = sections[i];
+            const top = section.offsetTop;
+            const height = section.offsetHeight;
+            if (scrollPosition >= top && scrollPosition < top + height) {
+                currentId = section.getAttribute('id');
+                break;
+            }
+        }
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === '#' + currentId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateActiveLink, { passive: true });
+    updateActiveLink();
 }
 
 // =========================================================================
