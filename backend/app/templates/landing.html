@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARTIS</title>
-    <link rel="icon" type="image/png" href="/static/img/argus-logo.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png">
     <!-- Compiled Tailwind CSS (Zero inline styles) -->
     <link rel="stylesheet" href="/static/css/output.css">
 </head>
@@ -78,26 +82,16 @@
             <!-- Hero Main Interactive Arena: Alternating Chevron Logo Panel & Content Push System -->
             <div id="heroArena" class="relative z-10 w-full my-auto px-4 sm:px-8 lg:px-12 flex items-center min-h-[520px] lg:min-h-[580px] overflow-hidden state-left">
                 
-                <!-- Left Dynamic Chevron Logo Panel (Pointing Right into content) -->
-                <div id="heroLeftPanel" class="hero-chevron-panel hero-panel-left active w-[92%] sm:w-[420px] lg:w-[480px] xl:w-[540px] h-[360px] sm:h-[420px] lg:h-[480px] overflow-hidden">
-                    <svg viewBox="0 0 500 380" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none">
-                        <polygon points="0,0 420,0 500,190 420,380 0,380" class="fill-white/10 dark:fill-white/5 stroke-slate-300/35 dark:stroke-white/10 stroke-[1]" />
-                    </svg>
-                    <div class="relative z-10 flex items-center justify-center h-full w-full p-0 m-0">
-                        <img src="/static/img/logo_dark_transparent.png" alt="ARTIS Logo" class="dark:hidden w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
-                        <img src="/static/img/logo_white_transparent.png" alt="ARTIS Logo" class="hidden dark:block w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
-                    </div>
+                <!-- Left Dynamic Box Logo Panel -->
+                <div id="heroLeftPanel" class="hero-box-panel hero-chevron-panel hero-panel-left active w-[92%] sm:w-[400px] lg:w-[460px] xl:w-[500px] h-[360px] sm:h-[400px] lg:h-[460px] xl:h-[500px] rounded-2xl sm:rounded-3xl bg-white/10 dark:bg-white/5 backdrop-blur-md border border-slate-300/30 dark:border-white/10 overflow-hidden flex items-center justify-center p-0 m-0">
+                    <img src="/static/img/logo_dark_transparent.png" alt="ARTIS Logo" class="dark:hidden w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
+                    <img src="/static/img/logo_white_transparent.png" alt="ARTIS Logo" class="hidden dark:block w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
                 </div>
 
-                <!-- Right Dynamic Chevron Logo Panel (Pointing Left into content) -->
-                <div id="heroRightPanel" class="hero-chevron-panel hero-panel-right w-[92%] sm:w-[420px] lg:w-[480px] xl:w-[540px] h-[360px] sm:h-[420px] lg:h-[480px] overflow-hidden">
-                    <svg viewBox="0 0 500 380" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none">
-                        <polygon points="80,0 500,0 500,380 80,380 0,190" class="fill-white/10 dark:fill-white/5 stroke-slate-300/35 dark:stroke-white/10 stroke-[1]" />
-                    </svg>
-                    <div class="relative z-10 flex items-center justify-center h-full w-full p-0 m-0">
-                        <img src="/static/img/logo_dark_transparent.png" alt="ARTIS Logo" class="dark:hidden w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
-                        <img src="/static/img/logo_white_transparent.png" alt="ARTIS Logo" class="hidden dark:block w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
-                    </div>
+                <!-- Right Dynamic Box Logo Panel -->
+                <div id="heroRightPanel" class="hero-box-panel hero-chevron-panel hero-panel-right w-[92%] sm:w-[400px] lg:w-[460px] xl:w-[500px] h-[360px] sm:h-[400px] lg:h-[460px] xl:h-[500px] rounded-2xl sm:rounded-3xl bg-white/10 dark:bg-white/5 backdrop-blur-md border border-slate-300/30 dark:border-white/10 overflow-hidden flex items-center justify-center p-0 m-0">
+                    <img src="/static/img/logo_dark_transparent.png" alt="ARTIS Logo" class="dark:hidden w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
+                    <img src="/static/img/logo_white_transparent.png" alt="ARTIS Logo" class="hidden dark:block w-full h-full object-contain p-0 m-0 transition-transform duration-500" />
                 </div>
 
                 <!-- Pushed Hero Content Block (Smoothly moves opposite to active logo panel) -->

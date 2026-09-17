@@ -1,7 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -57,6 +57,15 @@ app.include_router(audit_router, prefix=f"{settings.API_V1_STR}/audit", tags=["A
 app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["Users"])
 app.include_router(forensics_router, prefix=f"{settings.API_V1_STR}/forensics", tags=["Digital Forensics"])
 app.include_router(spatial_router, prefix=f"{settings.API_V1_STR}/spatial", tags=["Spatial Intelligence & Telemetry"])
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    """Serves the ARTIS platform favicon directly at the root."""
+    favicon_path = os.path.join(static_dir, "img", "favicon.ico")
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path, media_type="image/x-icon")
+    return HTMLResponse(status_code=404)
 
 
 @app.get("/", response_class=HTMLResponse)
