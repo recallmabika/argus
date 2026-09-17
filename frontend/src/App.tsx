@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ModalProvider } from './context/ModalContext';
 import { LoadingProvider } from './context/LoadingContext';
 import { TopProgressBar } from './components/common/TopProgressBar';
+import { GlobalTooltip } from './components/common/CustomTooltip';
 import { AppLayout } from './components/layout/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ThreatStreamPage } from './pages/ThreatStreamPage';
@@ -16,6 +17,7 @@ export const App: React.FC = () => {
         <BrowserRouter>
           <LoadingProvider>
             <TopProgressBar />
+            <GlobalTooltip />
             <Routes>
               {/* Public Landing Page */}
               <Route path="/" element={<LandingPage />} />

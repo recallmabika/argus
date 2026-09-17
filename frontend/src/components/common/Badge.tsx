@@ -6,15 +6,15 @@ export const SeverityBadge: React.FC<{ severity: SeverityLevel; className?: stri
   className = ''
 }) => {
   const styles = {
-    CRITICAL: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30',
-    HIGH: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30',
-    MEDIUM: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
-    LOW: 'bg-slate-500/10 text-slate-600 dark:text-slate-300 border-slate-400/30'
+    CRITICAL: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+    HIGH: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+    MEDIUM: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    LOW: 'bg-slate-500/10 text-slate-600 dark:text-slate-300'
   };
 
   return (
     <span
-      className={`px-1.5 py-0.5 rounded-sm font-mono font-bold text-[10px] uppercase border flex-shrink-0 ${
+      className={`px-1.5 py-0.5 rounded-sm font-mono font-bold text-[10px] uppercase flex-shrink-0 ${
         styles[severity] || styles.LOW
       } ${className}`}
     >
@@ -30,7 +30,7 @@ export const StatusBadge: React.FC<{ status: DeviceStatus; className?: string }>
   if (status === 'ONLINE') {
     return (
       <span
-        className={`px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 inline-flex items-center space-x-1.5 ${className}`}
+        className={`px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 inline-flex items-center space-x-1.5 ${className}`}
       >
         <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -44,7 +44,7 @@ export const StatusBadge: React.FC<{ status: DeviceStatus; className?: string }>
   if (status === 'QUARANTINED') {
     return (
       <span
-        className={`px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 inline-flex items-center space-x-1.5 ${className}`}
+        className={`px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 inline-flex items-center space-x-1.5 ${className}`}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
         <span>QUARANTINED</span>
@@ -54,7 +54,7 @@ export const StatusBadge: React.FC<{ status: DeviceStatus; className?: string }>
 
   return (
     <span
-      className={`px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-cyber-600 inline-flex items-center space-x-1.5 ${className}`}
+      className={`px-2 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400 inline-flex items-center space-x-1.5 ${className}`}
     >
       <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
       <span>OFFLINE</span>
