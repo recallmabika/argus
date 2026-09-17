@@ -17,10 +17,10 @@
 <body class="bg-slate-100 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden flex antialiased transition-colors duration-200">
 
     <!-- Mobile Sidebar Backdrop -->
-    <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden lg:hidden"></div>
+    <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm hidden lg:hidden"></div>
 
     <!-- Collapsible & Fixed Sidebar -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-[65] w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none">
         
         <!-- Sidebar Header / Brand -->
         <div class="sidebar-header p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
@@ -306,7 +306,7 @@
                     </button>
 
                     <!-- Profile Dropdown Card -->
-                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl shadow-2xl z-50 py-1.5 divide-y divide-slate-100 dark:divide-cyber-700/50 text-xs">
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl shadow-2xl z-[70] py-1.5 divide-y divide-slate-100 dark:divide-cyber-700/50 text-xs">
                         <!-- Identity Card -->
                         <div class="p-3.5 flex items-center space-x-3 bg-slate-50 dark:bg-cyber-800/40 rounded-t-2xl">
                             <div class="relative flex-shrink-0">
@@ -554,7 +554,7 @@
                 <!-- Slot 4: Lower Right (1 col) -->
                 <div id="slot-4" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'slot-4')" class="panel-slot lg:col-span-1 min-h-[380px] lg:min-h-[420px] flex flex-col transition-all duration-200">
                     <!-- Card 4: Branch Geo-Map (Pullable to Main!) -->
-                    <div id="card-map" draggable="true" ondragstart="handleDragStart(event, 'card-map')" ondragend="handleDragEnd(event)" class="panel-card w-full h-full bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none flex-1 transition-all duration-200">
+                    <div id="card-map" draggable="true" ondragstart="handleDragStart(event, 'card-map')" ondragend="handleDragEnd(event)" class="panel-card relative z-0 isolate w-full h-full bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col shadow-sm dark:shadow-none flex-1 transition-all duration-200">
                         <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
                             <div class="flex items-center space-x-2">
                                 <span class="drag-handle cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
@@ -570,7 +570,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="map" class="w-full flex-1 min-h-[300px] rounded-lg mt-3 border border-slate-200 dark:border-cyber-700/60 overflow-hidden"></div>
+                        <div id="map" class="w-full flex-1 min-h-[300px] rounded-lg mt-3 border border-slate-200 dark:border-cyber-700/60 overflow-hidden relative z-0 isolate"></div>
                     </div>
                 </div>
             </div> <!-- Properly close #devices grid container -->
@@ -617,7 +617,7 @@
     </div>
 
     <!-- Device Details Modal (Telemetry Drilldown) -->
-    <div id="deviceModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="deviceModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
                 <div>
@@ -645,7 +645,7 @@
     </div>
 
     <!-- Generate Report Modal -->
-    <div id="reportModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="reportModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-slate-900 dark:text-white">Generate Signed Incident Report</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400">Produces an official cryptographic PDF incident assessment signed with ARTIS Ed25519 root authority.</p>
@@ -686,7 +686,7 @@
     </div>
 
     <!-- Verify Report Modal -->
-    <div id="verifyModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="verifyModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-slate-900 dark:text-white">Verify PDF Chain of Custody</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400">Upload a report to verify its SHA-256 checksum and cryptographic Ed25519 signature.</p>
@@ -705,7 +705,7 @@
     </div>
 
     <!-- Audit Drawer -->
-    <div id="auditDrawer" class="fixed inset-y-0 right-0 z-50 w-96 bg-white dark:bg-cyber-card border-l border-slate-200 dark:border-cyber-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div id="auditDrawer" class="fixed inset-y-0 right-0 z-[70] w-96 bg-white dark:bg-cyber-card border-l border-slate-200 dark:border-cyber-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
             <h3 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Access Audit Log</h3>
             <button onclick="toggleAuditDrawer()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
@@ -718,7 +718,7 @@
     </div>
 
     <!-- Settings Modal -->
-    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="settingsModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col text-xs">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
@@ -787,7 +787,7 @@
     </div>
 
     <!-- Wireless Connect Modal -->
-    <div id="wirelessConnectModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="wirelessConnectModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col text-xs">
             <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
@@ -837,7 +837,7 @@
     </div>
 
     <!-- Digital Forensic Studio & Visual Screen Control Modal -->
-    <div id="forensicStudioModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
+    <div id="forensicStudioModal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
         <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-6xl h-[92vh] shadow-2xl flex flex-col overflow-hidden text-xs">
             <!-- Studio Header -->
             <div class="px-5 py-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
@@ -1519,16 +1519,10 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 html.classList.remove('dark');
             }
 
-            // Update Map tile layer to match theme
-            if (map) {
-                const tileUrl = isDark 
-                    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-                
-                if (mapTileLayer) map.removeLayer(mapTileLayer);
-                mapTileLayer = L.tileLayer(tileUrl, {
-                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-                    subdomains: 'abcd',
+            // Update Map tile layer if needed
+            if (map && !mapTileLayer) {
+                mapTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     maxZoom: 19
                 }).addTo(map);
             }
@@ -1595,15 +1589,11 @@ Connected to target subsystem. Type a shell command below or click a preset.
         }
 
         function initMap() {
-            const isDark = document.documentElement.classList.contains('dark');
             map = L.map('map').setView([40.7128, -74.0060], 4);
-            const tileUrl = isDark 
-                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+            const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
             
             mapTileLayer = L.tileLayer(tileUrl, {
-                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-                subdomains: 'abcd',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
         }
