@@ -857,16 +857,68 @@ class ForensicsManager:
         }
 
         if device_id == "HOST-LOCAL-BRIDGE":
-            # Genuine Host Processes
+            # 1. Genuine Host Processes
             for p in list(psutil.process_iter(['pid', 'name', 'username']))[:40]:
                 try:
                     triage["processes"].append(p.info)
                 except Exception:
                     pass
+
+            # 2. Genuine Installed Software from Windows Registry
+            packages = set()
+            try:
+                import winreg
+                for root in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+                    for sub in (r"Software\Microsoft\Windows\CurrentVersion\Uninstall",
+                                r"Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"):
+                        try:
+                            key = winreg.OpenKey(root, sub)
+                            for i in range(winreg.QueryInfoKey(key)[0]):
+                                try:
+                                    subkey_name = winreg.EnumKey(key, i)
+                                    subkey = winreg.OpenKey(key, subkey_name)
+                                    val, _ = winreg.QueryValueEx(subkey, "DisplayName")
+                                    if val and isinstance(val, str) and val.strip():
+                                        packages.add(val.strip())
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            triage["packages"] = sorted(list(packages))
+
+            # 3. Genuine Battery Telemetry
+            bat = psutil.sensors_battery()
+            triage["battery"] = {
+                "level": bat.percent if bat else 100,
+                "plugged": bat.power_plugged if bat else True,
+                "status": "Charging" if (bat and bat.power_plugged) else "Discharging"
+            } if bat else None
+
+            # 4. Genuine Host OS & System Specs
+            import platform
+            triage["os_version"] = f"Windows 11 ({platform.version()})"
+            triage["architecture"] = f"{platform.machine()} ({psutil.cpu_count(logical=False)}C/{psutil.cpu_count()}T)"
+            triage["model"] = os.environ.get("COMPUTERNAME", "Host Workstation")
+
+            # 5. Network Interfaces
+            net_summary = []
+            try:
+                for iface, addrs in psutil.net_if_addrs().items():
+                    for addr in addrs:
+                        if addr.family == 2:  # AF_INET IPv4
+                            net_summary.append(f"{iface}: {addr.address}")
+            except Exception:
+                pass
+            triage["network"] = net_summary[:10]
+
             triage["system_info"] = {
-                "os": sys.platform,
+                "os": f"Windows 11 ({platform.version()})",
                 "hostname": os.environ.get("COMPUTERNAME", "Host"),
-                "cores": psutil.cpu_count()
+                "cores": psutil.cpu_count(),
+                "physical_cores": psutil.cpu_count(logical=False),
+                "arch": platform.machine()
             }
 
         elif self.adb_path:
@@ -900,26 +952,52 @@ class ForensicsManager:
 
     def execute_shell_command(self, device_id: str, command: str) -> Dict[str, Any]:
         """Executes a forensic shell command directly on the target device."""
+        cmd_clean = command.strip()
         if device_id == "HOST-LOCAL-BRIDGE":
+            # Command translation for common cross-platform / Android forensic shell commands on Windows
+            cmd_lower = cmd_clean.lower()
+            if cmd_lower in ("getprop", "getprop | grep model", "getprop ro.product.model") or cmd_lower.startswith("getprop"):
+                cmd_to_run = "Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, OSArchitecture, BuildNumber, RegisteredUser | Format-List; Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors | Format-List"
+            elif cmd_lower in ("dumpsys battery", "battery", "dumpsys battery info"):
+                cmd_to_run = "Get-CimInstance -ClassName Win32_Battery -ErrorAction SilentlyContinue | Select-Object EstimatedChargeRemaining, BatteryStatus, Name | Format-List; if (-not (Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue)) { Write-Host 'Power: AC Mains Connected (Desktop Workstation / No internal battery)' }"
+            elif cmd_lower in ("pm list", "pm list packages", "pm list packages -3", "packages", "installed apps"):
+                cmd_to_run = "Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*, HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName, DisplayVersion, Publisher | Where-Object { $_.DisplayName } | Sort-Object DisplayName | Format-Table -AutoSize"
+            elif cmd_lower in ("ip addr", "ifconfig", "ip a"):
+                cmd_to_run = "ipconfig /all"
+            elif cmd_lower in ("ps", "ps -a", "ps -ef", "ps aux", "tasklist"):
+                cmd_to_run = "Get-Process | Sort-Object CPU -Descending | Select-Object -First 30 Id, ProcessName, CPU, @{Name='RAM(MB)';Expression={[math]::Round($_.WorkingSet/1MB,1)}} | Format-Table -AutoSize"
+            elif cmd_lower in ("ls -la", "ls -l"):
+                cmd_to_run = "Get-ChildItem -Force | Format-Table Mode, Length, LastWriteTime, Name -AutoSize"
+            elif cmd_lower in ("df -h", "df"):
+                cmd_to_run = "Get-PSDrive -PSProvider FileSystem | Select-Object Name, @{Name='Used(GB)';Expression={[math]::Round($_.Used/1GB,2)}}, @{Name='Free(GB)';Expression={[math]::Round($_.Free/1GB,2)}}, Root | Format-Table -AutoSize"
+            elif cmd_lower in ("netstat", "netstat -ano"):
+                cmd_to_run = "netstat -ano | Select-String -Pattern 'LISTENING|ESTABLISHED'"
+            else:
+                cmd_to_run = cmd_clean
+
             try:
                 proc = subprocess.run(
-                    ["powershell", "-NoProfile", "-Command", command],
+                    ["powershell", "-NoProfile", "-Command", cmd_to_run],
                     capture_output=True,
                     text=True,
-                    timeout=10.0
+                    encoding="utf-8",
+                    errors="replace",
+                    timeout=15.0
                 )
-                return {"stdout": proc.stdout, "stderr": proc.stderr, "exit_code": proc.returncode}
+                output = proc.stdout if proc.stdout else proc.stderr
+                return {"stdout": proc.stdout, "stderr": proc.stderr, "exit_code": proc.returncode, "output": output}
             except Exception as e:
-                return {"stdout": "", "stderr": str(e), "exit_code": 1}
+                return {"stdout": "", "stderr": str(e), "exit_code": 1, "output": f"Execution error: {e}"}
 
         elif self.adb_path:
             try:
                 proc = self._run_adb(["-s", device_id, "shell", command], timeout=10.0)
-                return {"stdout": proc.stdout, "stderr": proc.stderr, "exit_code": proc.returncode}
+                output = proc.stdout if proc.stdout else proc.stderr
+                return {"stdout": proc.stdout, "stderr": proc.stderr, "exit_code": proc.returncode, "output": output}
             except Exception as e:
-                return {"stdout": "", "stderr": str(e), "exit_code": 1}
+                return {"stdout": "", "stderr": str(e), "exit_code": 1, "output": f"Execution error: {e}"}
 
-        return {"stdout": "", "stderr": "Target unreachable", "exit_code": 1}
+        return {"stdout": "", "stderr": "Target unreachable", "exit_code": 1, "output": "Target unreachable"}
 
 
 # Global Singleton

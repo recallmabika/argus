@@ -1153,7 +1153,7 @@
                                 <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                                 <span class="font-bold text-slate-200">Interactive Forensic Shell</span>
                             </div>
-                            <div class="flex items-center space-x-1 text-[10px]">
+                            <div id="shellPresetsContainer" class="flex flex-wrap items-center space-x-1 text-[10px]">
                                 <span class="text-slate-500 mr-1">Presets:</span>
                                 <button onclick="injectPresetCommand('getprop')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">getprop</button>
                                 <button onclick="injectPresetCommand('ip addr')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">ip addr</button>
@@ -3034,12 +3034,20 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 if (!res.ok) return;
                 const data = await res.json();
                 
-                const osEl = document.getElementById('triageOs');
+                const isHost = (id === 'HOST-LOCAL-BRIDGE' || (currentForensicDevice && currentForensicDevice.type === 'host'));
                 const sysInfo = data.system_info || {};
-                if (osEl) osEl.innerText = `${data.model || sysInfo.hostname || 'Target'} (${data.os_version || sysInfo.os || 'Android'})`;
+
+                const osEl = document.getElementById('triageOs');
+                if (osEl) {
+                    osEl.innerText = isHost 
+                        ? (data.os_version || 'Windows 11') 
+                        : `${data.model || sysInfo.hostname || 'Target'} (${data.os_version || sysInfo.os || 'Android'})`;
+                }
 
                 const archEl = document.getElementById('triageArch');
-                if (archEl) archEl.innerText = data.architecture || (sysInfo.cores ? `${sysInfo.cores} Cores` : 'arm64');
+                if (archEl) {
+                    archEl.innerText = data.architecture || (sysInfo.cores ? `${sysInfo.cores} Cores` : 'x64');
+                }
 
                 const pkgEl = document.getElementById('triagePackages');
                 const pkgCount = Array.isArray(data.packages) ? data.packages.length : (data.packages_count || 0);
@@ -3053,8 +3061,40 @@ Connected to target subsystem. Type a shell command below or click a preset.
                     const b = document.getElementById('studioBatteryBadge');
                     if (b) {
                         b.classList.remove('hidden');
-                        b.innerText = `BAT: ${data.battery.level}%`;
+                        b.innerText = `BAT: ${data.battery.level}% (${data.battery.status || (data.battery.plugged ? 'AC' : 'Batt')})`;
                     }
+                }
+
+                // Dynamically update shell presets for Windows Host vs Android mobile
+                const presets = document.getElementById('shellPresetsContainer');
+                if (presets) {
+                    if (isHost) {
+                        presets.innerHTML = `
+                            <span class="text-slate-500 mr-1">Presets:</span>
+                            <button onclick="injectPresetCommand('systeminfo')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="System Info">systeminfo</button>
+                            <button onclick="injectPresetCommand('ipconfig')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Network Configuration">ipconfig</button>
+                            <button onclick="injectPresetCommand('tasklist')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Running Processes">tasklist</button>
+                            <button onclick="injectPresetCommand('netstat -ano')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Network Ports">netstat</button>
+                            <button onclick="injectPresetCommand('installed apps')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Installed Software">installed apps</button>
+                            <button onclick="injectPresetCommand('battery')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Power Status">battery</button>
+                        `;
+                    } else {
+                        presets.innerHTML = `
+                            <span class="text-slate-500 mr-1">Presets:</span>
+                            <button onclick="injectPresetCommand('getprop')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">getprop</button>
+                            <button onclick="injectPresetCommand('ip addr')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">ip addr</button>
+                            <button onclick="injectPresetCommand('pm list packages -3')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">pm list</button>
+                            <button onclick="injectPresetCommand('dumpsys battery')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">battery</button>
+                            <button onclick="injectPresetCommand('ps -A')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">ps</button>
+                        `;
+                    }
+                }
+
+                const shellInput = document.getElementById('forensicShellInput');
+                if (shellInput) {
+                    shellInput.placeholder = isHost
+                        ? "Enter PowerShell / CMD command (e.g. tasklist, ipconfig, netstat -ano, systeminfo)..."
+                        : "Enter ADB shell command (e.g. getprop, ps -A, ls -la, pm list)...";
                 }
             } catch (err) {
                 console.error("Triage error:", err);
