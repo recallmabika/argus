@@ -60,8 +60,16 @@ app.include_router(spatial_router, prefix=f"{settings.API_V1_STR}/spatial", tags
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/landing", response_class=HTMLResponse)
+async def get_landing_page(request: Request):
+    """Renders the executive ARTIS landing page."""
+    return templates.TemplateResponse(request=request, name="landing.html")
+
+
+@app.get("/console", response_class=HTMLResponse)
+@app.get("/dashboard", response_class=HTMLResponse)
 async def get_dashboard(request: Request):
-    """Renders the SOC web console dashboard."""
+    """Renders the operational SOC web console dashboard."""
     return templates.TemplateResponse(request=request, name="index.html")
 
 
