@@ -31,7 +31,7 @@ export const KillProcessModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[85] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-sm max-w-sm w-full p-5 space-y-4 shadow-2xl text-xs">
         <div className="flex items-center space-x-2.5">
           <div className="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black">

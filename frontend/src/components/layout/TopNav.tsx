@@ -13,7 +13,9 @@ import {
   Lock,
   RotateCcw,
   Home,
-  Menu
+  Menu,
+  Shield,
+  ChevronRight
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useModals } from '../../context/ModalContext';
@@ -23,11 +25,12 @@ import { api } from '../../services/api';
 interface TopNavProps {
   onToggleSidebar?: () => void;
   onResetLayout?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
-export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }) => {
+export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout, isSidebarCollapsed }) => {
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, toggleTheme, isDark } = useTheme();
   const { openReport, openVerify, toggleAudit, openSettings, alert } = useModals();
 
   const [user, setUser] = useState<UserProfile>({
@@ -55,6 +58,41 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
 
   const isThreatsPage = location.pathname.startsWith('/threats');
 
+  // Dynamic breadcrumb generation based on SPA route & hash
+  const getBreadcrumbs = () => {
+    const path = location.pathname;
+    const hash = location.hash;
+
+    if (path.startsWith('/threats')) {
+      return {
+        root: { label: 'SOC', path: '/dashboard' },
+        category: 'Threat Grid',
+        leaf: 'Live Feed'
+      };
+    }
+
+    if (path.startsWith('/landing') || path === '/') {
+      return {
+        root: { label: 'ARGUS', path: '/' },
+        category: 'Gateway',
+        leaf: 'Executive'
+      };
+    }
+
+    let leaf = 'Overview';
+    if (hash === '#devices') leaf = 'Endpoint Fleet';
+    else if (hash === '#forensics') leaf = 'Forensics Bridge';
+    else if (hash === '#branches') leaf = 'Geolocation Grid';
+
+    return {
+      root: { label: 'SOC', path: '/dashboard' },
+      category: 'Operations',
+      leaf
+    };
+  };
+
+  const breadcrumbs = getBreadcrumbs();
+
   const handleLockSession = () => {
     setProfileOpen(false);
     alert({
@@ -68,19 +106,43 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
 
   return (
     <header className="h-16 flex-shrink-0 bg-white dark:bg-cyber-card border-b border-slate-200 dark:border-cyber-700/60 px-2 sm:px-3 flex items-center justify-between z-30 transition-colors">
-      {/* Left: Mobile Sidebar Toggle + Navigation / Mode */}
-      <div className="flex items-center space-x-1.5 sm:space-x-2">
+      {/* Left: Mobile Sidebar Toggle + Breadcrumb Navigation */}
+      <div className="flex items-center space-x-2 sm:space-x-2.5">
         <button
           onClick={onToggleSidebar}
-          className="p-1 rounded-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors focus:outline-none"
-          title="Toggle Navigation Menu"
+          data-tooltip={isSidebarCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Ctrl+B)"}
+          className="p-1 rounded-sm text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors focus:outline-none cursor-pointer"
+          title={isSidebarCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Ctrl+B)"}
         >
           <Menu className="w-4 h-4" />
         </button>
 
-        <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider hidden md:block">
-          {isThreatsPage ? 'Live Ingestion Feed' : 'SOC Operations Command'}
-        </h2>
+        {/* Unique Cyber-Tactical Breadcrumbs */}
+        <nav aria-label="Breadcrumbs" className="hidden sm:flex items-center space-x-2 text-xs font-mono select-none">
+          <Link
+            to={breadcrumbs.root.path}
+            className="font-bold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none"
+            title="Root Console"
+          >
+            {breadcrumbs.root.label}
+          </Link>
+
+          <ChevronRight className="w-3 h-3 text-slate-400 dark:text-cyber-500 flex-shrink-0" />
+
+          <span className="text-slate-500 dark:text-slate-400 font-medium tracking-tight">
+            {breadcrumbs.category}
+          </span>
+
+          <ChevronRight className="w-3 h-3 text-slate-400 dark:text-cyber-500 flex-shrink-0" />
+
+          <span className="inline-flex items-center space-x-1.5 text-blue-600 dark:text-blue-400 font-bold tracking-tight">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+            <span>{breadcrumbs.leaf}</span>
+          </span>
+        </nav>
+
+        {/* Vertical Divider */}
+        <div className="h-4 w-px bg-slate-200 dark:bg-cyber-700/70 hidden md:block mx-1"></div>
 
         {/* Left action group: Borderless buttons separated by border-r, hover text color change */}
         <div className="flex items-center text-xs sm:text-[13px] font-medium">
@@ -101,6 +163,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
               }}
               className="px-2.5 sm:px-3 py-1 border-r border-slate-200 dark:border-cyber-700/70 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors flex items-center space-x-1.5 group focus:outline-none"
               title="Reset dashboard panels to default layout"
+              data-tooltip="Reset dashboard panels to default layout"
             >
               <RotateCcw className="w-3.5 h-3.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
               <span>Reset Layout</span>
@@ -111,6 +174,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
             to="/landing"
             className="px-2.5 sm:px-3 py-1 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors flex items-center space-x-1.5 group focus:outline-none"
             title="Return to Executive Landing Page"
+            data-tooltip="Return to Executive Landing Page"
           >
             <Home className="w-3.5 h-3.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
             <span>Landing Page</span>
@@ -118,12 +182,13 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
         </div>
       </div>
 
-      {/* Right: Border-Divided Toolbars (Export PDF | Verify | Audit) + User Profile */}
+      {/* Right: Border-Divided Toolbars (Export PDF | Verify | Audit | Theme) + User Profile */}
       <div className="flex items-center space-x-1.5 sm:space-x-2">
         {/* Right action group: Borderless buttons separated by border-r, hover text color change */}
         <div className="flex items-center text-xs sm:text-[13px] font-medium">
           <button
             onClick={openReport}
+            data-tooltip="Export Signed Incident PDF Report"
             className="px-2.5 sm:px-3 py-1 border-r border-slate-200 dark:border-cyber-700/70 flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors group focus:outline-none"
           >
             <FileText className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
@@ -132,6 +197,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
           </button>
           <button
             onClick={openVerify}
+            data-tooltip="Verify Cryptographic Report Signature"
             className="px-2.5 sm:px-3 py-1 border-r border-slate-200 dark:border-cyber-700/70 flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors group focus:outline-none"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
@@ -139,9 +205,17 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
           </button>
           <button
             onClick={toggleAudit}
-            className="px-2.5 sm:px-3 py-1 flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors group focus:outline-none"
+            data-tooltip="Inspect SOC Audit Trail"
+            className="px-2.5 sm:px-3 py-1 border-r border-slate-200 dark:border-cyber-700/70 flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors group focus:outline-none"
           >
             <span>Audit</span>
+          </button>
+          <button
+            onClick={toggleTheme}
+            data-tooltip={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+            className="px-2.5 sm:px-3 py-1 flex items-center space-x-1.5 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 transition-colors group focus:outline-none capitalize font-mono text-xs"
+          >
+            <span>{isDark ? 'dark' : 'light'}</span>
           </button>
         </div>
 
@@ -155,7 +229,7 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
             className="flex items-center space-x-1.5 p-0.5 pr-1.5 rounded-sm hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition focus:outline-none"
           >
             <div className="relative flex-shrink-0">
-              <div className="w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-xs flex items-center justify-center border border-slate-300 dark:border-cyber-600">
+              <div className="w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-xs flex items-center justify-center shadow-xs">
                 {user.full_name.charAt(0)}
               </div>
               <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-cyber-800"></span>
@@ -192,11 +266,12 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout }
                     <span>ID:</span>
                     <span className="font-semibold text-slate-800 dark:text-slate-200">{user.user_id}</span>
                   </div>
-                  <div className="flex items-center space-x-1.5 mt-1">
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-sm font-semibold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">
+                  <div className="flex items-center space-x-2 mt-1 text-[10px]">
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
                       {user.role.toUpperCase()}
                     </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-sm font-mono bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 truncate">
+                    <span className="text-slate-400 dark:text-slate-600">&bull;</span>
+                    <span className="font-mono text-slate-500 dark:text-slate-400 truncate">
                       {user.organization_name}
                     </span>
                   </div>

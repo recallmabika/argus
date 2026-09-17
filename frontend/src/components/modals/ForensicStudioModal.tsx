@@ -15,7 +15,8 @@ import {
   Sliders,
   ChevronRight,
   ShieldCheck,
-  CheckCircle2
+  CheckCircle2,
+  AppWindow
 } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
@@ -273,23 +274,26 @@ export const ForensicStudioModal: React.FC = () => {
   if (!activeForensicDeviceId) return null;
 
   const isHost = device?.type === 'host' || device?.type === 'HOST_WORKSTATION' || activeForensicDeviceId.includes('HOST');
+  const isStorage = device?.type === 'storage' || device?.type === 'USB_STORAGE';
   const isWireless = device?.connection && (device.connection.toLowerCase().includes('wireless') || device.connection.toLowerCase().includes('wi-fi'));
 
   return (
-    <div className="fixed inset-0 z-[85] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-sm w-full max-w-6xl h-[92vh] shadow-2xl flex flex-col overflow-hidden text-xs">
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white dark:bg-cyber-card rounded-sm w-full max-w-6xl h-[92vh] shadow-2xl flex flex-col overflow-hidden text-xs">
         {/* Studio Titlebar */}
-        <div className="px-5 py-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
+        <div className="px-5 py-3.5 border-b border-slate-100 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
           <div className="flex items-center space-x-3 min-w-0">
-            <div className="w-8 h-8 rounded-sm bg-slate-100 dark:bg-cyber-700/60 flex items-center justify-center flex-shrink-0 text-cyan-500">
-              {isHost ? <Laptop className="w-4 h-4" /> : <Smartphone className="w-4 h-4" />}
-            </div>
+            {!isHost && (
+              <div className="w-8 h-8 rounded-sm bg-slate-100 dark:bg-cyber-700/60 flex items-center justify-center flex-shrink-0 text-cyan-500">
+                {isStorage ? <HardDrive className="w-4 h-4" /> : <Smartphone className="w-4 h-4" />}
+              </div>
+            )}
             <div className="min-w-0">
               <div className="flex items-center space-x-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                   {isHost ? 'Local Host Workstation' : device?.model || device?.name || 'Target Device'}
                 </h3>
-                <span className="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold whitespace-nowrap">
+                <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-semibold whitespace-nowrap">
                   {isHost ? 'LOCAL HOST' : isWireless ? 'WI-FI ADB' : 'USB CABLE'}
                 </span>
               </div>
@@ -302,7 +306,7 @@ export const ForensicStudioModal: React.FC = () => {
           </div>
 
           {/* Studio Tab Buttons */}
-          <div className="flex items-center space-x-1 bg-slate-200/70 dark:bg-cyber-900/80 p-1 rounded-sm border border-slate-300/60 dark:border-cyber-700/50">
+          <div className="flex items-center space-x-1 bg-slate-200/70 dark:bg-cyber-900/80 p-1 rounded-sm">
             <button
               onClick={() => setActiveTab('screen')}
               className={`px-3 py-1.5 rounded-sm font-semibold flex items-center space-x-1.5 transition cursor-pointer ${
@@ -358,8 +362,8 @@ export const ForensicStudioModal: React.FC = () => {
           {activeTab === 'screen' && (
             <div className="h-full flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
               {/* Left Screen Canvas Container */}
-              <div className="flex-1 flex flex-col bg-slate-950 rounded-sm border border-slate-800 p-2 overflow-hidden relative">
-                <div className="flex flex-wrap items-center justify-between px-3 py-1.5 text-[10px] text-slate-400 bg-slate-900/90 rounded-sm border border-slate-800 mb-2 z-10 select-none gap-2">
+              <div className="flex-1 flex flex-col bg-slate-950 rounded-sm p-3 overflow-hidden relative shadow-inner">
+                <div className="flex flex-wrap items-center justify-between px-3 py-1.5 text-[10px] text-slate-400 bg-slate-900/90 rounded-sm mb-2 z-10 select-none gap-2">
                   <div className="flex items-center space-x-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span className="font-mono font-semibold text-slate-300">LIVE INTERACTIVE DECK</span>
@@ -370,25 +374,29 @@ export const ForensicStudioModal: React.FC = () => {
                   {/* Window Selector */}
                   <div className="flex items-center space-x-1.5">
                     <span className="text-slate-600">•</span>
+                    <AppWindow className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                     <label className="text-[10px] text-slate-400 font-medium hidden sm:inline">Target Window:</label>
                     <select
                       value={selectedWindowId}
                       onChange={(e) => setSelectedWindowId(e.target.value)}
-                      className="bg-slate-800 text-slate-200 border border-slate-700 rounded-sm px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:border-cyan-500 max-w-[280px] sm:max-w-[340px] truncate"
+                      className="bg-slate-800 text-slate-200 rounded-sm px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 max-w-[280px] sm:max-w-[340px] truncate"
                     >
-                      <option value="desktop">🖥️ Full Desktop (Display 1)</option>
-                      {windows.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          🪟 {w.title}
-                        </option>
-                      ))}
+                      <option value="desktop">Full Desktop (Display 1)</option>
+                      {windows.map((w: any) => {
+                        const winId = w.id || w.hwnd;
+                        return (
+                          <option key={winId} value={winId}>
+                            {w.title}
+                          </option>
+                        );
+                      })}
                     </select>
                     <button
                       onClick={() => {
                         api.getDeviceWindows(activeForensicDeviceId).then((r) => setWindows(r.windows || []));
                       }}
                       title="Scan & Refresh Open Windows"
-                      className="p-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+                      className="p-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
                     >
                       <RefreshCw className="w-3 h-3" />
                     </button>
@@ -398,7 +406,7 @@ export const ForensicStudioModal: React.FC = () => {
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={fetchScreenFrame}
-                      className="px-2 py-0.5 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1"
+                      className="px-2 py-0.5 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1 cursor-pointer"
                     >
                       <RefreshCw className="w-3 h-3" />
                       <span>Refresh</span>
@@ -420,7 +428,7 @@ export const ForensicStudioModal: React.FC = () => {
                   <canvas
                     ref={canvasRef}
                     onClick={handleCanvasClick}
-                    className="max-h-full max-w-full rounded-sm shadow-2xl cursor-crosshair object-contain bg-black border border-slate-800"
+                    className="max-h-full max-w-full rounded-sm cursor-crosshair object-contain bg-black shadow-lg"
                   />
                 </div>
 
@@ -433,7 +441,7 @@ export const ForensicStudioModal: React.FC = () => {
               <div className="w-full md:w-80 flex flex-col space-y-3 overflow-y-auto custom-scrollbar flex-shrink-0">
                 {/* Workstation Controls */}
                 {isHost ? (
-                  <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-sm space-y-2.5">
+                  <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 rounded-sm space-y-2.5 shadow-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         Workstation Pointer
@@ -443,19 +451,19 @@ export const ForensicStudioModal: React.FC = () => {
                     <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => sendMouseAction('click')}
-                        className="py-2 px-1 rounded-sm bg-blue-600 hover:bg-blue-500 font-semibold text-white flex flex-col items-center justify-center space-y-1 transition text-[10px]"
+                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 active:bg-slate-400 dark:active:bg-cyber-500 font-semibold text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center space-y-1 transition text-[10px] cursor-pointer"
                       >
                         LEFT CLICK
                       </button>
                       <button
                         onClick={() => sendMouseAction('double_click')}
-                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-semibold flex flex-col items-center justify-center space-y-1 transition text-[10px]"
+                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 active:bg-slate-400 dark:active:bg-cyber-500 text-slate-800 dark:text-slate-200 font-semibold flex flex-col items-center justify-center space-y-1 transition text-[10px] cursor-pointer"
                       >
                         DBL CLICK
                       </button>
                       <button
                         onClick={() => sendMouseAction('right_click')}
-                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-semibold flex flex-col items-center justify-center space-y-1 transition text-[10px]"
+                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 active:bg-slate-400 dark:active:bg-cyber-500 text-slate-800 dark:text-slate-200 font-semibold flex flex-col items-center justify-center space-y-1 transition text-[10px] cursor-pointer"
                       >
                         RIGHT CLICK
                       </button>
@@ -464,32 +472,32 @@ export const ForensicStudioModal: React.FC = () => {
                     <div className="grid grid-cols-2 gap-2 pt-1">
                       <button
                         onClick={() => sendMouseAction('wheel_up')}
-                        className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium text-[10px] transition"
+                        className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-300 font-medium text-[10px] transition cursor-pointer"
                       >
                         SCROLL UP
                       </button>
                       <button
                         onClick={() => sendMouseAction('wheel_down')}
-                        className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium text-[10px] transition"
+                        className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-300 font-medium text-[10px] transition cursor-pointer"
                       >
                         SCROLL DOWN
                       </button>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                    <div className="pt-2 border-t border-slate-200/60 dark:border-cyber-700/40 space-y-1.5">
                       <span className="text-[9px] font-mono text-slate-400">DESKTOP SHORTCUTS</span>
                       <div className="grid grid-cols-3 gap-1.5 font-mono text-[10px]">
-                        <button onClick={() => sendHardwareKey('WIN')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 transition">⊞ WIN</button>
-                        <button onClick={() => sendHardwareKey('ENTER')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 transition">↵ ENTER</button>
-                        <button onClick={() => sendHardwareKey('ESC')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 transition">ESC</button>
-                        <button onClick={() => sendHardwareKey('ALTTAB')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 transition">ALT+TAB</button>
-                        <button onClick={() => sendHardwareKey('TASKMGR')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 transition">TASKS</button>
-                        <button onClick={() => sendHardwareKey('F5')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 transition">F5</button>
+                        <button onClick={() => sendHardwareKey('WIN')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 transition cursor-pointer">WIN</button>
+                        <button onClick={() => sendHardwareKey('ENTER')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 transition cursor-pointer">ENTER</button>
+                        <button onClick={() => sendHardwareKey('ESC')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 transition cursor-pointer">ESC</button>
+                        <button onClick={() => sendHardwareKey('ALTTAB')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 transition cursor-pointer">ALT+TAB</button>
+                        <button onClick={() => sendHardwareKey('TASKMGR')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 transition cursor-pointer">TASKS</button>
+                        <button onClick={() => sendHardwareKey('F5')} className="py-1 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 transition cursor-pointer">F5</button>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-sm space-y-2.5">
+                  <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 rounded-sm space-y-2.5 shadow-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                         Mobile Navigation
@@ -499,33 +507,33 @@ export const ForensicStudioModal: React.FC = () => {
                     <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => sendHardwareKey('BACK')}
-                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition"
+                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition cursor-pointer"
                       >
                         BACK
                       </button>
                       <button
                         onClick={() => sendHardwareKey('HOME')}
-                        className="py-2 px-1 rounded-sm bg-blue-600 hover:bg-blue-500 font-semibold text-white text-[10px] transition"
+                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition cursor-pointer"
                       >
                         HOME
                       </button>
                       <button
                         onClick={() => sendHardwareKey('RECENTS')}
-                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition"
+                        className="py-2 px-1 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition cursor-pointer"
                       >
                         APPS
                       </button>
                     </div>
                     <div className="grid grid-cols-3 gap-2 pt-1 font-semibold text-[10px]">
-                      <button onClick={() => sendHardwareKey('POWER')} className="py-1.5 px-1 rounded-sm bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition">POWER</button>
-                      <button onClick={() => sendHardwareKey('VOLUME_UP')} className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 transition">VOL +</button>
-                      <button onClick={() => sendHardwareKey('VOLUME_DOWN')} className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 transition">VOL -</button>
+                      <button onClick={() => sendHardwareKey('POWER')} className="py-1.5 px-1 rounded-sm bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition cursor-pointer">POWER</button>
+                      <button onClick={() => sendHardwareKey('VOLUME_UP')} className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 transition cursor-pointer">VOL +</button>
+                      <button onClick={() => sendHardwareKey('VOLUME_DOWN')} className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 transition cursor-pointer">VOL -</button>
                     </div>
                   </div>
                 )}
 
                 {/* Remote Text Injection */}
-                <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-sm space-y-2">
+                <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 rounded-sm space-y-2 shadow-xs">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Remote Text Injection
                   </span>
@@ -538,11 +546,11 @@ export const ForensicStudioModal: React.FC = () => {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') sendRemoteText();
                       }}
-                      className="flex-1 px-2.5 py-1.5 rounded-sm bg-white dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 text-slate-900 dark:text-white font-mono text-xs"
+                      className="flex-1 px-2.5 py-1.5 rounded-sm bg-white dark:bg-cyber-800/80 focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 dark:text-white font-mono text-xs"
                     />
                     <button
                       onClick={sendRemoteText}
-                      className="px-3 py-1.5 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition text-xs flex items-center space-x-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold transition text-xs flex items-center space-x-1 cursor-pointer shadow-xs"
                     >
                       <Send className="w-3 h-3" />
                       <span>Send</span>
@@ -551,8 +559,8 @@ export const ForensicStudioModal: React.FC = () => {
                 </div>
 
                 {/* Verified Cryptographic Snapshot */}
-                <div className="p-3 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-500/20 rounded-sm space-y-2">
-                  <div className="flex items-center space-x-1.5 text-blue-600 dark:text-blue-400 font-bold">
+                <div className="p-3 bg-cyan-500/5 dark:bg-cyan-950/20 rounded-sm space-y-2 shadow-xs">
+                  <div className="flex items-center space-x-1.5 text-cyan-600 dark:text-cyan-400 font-bold">
                     <Camera className="w-4 h-4" />
                     <span>Cryptographic Frame Evidence</span>
                   </div>
@@ -561,13 +569,13 @@ export const ForensicStudioModal: React.FC = () => {
                   </p>
                   <button
                     onClick={acquireCryptographicFrame}
-                    className="w-full py-2 rounded-sm bg-blue-600 hover:bg-blue-500 text-white font-semibold transition text-xs flex items-center justify-center space-x-1.5 shadow-sm cursor-pointer"
+                    className="w-full py-2 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition text-xs flex items-center justify-center space-x-1.5 shadow-xs cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Acquire Verified Frame (PNG)</span>
                   </button>
                   {snapshotDigest && (
-                    <div className="p-2 rounded-sm bg-slate-100 dark:bg-cyber-900 border border-slate-200 dark:border-cyber-700 font-mono text-[9px] break-all text-slate-600 dark:text-slate-300">
+                    <div className="p-2 rounded-sm bg-slate-100 dark:bg-cyber-900 font-mono text-[9px] break-all text-slate-600 dark:text-slate-300">
                       <b>SHA-256:</b> {snapshotDigest}
                     </div>
                   )}
@@ -580,15 +588,15 @@ export const ForensicStudioModal: React.FC = () => {
           {activeTab === 'files' && (
             <div className="h-full flex flex-col p-4 space-y-3 overflow-hidden">
               {/* Path Navigation Bar */}
-              <div className="flex items-center space-x-2 bg-slate-50 dark:bg-cyber-800/60 p-2 rounded-sm border border-slate-200 dark:border-cyber-700/60">
+              <div className="flex items-center space-x-2 bg-slate-50 dark:bg-cyber-800/60 p-2 rounded-sm shadow-xs">
                 <button
                   onClick={navigateUp}
                   title="Go Up Directory"
-                  className="p-1.5 rounded-sm bg-white dark:bg-cyber-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-cyber-600 transition cursor-pointer"
+                  className="p-1.5 rounded-sm bg-white dark:bg-cyber-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
                 >
                   <CornerLeftUp className="w-4 h-4" />
                 </button>
-                <div className="flex-1 flex items-center space-x-1 font-mono text-xs text-slate-800 dark:text-slate-200 bg-white dark:bg-cyber-900 px-3 py-1.5 rounded-sm border border-slate-200 dark:border-cyber-700">
+                <div className="flex-1 flex items-center space-x-1 font-mono text-xs text-slate-800 dark:text-slate-200 bg-white dark:bg-cyber-900 px-3 py-1.5 rounded-sm shadow-xs">
                   <span className="text-slate-400 select-none">Path:</span>
                   <input
                     type="text"
@@ -602,7 +610,7 @@ export const ForensicStudioModal: React.FC = () => {
                 </div>
                 <button
                   onClick={() => loadFiles(currentPath)}
-                  className="px-3 py-1.5 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-1 cursor-pointer"
+                  className="px-3 py-1.5 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-1 cursor-pointer shadow-xs"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${filesLoading ? 'animate-spin' : ''}`} />
                   <span>Browse</span>
@@ -610,9 +618,9 @@ export const ForensicStudioModal: React.FC = () => {
               </div>
 
               {/* Files Table */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm">
+              <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-cyber-card rounded-sm shadow-xs">
                 <table className="w-full text-left border-collapse text-xs">
-                  <thead className="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+                  <thead className="sticky top-0 bg-slate-50 dark:bg-cyber-800 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
                     <tr>
                       <th className="py-2.5 px-4">Item Name</th>
                       <th className="py-2.5 px-3">Type</th>
@@ -664,7 +672,7 @@ export const ForensicStudioModal: React.FC = () => {
                                 href={`/api/v1/forensics/devices/${encodeURIComponent(activeForensicDeviceId)}/files/download?path=${encodeURIComponent(f.path)}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="px-2.5 py-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-cyber-600 font-medium text-[11px] inline-flex items-center space-x-1 transition"
+                                className="px-2.5 py-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 font-medium text-[11px] inline-flex items-center space-x-1 transition shadow-xs"
                               >
                                 <Download className="w-3 h-3" />
                                 <span>Download</span>
@@ -679,7 +687,7 @@ export const ForensicStudioModal: React.FC = () => {
               </div>
 
               {/* Status Bar */}
-              <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-sm flex items-center justify-between text-[11px] font-mono">
+              <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 rounded-sm flex items-center justify-between text-[11px] font-mono shadow-xs">
                 <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
                   <span>Evidence Integrity: SHA-256 cryptographic verification active.</span>
@@ -693,25 +701,25 @@ export const ForensicStudioModal: React.FC = () => {
             <div className="h-full flex flex-col p-4 space-y-3 overflow-hidden">
               {/* Triage Specs Bar */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-sm">
+                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 rounded-sm shadow-xs">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">OS Version</span>
                   <div className="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 mt-0.5">
                     {triage?.os || (isHost ? 'Windows 11 / x64' : 'Android')}
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-sm">
+                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 rounded-sm shadow-xs">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">Architecture</span>
                   <div className="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 mt-0.5">
                     {triage?.arch || (isHost ? 'AMD64' : 'arm64-v8a')}
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-sm">
+                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 rounded-sm shadow-xs">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">Installed Packages</span>
                   <div className="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 mt-0.5">
                     {triage?.packages_count || (isHost ? '340' : '85')}
                   </div>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/50 rounded-sm">
+                <div className="p-3 bg-slate-50 dark:bg-cyber-800/60 rounded-sm shadow-xs">
                   <span className="text-[10px] text-slate-400 uppercase font-bold">Running Processes</span>
                   <div className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                     {triage?.procs_count || '120'}
@@ -720,9 +728,9 @@ export const ForensicStudioModal: React.FC = () => {
               </div>
 
               {/* Terminal Container */}
-              <div className="flex-1 flex flex-col bg-black rounded-sm border border-slate-800 overflow-hidden font-mono text-xs">
+              <div className="flex-1 flex flex-col bg-black rounded-sm overflow-hidden font-mono text-xs shadow-xs">
                 {/* Titlebar with Presets */}
-                <div className="px-3 py-2 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                <div className="px-3 py-2 bg-slate-900 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center space-x-2 text-slate-400 text-[11px]">
                     <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                     <span className="font-bold text-slate-200">Interactive Forensic Shell</span>
@@ -753,7 +761,7 @@ export const ForensicStudioModal: React.FC = () => {
                 </div>
 
                 {/* Input Bar */}
-                <div className="p-2 bg-slate-900/90 border-t border-slate-800 flex items-center space-x-2">
+                <div className="p-2 bg-slate-900/90 flex items-center space-x-2">
                   <span className="text-cyan-400 font-bold pl-2 select-none">$</span>
                   <input
                     type="text"
@@ -768,7 +776,7 @@ export const ForensicStudioModal: React.FC = () => {
                   <button
                     onClick={() => executeShell()}
                     disabled={shellExecuting}
-                    className="px-3 py-1 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition cursor-pointer disabled:opacity-50"
+                    className="px-3 py-1 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition cursor-pointer disabled:opacity-50 shadow-xs"
                   >
                     {shellExecuting ? 'Executing...' : 'Execute'}
                   </button>

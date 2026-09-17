@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ClipboardList, RefreshCw, Shield } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
@@ -26,7 +26,7 @@ export const AuditDrawer: React.FC = () => {
   if (!isAuditOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[85] overflow-hidden">
+    <div className="fixed inset-0 z-[9999] overflow-hidden">
       {/* Backdrop */}
       <div onClick={closeAudit} className="absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity" />
 

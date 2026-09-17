@@ -50,7 +50,7 @@ export const GeolocationMapCard: React.FC<GeolocationMapCardProps> = ({
   }, [devices]);
 
   return (
-    <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 flex flex-col shadow-xs h-full" id="branches">
+    <div className="bg-white dark:bg-cyber-card rounded-sm p-4 flex flex-col shadow-xs h-full relative isolate z-0" id="branches">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-cyber-700/50">
         <div className="flex items-center space-x-2">
           <span className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
@@ -65,10 +65,10 @@ export const GeolocationMapCard: React.FC<GeolocationMapCardProps> = ({
           {onPullToMain && (
             <button
               onClick={onPullToMain}
-              className={`px-2 py-0.5 rounded-sm text-[10px] font-mono border transition flex items-center space-x-1 ${
+              className={`px-2 py-0.5 rounded-sm text-[10px] font-mono transition flex items-center space-x-1 ${
                 isMainStage
-                  ? 'bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-cyber-600 font-semibold'
-                  : 'border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 font-semibold'
+                  : 'bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
               title={isMainStage ? 'Currently on Primary Stage' : 'Pull into Main Stage'}
             >
@@ -79,8 +79,8 @@ export const GeolocationMapCard: React.FC<GeolocationMapCardProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 min-h-[260px] relative rounded-sm overflow-hidden mt-3 border border-slate-200 dark:border-cyber-700/50">
-        <div ref={mapContainerRef} className="w-full h-full min-h-[260px]" />
+      <div className="flex-1 min-h-[260px] relative rounded-sm overflow-hidden mt-3 isolate z-0">
+        <div ref={mapContainerRef} className="w-full h-full min-h-[260px] relative z-0" />
       </div>
     </div>
   );

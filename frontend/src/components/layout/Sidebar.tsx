@@ -10,7 +10,7 @@ import {
   ClipboardList,
   Search,
   Bell,
-  Smartphone,
+  Microscope,
   ChevronLeft,
   ChevronRight,
   Sun,
@@ -194,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
               {!isCollapsed ? (
-                <span className="px-2 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-700 dark:text-slate-300 font-bold">
+                <span className="font-sans text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {activeThreatCount}
                 </span>
               ) : activeThreatCount > 0 ? (
@@ -219,7 +219,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
               {!isCollapsed && (
-                <span className="px-2 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400">
+                <span className="font-sans text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {endpointCount}
                 </span>
               )}
@@ -265,13 +265,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Device Forensics Bridge"
             >
               <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <Smartphone className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <Microscope className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
                   {isCollapsed ? 'Forensics' : 'Device Forensics Bridge'}
                 </span>
               </div>
               {!isCollapsed && (
-                <span className="px-2 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400 font-semibold">
+                <span className="font-sans text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {forensicCount}
                 </span>
               )}
@@ -283,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className={`w-full rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
-                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+                  : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
               } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Threat Hunting Engine"
             >
@@ -293,11 +293,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {isCollapsed ? 'Hunt' : 'Threat Hunting'}
                 </span>
               </div>
-              {!isCollapsed && (
-                <span className="px-2 py-0.5 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 font-semibold">
-                  HUNT
-                </span>
-              )}
             </button>
 
             {/* Export Incident PDF */}
@@ -353,7 +348,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
               {!isCollapsed && (
-                <span className="font-mono text-[10px] text-slate-400">
+                <span className="font-sans text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {auditCount}
                 </span>
               )}
@@ -365,7 +360,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className={`w-full rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
-                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+                  : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
               } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="SIEM & Webhooks Forwarding"
             >
@@ -375,11 +370,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {isCollapsed ? 'Webhooks' : 'Alert Webhooks'}
                 </span>
               </div>
-              {!isCollapsed && (
-                <span className="px-2 py-0.5 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 font-semibold">
-                  SIEM
-                </span>
-              )}
             </button>
           </div>
         </nav>
