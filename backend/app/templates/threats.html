@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTIS — Threat Stream</title>
+    <!-- Logo Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png">
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Compiled Production Tailwind CSS -->
+    <link rel="stylesheet" href="/static/css/output.css" />
+    <!-- Custom Option Fields (TomSelect) -->
+    <link rel="stylesheet" href="/static/css/tom-select.css" />
+    <script src="/static/js/tom-select.complete.min.js"></script>
+</head>
+<body class="bg-slate-100 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans h-screen overflow-hidden flex antialiased transition-colors duration-200">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm hidden lg:hidden"></div>
+
+    <!-- Collapsible & Fixed Sidebar -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-[65] w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none transition-all duration-200">
+        
+        <!-- Sidebar Header / Brand -->
+        <div class="sidebar-header p-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
+            <div class="sidebar-brand-group flex items-center space-x-2.5 w-full cursor-pointer group" onclick="toggleSidebar()">
+                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-12 h-12 rounded-lg object-contain shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform" />
+                <div class="sidebar-brand-text">
+                    <h1 class="text-xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
+                        ARTIS
+                    </h1>
+                    <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Incident Security</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="sidebar-nav flex-1 overflow-y-auto custom-scrollbar px-2.5 py-3 space-y-5 text-xs">
+            <!-- Section: Monitoring -->
+            <div class="sidebar-section space-y-1">
+                <div class="sidebar-section-title px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monitoring &amp; SOC</div>
+                
+                <!-- SOC Overview -->
+                <a href="/console" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="SOC Overview">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <rect width="7" height="7" x="3" y="3" rx="1"/>
+                            <rect width="7" height="7" x="14" y="3" rx="1"/>
+                            <rect width="7" height="7" x="14" y="14" rx="1"/>
+                            <rect width="7" height="7" x="3" y="14" rx="1"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">SOC Overview</span>
+                            <span class="sidebar-text-compact hidden">Overview</span>
+                        </span>
+                    </div>
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">SOC Overview</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Live Telemetry &amp; Incident Triage</span>
+                    </div>
+                </a>
+
+                <!-- Threat Stream (ACTIVE on this page) -->
+                <a href="/threats" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg bg-slate-100 dark:bg-cyber-700/60 text-slate-900 dark:text-white font-medium transition group" title="Threat Stream">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Threat Stream</span>
+                            <span class="sidebar-text-compact hidden">Threats</span>
+                        </span>
+                    </div>
+                    <span id="sideActiveThreats" class="sidebar-badge px-1.5 py-0.2 rounded font-mono font-semibold text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-700 dark:text-slate-300">0</span>
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Threat Stream</span>
+                            <span id="sideActiveThreatsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-bold">0 Live</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Real-Time MITRE ATT&amp;CK Vectors</span>
+                    </div>
+                </a>
+                <!-- Item 3: Org Devices -->
+                <a href="/console#devices" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Org Devices">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect width="20" height="14" x="2" y="3" rx="2"/>
+                            <line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/>
+                            <line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Org Devices</span>
+                            <span class="sidebar-text-compact hidden">Devices</span>
+                        </span>
+                    </div>
+                    <span id="sideEndpoints" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">0</span>
+                </a>
+
+                <!-- Item 4: Branch Geolocation -->
+                <a href="/console#branches" class="sidebar-link relative flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Branch Geolocation">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Branch Geolocation</span>
+                            <span class="sidebar-text-compact hidden">Branches</span>
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Section: Forensics & Response -->
+            <div class="sidebar-section space-y-1">
+                <div class="sidebar-section-title px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Forensics &amp; Response</div>
+                
+                <!-- Item 5: Forensics Bridge -->
+                <a href="/console#forensics" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Device Forensics Bridge">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+                            <line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Device Forensics Bridge</span>
+                            <span class="sidebar-text-compact hidden">Forensics</span>
+                        </span>
+                    </div>
+                    <span id="sideForensicsCount" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 font-semibold">1</span>
+                </a>
+
+                <!-- Item 6: Export Incident PDF -->
+                <button onclick="openReportModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Export Incident PDF">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Export Incident PDF</span>
+                            <span class="sidebar-text-compact hidden">Export</span>
+                        </span>
+                    </div>
+                </button>
+
+                <!-- Item 7: Verify PDF Signature -->
+                <button onclick="openVerifyModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Verify PDF Signature">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Verify PDF Signature</span>
+                            <span class="sidebar-text-compact hidden">Verify</span>
+                        </span>
+                    </div>
+                </button>
+
+                <!-- Item 8: Access Audit Trail -->
+                <button onclick="toggleAuditDrawer()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Access Audit Trail">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Access Audit Trail</span>
+                            <span class="sidebar-text-compact hidden">Audit</span>
+                        </span>
+                    </div>
+                    <span id="sideAuditCount" class="sidebar-badge font-mono text-[10px] text-slate-400">0</span>
+                </button>
+
+                <!-- Item 9: Threat Hunting Engine -->
+                <button onclick="openThreatHuntingModal()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Threat Hunting Engine">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Threat Hunting</span>
+                            <span class="sidebar-text-compact hidden">Hunting</span>
+                        </span>
+                    </div>
+                    <span class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 font-semibold">HUNT</span>
+                </button>
+
+                <!-- Item 10: Webhook & SIEM Forwarding -->
+                <button onclick="openWebhooksModal()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Alert Forwarding & Webhooks">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Alert Webhooks</span>
+                            <span class="sidebar-text-compact hidden">Webhooks</span>
+                        </span>
+                    </div>
+                    <span class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 font-semibold">SIEM</span>
+                </button>
+            </div>
+        <div class="sidebar-footer p-3 border-t border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-900/40">
+            <div class="sidebar-footer-full space-y-3">
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 px-1">Theme</div>
+                    <div class="grid grid-cols-3 gap-1 bg-slate-200 dark:bg-cyber-700/60 p-1 rounded-lg text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                        <button id="themeBtn-light" onclick="setTheme('light')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <span>Light</span>
+                        </button>
+                        <button id="themeBtn-dark" onclick="setTheme('dark')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                            <span>Dark</span>
+                        </button>
+                        <button id="themeBtn-system" onclick="setTheme('system')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <span>Auto</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Live Status -->
+                <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 dark:border-emerald-800/40 text-[10px]">
+                    <div class="flex items-center space-x-2">
+                        <span class="relative flex h-2 w-2 flex-shrink-0">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span id="wsStatusDot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span id="wsStatusText" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">LIVE FEED</span>
+                    </div>
+                    <span class="font-mono text-emerald-600/70 dark:text-emerald-400/70 text-[9px] font-semibold">WS://</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+        
+        <!-- Pinned Top App Bar -->
+        <header class="flex-shrink-0 bg-white/90 dark:bg-cyber-800/90 backdrop-blur border-b border-slate-200 dark:border-cyber-700/60 z-30 px-4 py-2.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleSidebar()" id="sidebarToggleBtn" class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-cyber-700 hover:text-slate-700 dark:hover:text-slate-200 transition focus:outline-none" title="Toggle Sidebar">
+                    <svg class="sidebar-icon-fold w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="2"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3v18"/>
+                        <path d="M12 9l-4 3 4 3V9z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+                    </svg>
+                    <svg class="sidebar-icon-hamburger hidden w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <line x1="4" y1="6.5" x2="20" y2="6.5"/>
+                        <line x1="4" y1="12" x2="20" y2="12"/>
+                        <line x1="4" y1="17.5" x2="20" y2="17.5"/>
+                    </svg>
+                </button>
+                <div class="flex items-center space-x-3">
+                    <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                        Threat Stream Console
+                    </h2>
+
+                    <!-- Left action group: Border-divided toolbar with hover states, no background fills -->
+                    <div class="hidden md:flex items-center border border-slate-200 dark:border-cyber-700/70 rounded-sm divide-x divide-slate-200 dark:divide-cyber-700/70 overflow-hidden text-[10px] font-mono">
+                        <span class="px-2.5 py-1 text-slate-700 dark:text-slate-300 font-semibold flex items-center space-x-1.5">
+                            <span class="relative flex h-1.5 w-1.5 flex-shrink-0">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                            </span>
+                            <span>LIVE STREAM</span>
+                        </span>
+                        <a href="/console" class="px-2.5 py-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition flex items-center space-x-1" title="Return to SOC Dashboard">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"/></svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/" class="px-2.5 py-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition flex items-center space-x-1" title="Return to ARTIS Landing Page">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            <span>Landing Page</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons & User Profile in Header -->
+            <div class="flex items-center space-x-3">
+                <!-- Right action group: Border-divided toolbar (Export PDF | Verify | Audit) with hover states, no background fills -->
+                <div class="flex items-center border border-slate-200 dark:border-cyber-700/70 rounded-sm divide-x divide-slate-200 dark:divide-cyber-700/70 overflow-hidden text-xs">
+                    <button onclick="openReportModal()" class="px-3.5 py-1.5 flex items-center space-x-1.5 font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Export PDF</span>
+                    </button>
+                    <button onclick="openVerifyModal()" class="px-3.5 py-1.5 flex items-center space-x-1.5 font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                        <svg class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Verify</span>
+                    </button>
+                    <button onclick="toggleAuditDrawer()" class="px-3.5 py-1.5 font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                        <span>Audit</span>
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="h-6 w-px bg-slate-200 dark:bg-cyber-700/70"></div>
+
+                <!-- User Profile Dropdown Button & Menu -->
+                <div class="relative" id="profileDropdownWrapper">
+                    <button onclick="toggleProfileDropdown(event)" id="profileBtn" class="flex items-center space-x-2 p-1 pr-2 rounded-xl hover:bg-slate-200/60 dark:hover:bg-cyber-700/60 transition focus:outline-none">
+                        <div class="relative flex-shrink-0">
+                            <img src="/static/img/avatar.svg" alt="User Avatar" class="w-8 h-8 rounded-full border border-slate-300 dark:border-cyber-600" />
+                            <span class="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-slate-900 dark:bg-white ring-2 ring-white dark:ring-cyber-800"></span>
+                        </div>
+                        <div class="hidden sm:flex flex-col text-left leading-tight">
+                            <span id="topbarFullName" class="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[110px]">Alex Mercer</span>
+                            <span id="topbarUserId" class="text-[10px] font-mono text-slate-700 dark:text-slate-300 font-medium">AG-ARG01-0001</span>
+                        </div>
+                        <svg id="profileChevron" class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Profile Dropdown Card -->
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-72 bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl shadow-2xl z-[70] py-1.5 divide-y divide-slate-100 dark:divide-cyber-700/50 text-xs">
+                        <div class="p-3.5 flex items-center space-x-3 bg-slate-50 dark:bg-cyber-800/40 rounded-t-2xl">
+                            <div class="relative flex-shrink-0">
+                                <img src="/static/img/avatar.svg" alt="Alex Mercer" class="w-11 h-11 rounded-full border-2 border-slate-900 dark:border-white shadow" />
+                                <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-slate-900 dark:bg-white ring-2 ring-white dark:ring-cyber-card"></span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 id="menuFullName" class="font-bold text-sm text-slate-900 dark:text-white truncate">Alex Mercer</h4>
+                                <div class="flex items-center space-x-1 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                                    <span>ID:</span>
+                                    <span id="menuUserId" class="font-semibold">AG-ARG01-0001</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5 mt-1">
+                                    <span id="menuRole" class="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">SOC ANALYST</span>
+                                    <span id="menuOrgName" class="text-[9px] px-1.5 py-0.5 rounded font-mono bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">Argus SecOps</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-1 px-1 space-y-0.5">
+                            <button onclick="openSettingsModal(); closeProfileDropdown();" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                                <svg class="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span>SOC &amp; Account Settings</span>
+                            </button>
+                            <button onclick="toggleAuditDrawer(); closeProfileDropdown();" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">
+                                <svg class="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span>My Audit Trail</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Main Content -->
+        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-5 w-full mx-auto">
+
+            <!-- Dedicated Threat KPI Summary Cards Strip -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Active Threats -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col justify-between shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Threats</span>
+                        <span class="relative flex h-2 w-2 flex-shrink-0">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                        </span>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <h3 id="statActiveThreats" class="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight flex items-center min-h-[1.75rem]">0</h3>
+                        <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">UNRESOLVED</span>
+                    </div>
+                </div>
+
+                <!-- Critical / High Ratio -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col justify-between shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical / High</span>
+                        <span class="h-2 w-2 rounded-full bg-orange-500"></span>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <h3 id="statCriticalHigh" class="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight flex items-center min-h-[1.75rem]">0 / 0</h3>
+                        <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">SEV RATIO</span>
+                    </div>
+                </div>
+
+                <!-- Monitored Endpoints -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col justify-between shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Monitored Fleet</span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <h3 id="statEndpoints" class="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight flex items-center min-h-[1.75rem]">0</h3>
+                        <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">HOSTS</span>
+                    </div>
+                </div>
+
+                <!-- Audit Compliance -->
+                <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 flex flex-col justify-between shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Audit Logged</span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <h3 id="statAuditCount" class="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight flex items-center min-h-[1.75rem]">0</h3>
+                        <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">ENTRIES</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dedicated Threat Stream Panel Container -->
+            <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-5 shadow-sm space-y-4">
+                
+                <!-- Stream Header & Info -->
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="relative flex h-2.5 w-2.5 flex-shrink-0">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                            Live Telemetry Incident &amp; Threat Ingestion Feed
+                        </h2>
+                    </div>
+                    <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-400 dark:text-slate-500">
+                        <span>WebSocket Event Bus</span>
+                        <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-cyber-600"></span>
+                        <span>Auto-correlated MITRE ATT&amp;CK</span>
+                    </div>
+                </div>
+
+                <!-- Stream Filtering Toolbar -->
+                <div class="flex items-center justify-between flex-wrap gap-3 py-2 border-b border-slate-100 dark:border-cyber-700/40">
+                    <!-- Severity Filter Tabs: Border-divided, no solid background -->
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 mr-1 font-semibold">Filter:</span>
+                        <div class="flex items-center border border-slate-200 dark:border-cyber-700/70 rounded-sm divide-x divide-slate-200 dark:divide-cyber-700/70 overflow-hidden text-xs">
+                            <button onclick="setStreamSevFilter('ALL', this)" class="stream-sev-tab px-3 py-1 font-mono font-bold bg-slate-200 dark:bg-cyber-700 text-slate-900 dark:text-white transition">All</button>
+                            <button onclick="setStreamSevFilter('CRITICAL', this)" class="stream-sev-tab px-3 py-1 font-mono text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">Critical</button>
+                            <button onclick="setStreamSevFilter('HIGH', this)" class="stream-sev-tab px-3 py-1 font-mono text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">High</button>
+                            <button onclick="setStreamSevFilter('MEDIUM', this)" class="stream-sev-tab px-3 py-1 font-mono text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">Medium</button>
+                            <button onclick="setStreamSevFilter('LOW', this)" class="stream-sev-tab px-3 py-1 font-mono text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition">Low</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Input & Stream Pause Button -->
+                    <div class="flex items-center space-x-2.5">
+                        <div class="relative">
+                            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input type="text" placeholder="Filter host, command, tactic..." oninput="activeHostFilter = this.value.toLowerCase(); filterStreamCards();" class="pl-8 pr-3 py-1.5 rounded-sm text-xs font-mono w-60 bg-white dark:bg-cyber-900/60 border border-slate-200 dark:border-cyber-700/60 text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:border-slate-400 dark:focus:border-cyber-500 focus:outline-none transition" />
+                        </div>
+                        <button id="streamPauseBtn" onclick="toggleStreamPause()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-sm text-xs font-mono border border-slate-200 dark:border-cyber-700/60 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Pause or Resume live incoming threat stream">
+                            <svg id="streamPauseIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span id="streamPauseLabel">Pause</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Full-Width Live Stream Card Container -->
+                <div id="alertContainer" class="space-y-3 pt-1 min-h-[400px]">
+                <!-- Loading Skeletons -->
+                <div class="alert-skeleton p-4 rounded-sm border border-slate-200 dark:border-cyber-700/50 bg-white dark:bg-cyber-card space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 w-2/3">
+                            <div class="w-16 h-5 bg-slate-200 dark:bg-cyber-700/70 rounded-sm animate-pulse"></div>
+                            <div class="w-1/2 h-5 bg-slate-200 dark:bg-cyber-700/70 rounded-sm animate-pulse"></div>
+                        </div>
+                        <div class="w-14 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded-sm animate-pulse"></div>
+                    </div>
+                    <div class="w-4/5 h-3.5 bg-slate-200 dark:bg-cyber-700/50 rounded-sm animate-pulse"></div>
+                    <div class="w-2/3 h-3.5 bg-slate-200 dark:bg-cyber-700/50 rounded-sm animate-pulse"></div>
+                </div>
+                <div class="alert-skeleton p-4 rounded-sm border border-slate-200 dark:border-cyber-700/50 bg-white dark:bg-cyber-card space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 w-2/3">
+                            <div class="w-14 h-5 bg-slate-200 dark:bg-cyber-700/70 rounded-sm animate-pulse"></div>
+                            <div class="w-3/5 h-5 bg-slate-200 dark:bg-cyber-700/70 rounded-sm animate-pulse"></div>
+                        </div>
+                        <div class="w-14 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded-sm animate-pulse"></div>
+                    </div>
+                    <div class="w-3/4 h-3.5 bg-slate-200 dark:bg-cyber-700/50 rounded-sm animate-pulse"></div>
+            </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Device Telemetry Inspector Modal -->
+    <div id="deviceModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div>
+                    <h3 id="modalDeviceTitle" class="text-base font-bold text-slate-900 dark:text-white">Device Telemetry Inspector</h3>
+                    <p id="modalDeviceSub" class="text-xs text-slate-500 dark:text-slate-400"></p>
+                </div>
+                <button onclick="closeDeviceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Active SOC Remediation Directives Strip -->
+            <div id="modalRemediationStrip" class="px-5 py-2.5 bg-slate-50 dark:bg-cyber-800/60 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center space-x-2">
+                    <span class="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">SOC Directives:</span>
+                    <span id="modalDeviceStatusPill" class="px-2.5 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 inline-flex items-center space-x-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>ONLINE</span></span>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button id="btnQuarantineAction" onclick="handleQuarantineToggle()" class="px-3.5 py-1.5 rounded-sm min-w-[130px] justify-center bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition shadow-xs flex items-center space-x-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                        <span id="btnQuarantineText">Quarantine Host</span>
+                    </button>
+                    <button onclick="promptKillProcess()" class="px-3.5 py-1.5 rounded-sm min-w-[115px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-xs transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Kill Process</span>
+                    </button>
+                    <button onclick="triggerForensicTriage()" class="px-3.5 py-1.5 rounded-sm min-w-[125px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-xs transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        <span>Forensic Triage</span>
+                    </button>
+                    <button onclick="triggerWorkstationSnapshot()" class="px-3.5 py-1.5 rounded-sm min-w-[120px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-xs transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke-width="2"/></svg>
+                        <span>Snap Webcam</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Telemetry Tabs -->
+            <div class="px-5 pt-3 border-b border-slate-200 dark:border-cyber-700/60 flex space-x-3 text-xs font-semibold">
+                <button onclick="switchTab('processes')" id="tab-processes" class="pb-2 border-b-2 border-slate-900 dark:border-white text-slate-900 dark:text-white font-bold">Processes</button>
+                <button onclick="switchTab('browser')" id="tab-browser" class="pb-2 border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">Web History</button>
+                <button onclick="switchTab('clipboard')" id="tab-clipboard" class="pb-2 border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">Clipboard Sync</button>
+                <button onclick="switchTab('print')" id="tab-print" class="pb-2 border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">Print Logs</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="modalTabContent" class="p-5 flex-1 overflow-y-auto custom-scrollbar text-xs">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Report Modal -->
+    <div id="reportModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Generate Signed Incident Report</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Produces an official cryptographic PDF incident assessment signed with ARTIS Ed25519 root authority.</p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Report Title</label>
+                    <input id="reportTitleInput" type="text" class="w-full bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" value="Security Incident & Endpoint Monitoring Assessment">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Audience Template</label>
+                    <select id="reportTypeSelect" class="w-full bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                        <option value="ANALYST">Technical Analyst Report (Full MITRE IOCs & Remediation)</option>
+                        <option value="EXECUTIVE">Executive Summary (Business Risk & Asset Impact)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="reportResultBlock" class="hidden p-3 bg-slate-100 dark:bg-cyber-800/80 border border-slate-300 dark:border-white/20 rounded-sm space-y-2 text-xs">
+                <div class="flex items-center space-x-2 text-slate-900 dark:text-white font-semibold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Report Signed & Generated</span>
+                </div>
+                <div class="text-[10px] font-mono text-slate-500 dark:text-slate-400 break-all">
+                    <b>SHA-256:</b> <span id="reportShaSpan"></span>
+                </div>
+                <a id="reportDownloadBtn" href="#" target="_blank" class="block text-center w-full py-2 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold rounded-sm transition mt-2">
+                    Download Signed PDF
+                </a>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeReportModal()" class="px-4 py-2 min-w-[90px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-xs rounded-sm text-slate-700 dark:text-slate-300 font-medium">Close</button>
+                <button id="btnSubmitGenerate" onclick="submitGenerateReport()" class="px-5 py-2 min-w-[140px] justify-center bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold rounded-sm text-white dark:text-black shadow-xs">Generate & Sign</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verify Report Modal -->
+    <div id="verifyModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Verify PDF Chain of Custody</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Upload a report to verify its SHA-256 checksum and cryptographic Ed25519 signature.</p>
+
+            <input type="file" id="verifyFileInput" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-sm file:border-0 file:text-xs file:font-semibold file:bg-slate-900 dark:file:bg-white file:text-white dark:file:text-black hover:file:bg-black dark:hover:file:bg-slate-200 cursor-pointer">
+
+            <div id="verifyResultBox" class="hidden p-3 rounded-sm text-xs space-y-1.5">
+                <!-- Result populated dynamically -->
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeVerifyModal()" class="px-4 py-2 min-w-[90px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-xs rounded-sm text-slate-700 dark:text-slate-300 font-medium">Close</button>
+                <button onclick="submitVerifyReport()" class="px-5 py-2 min-w-[140px] justify-center bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold rounded-sm text-white dark:text-black shadow-xs">Verify Signature</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Drawer -->
+    <div id="auditDrawer" class="fixed inset-y-0 right-0 z-[70] w-96 bg-white dark:bg-cyber-card border-l border-slate-200 dark:border-cyber-700 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+            <h3 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Access Audit Log</h3>
+            <button onclick="toggleAuditDrawer()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="auditList" class="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scrollbar text-xs">
+            <div class="audit-skeleton p-2.5 bg-slate-100 dark:bg-cyber-800/50 rounded border border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                <div class="flex justify-between">
+                    <div class="h-3 w-20 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-12 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3.5 w-3/4 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div>
+                <div class="h-2.5 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+            <div class="audit-skeleton p-2.5 bg-slate-100 dark:bg-cyber-800/50 rounded border border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                <div class="flex justify-between">
+                    <div class="h-3 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-12 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3.5 w-2/3 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div>
+                <div class="h-2.5 w-3/5 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col text-xs">
+            <div class="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 rounded-lg bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">SOC Analyst &amp; System Settings</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Security preferences, operator profile, and cryptographic status</p>
+                    </div>
+                </div>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <!-- User Profile Card in Settings -->
+                <div class="p-3.5 bg-slate-50 dark:bg-cyber-800/60 rounded-xl border border-slate-200 dark:border-cyber-700/50 flex items-center space-x-3.5">
+                    <img src="/static/img/avatar.svg" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-slate-900 dark:border-white shadow-sm" />
+                    <div>
+                        <h4 id="settingsFullName" class="text-sm font-bold text-slate-900 dark:text-white">Alex Mercer</h4>
+                        <div class="font-mono text-[11px] text-slate-700 dark:text-slate-300 font-semibold">User ID: <span id="settingsUserId">AG-ARG01-0001</span></div>
+                        <div id="settingsRoleOrg" class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Role: SecOps Lead Analyst • Org: Argus SecOps</div>
+                    </div>
+                </div>
+
+                <!-- SOC Alerts & Triggers -->
+                <div class="space-y-2.5">
+                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Automated Threat Triggers</h4>
+                    
+                    <label class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/50 cursor-pointer">
+                        <div>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">Auto-Snapshot on Critical Alert</span>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Commands endpoint webcam snapshot immediately when critical threats trigger.</p>
+                        </div>
+                        <input type="checkbox" checked class="rounded border-slate-300 dark:border-cyber-600 text-slate-900 dark:text-white focus:ring-slate-900 dark:focus:ring-white h-4 w-4">
+                    </label>
+
+                    <label class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/50 cursor-pointer">
+                        <div>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">Browser SQLite Shadow Copying</span>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Bypasses locked Chrome/Edge history files using shadow volume clones.</p>
+                        </div>
+                        <input type="checkbox" checked disabled class="rounded border-slate-300 dark:border-cyber-600 text-slate-900 dark:text-white focus:ring-slate-900 dark:focus:ring-white h-4 w-4">
+                    </label>
+                </div>
+
+                <!-- Cryptography Status -->
+                <div class="p-3 bg-slate-100 dark:bg-cyber-800/80 border border-slate-200 dark:border-cyber-700 rounded-xl space-y-1 text-[11px]">
+                    <div class="font-bold text-slate-700 dark:text-slate-300 flex items-center space-x-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <span>Chain-of-Custody Cryptography</span>
+                    </div>
+                    <div class="font-mono text-[10px] text-slate-600 dark:text-slate-400 break-all pt-1">
+                        <b>Root Authority:</b> Ed25519 Elliptic Curve Keypair<br>
+                        <b>Integrity Digest:</b> SHA-256 Checksum Engine (Active)
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 dark:bg-cyber-800/40 border-t border-slate-200 dark:border-cyber-700/60 flex justify-end">
+                <button onclick="closeSettingsModal()" class="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Threat Hunting & Telemetry Search Modal -->
+    <div id="threatHuntingModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-xs">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Threat Hunting &amp; Telemetry Search</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Deep search across live processes, clipboard, URLs, print jobs, and host telemetry payloads</p>
+                    </div>
+                </div>
+                <button onclick="closeThreatHuntingModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-5 bg-slate-50 dark:bg-cyber-800/50 border-b border-slate-200 dark:border-cyber-700/60 space-y-3">
+                <div class="flex items-center space-x-2">
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+                        </span>
+                        <input id="huntQueryInput" type="text" placeholder="Search keyword across command-lines, processes, payloads, users, domains (e.g. powershell, mimikatz, cmd.exe)..." class="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" onkeydown="if(event.key==='Enter') executeHunt()" />
+                    </div>
+                    <button onclick="executeHunt()" class="px-5 py-2.5 min-w-[140px] justify-center rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center space-x-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Execute Hunt</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Event:</span>
+                            <select id="huntEventTypeSelect" onchange="executeHunt()" class="w-48 min-w-[180px] bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="">ALL EVENTS</option>
+                                <option value="PROCESS_START">PROCESS_START</option>
+                                <option value="BROWSER_VISIT">BROWSER_VISIT</option>
+                                <option value="CLIPBOARD_CHANGE">CLIPBOARD_CHANGE</option>
+                                <option value="PRINT_JOB">PRINT_JOB</option>
+                                <option value="AUTH_FAILURE">AUTH_FAILURE</option>
+                                <option value="CAMERA_ALERT">CAMERA_ALERT</option>
+                                <option value="FORENSIC_TRIAGE">FORENSIC_TRIAGE</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Severity:</span>
+                            <select id="huntSeveritySelect" onchange="executeHunt()" class="w-40 min-w-[150px] bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="">ALL SEVERITIES</option>
+                                <option value="CRITICAL">CRITICAL</option>
+                                <option value="HIGH">HIGH</option>
+                                <option value="MEDIUM">MEDIUM</option>
+                                <option value="LOW">LOW</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center space-x-1 bg-white dark:bg-cyber-900 p-0.5 rounded-sm border border-slate-300 dark:border-cyber-700" id="huntTimeButtons">
+                            <button type="button" onclick="setHuntTimeRange('1h', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">1h</button>
+                            <button type="button" onclick="setHuntTimeRange('6h', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">6h</button>
+                            <button type="button" onclick="setHuntTimeRange('24h', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold">24h</button>
+                            <button type="button" onclick="setHuntTimeRange('7d', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">7d</button>
+                            <button type="button" onclick="setHuntTimeRange('all', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">ALL</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[11px] text-slate-400">Export Stream:</span>
+                        <button onclick="exportHunt('csv')" class="px-3.5 py-1.5 min-w-[80px] justify-center rounded-sm bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <span>CSV</span>
+                        </button>
+                        <button onclick="exportHunt('json')" class="px-3.5 py-1.5 min-w-[80px] justify-center rounded-sm bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                            <span>JSON</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col overflow-hidden p-5">
+                <div class="flex items-center justify-between pb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    <span id="huntResultsCount">Showing 0 matching events</span>
+                    <span id="huntTimeScope">Window: Last 24 Hours</span>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-200 dark:border-cyber-700/60 rounded-xl bg-white dark:bg-cyber-900">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+                            <tr>
+                                <th class="py-2.5 px-3">Timestamp</th>
+                                <th class="py-2.5 px-3">Event Type</th>
+                                <th class="py-2.5 px-3">Host / User</th>
+                                <th class="py-2.5 px-3">Severity</th>
+                                <th class="py-2.5 px-3">Payload Summary</th>
+                                <th class="py-2.5 px-3 text-right">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="huntResultsTableBody" class="divide-y divide-slate-100 dark:divide-cyber-800">
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-slate-400">Enter a query term or select filters to hunt across raw telemetry events.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MITRE ATT&CK Visual Incident Timeline & Attack Chain Modal -->
+    <div id="attackChainModal" class="fixed inset-0 z-[85] bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-xs">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 id="chainAlertTitle" class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">MITRE ATT&amp;CK Incident Attack Chain</h3>
+                            <span id="chainAlertSeverity" class="px-2 py-0.5 rounded font-mono font-bold text-[9px] uppercase bg-slate-900 dark:bg-white text-white dark:text-black">CRITICAL</span>
+                        </div>
+                        <p id="chainAlertSub" class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">Target Host: - | Correlating cross-stage kill chain</p>
+                    </div>
+                </div>
+                <button onclick="closeAttackChainModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+                <div>
+                    <div class="flex items-center justify-between pb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Enterprise MITRE ATT&amp;CK Progression</span>
+                        <span class="text-[10px] font-mono text-slate-400">Kill-Chain Sequence (Left to Right)</span>
+                    </div>
+                    <div id="chainStagesGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/60">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chronological Correlated Incident Timeline (&plusmn;24 Hours)</span>
+                        <span id="chainTimelineCount" class="text-[10px] font-mono text-slate-400">0 Events Correlated</span>
+                    </div>
+                    <div id="chainTimelineList" class="pt-4 space-y-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhooks & SIEM Forwarding Modal -->
+    <div id="webhooksModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col text-xs">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">SIEM &amp; Webhook Forwarding</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Stream critical threat alerts to Splunk, Microsoft Teams, Slack or external SOC</p>
+                    </div>
+                </div>
+                <button onclick="closeWebhooksModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <div class="p-4 bg-slate-50 dark:bg-cyber-800/50 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Register Destination Webhook</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300 mb-1">Channel Name</label>
+                            <input id="webhookNameInput" type="text" placeholder="e.g. Primary SOC Discord / Splunk HEC" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300 mb-1">Target Platform</label>
+                            <select id="webhookPlatformSelect" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="SLACK">Slack Webhook</option>
+                                <option value="DISCORD">Discord Channel</option>
+                                <option value="TEAMS">Microsoft Teams</option>
+                                <option value="GENERIC_JSON">Custom SIEM / REST Endpoint</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300 mb-1">Endpoint URL</label>
+                        <input id="webhookUrlInput" type="url" placeholder="https://hooks.slack.com/services/... or https://siem.example.com/alerts" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none" />
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300">Min Severity:</span>
+                            <select id="webhookSeveritySelect" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-2.5 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="CRITICAL">CRITICAL ONLY</option>
+                                <option value="ALL">ALL DETECTIONS</option>
+                            </select>
+                        </div>
+                        <button onclick="registerWebhook()" class="px-5 py-2 min-w-[130px] justify-center rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition shadow-sm">
+                            Add Webhook
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Active Alert Forwarding Channels</span>
+                    <div id="webhooksListContainer" class="space-y-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kill Process Modal -->
+    <div id="killProcessModal" class="fixed inset-0 z-[70] bg-black/70 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center space-x-2.5">
+                <div class="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Terminate Host Process</h3>
+                    <p class="text-[10px] text-slate-400">Dispatches an audited kill directive to the endpoint</p>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300">Target Process PID or Executable Name</label>
+                <input id="killProcessInput" type="text" placeholder="e.g. 4812 or powershell.exe" class="w-full bg-slate-50 dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                <p class="text-[10px] text-slate-400">If a number is provided, process is killed by PID. If a name is provided, all instances will be killed.</p>
+            </div>
+
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button onclick="closeKillProcessModal()" class="px-4 py-2 rounded-sm min-w-[90px] bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300">Cancel</button>
+                <button onclick="submitKillProcess()" class="px-5 py-2 rounded-sm min-w-[140px] bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">Terminate Process</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Argus MessageBox Modal -->
+    <div id="argusMessageBoxModal" class="fixed inset-0 z-[90] bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="argusMsgTitle">
+        <div id="argusMsgCard" class="relative bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/80 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 transform scale-95 transition-all duration-200">
+            <div id="argusMsgAccent" class="absolute top-0 left-6 right-6 h-1 rounded-full bg-slate-900 dark:bg-white shadow-sm"></div>
+
+            <div class="flex items-start space-x-3.5 pt-1">
+                <div id="argusMsgIconWrapper" class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">
+                    <svg id="argusMsgIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <h3 id="argusMsgTitle" class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider truncate">Notification</h3>
+                        <span id="argusMsgBadge" class="hidden text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider border">STATUS</span>
+                    </div>
+                    <p id="argusMsgDescription" class="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed break-words"></p>
+                </div>
+            </div>
+
+            <div id="argusMsgDigestBox" class="hidden p-3 bg-slate-100 dark:bg-cyber-800/90 border border-slate-200 dark:border-cyber-700 rounded-sm space-y-1.5">
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    <span id="argusMsgDigestLabel">SHA-256 Digest</span>
+                    <button type="button" id="argusMsgCopyBtn" onclick="copyArgusDigest()" class="hover:text-slate-700 dark:text-slate-300 dark:hover:text-white flex items-center space-x-1 text-[10px] px-2 py-1 rounded-sm min-w-[65px] bg-slate-200 dark:bg-cyber-700 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        <span id="argusMsgCopyText">Copy</span>
+                    </button>
+                </div>
+                <div id="argusMsgDigestVal" class="font-mono text-[11px] font-semibold text-slate-900 dark:text-white break-all select-all"></div>
+            </div>
+
+            <div id="argusMsgDetailsBox" class="hidden p-2.5 bg-slate-200/80 dark:bg-white/10 border border-slate-300 dark:border-white/20 rounded-sm text-[11px] font-mono text-slate-900 dark:text-white break-all max-h-32 overflow-y-auto custom-scrollbar"></div>
+
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button type="button" id="argusMsgCancelBtn" onclick="resolveArgusMessageBox(false)" class="hidden px-4 py-2 rounded-sm min-w-[90px] bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-cyber-600 transition">
+                    Cancel
+                </button>
+                <button type="button" id="argusMsgConfirmBtn" onclick="resolveArgusMessageBox(true)" class="px-5 py-2 rounded-sm min-w-[100px] bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Console JavaScript -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
