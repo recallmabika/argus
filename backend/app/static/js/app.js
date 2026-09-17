@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             sidebar.classList.remove('sidebar-collapsed');
         }
+        syncSidebarToggleIcon();
     });
 });
 
@@ -595,13 +596,22 @@ function toggleSidebar() {
 
 function syncSidebarToggleIcon() {
     const sidebar = document.getElementById('sidebar');
-    const icon = document.getElementById('sidebarToggleIcon');
-    if (!sidebar || !icon) return;
+    const toggleBtn = document.getElementById('sidebarToggleBtn');
+    if (!sidebar) return;
     const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
-    if (isCollapsed) {
-        icon.classList.add('rotate-180');
-    } else {
-        icon.classList.remove('rotate-180');
+    
+    if (toggleBtn) {
+        const foldIcon = toggleBtn.querySelector('.sidebar-icon-fold');
+        const hamburgerIcon = toggleBtn.querySelector('.sidebar-icon-hamburger');
+        if (foldIcon && hamburgerIcon) {
+            if (isCollapsed) {
+                foldIcon.classList.add('hidden');
+                hamburgerIcon.classList.remove('hidden');
+            } else {
+                foldIcon.classList.remove('hidden');
+                hamburgerIcon.classList.add('hidden');
+            }
+        }
     }
 }
 

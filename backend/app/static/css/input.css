@@ -83,6 +83,14 @@
   display: block !important;
 }
 
+#sidebar:not(.sidebar-collapsed) .sidebar-collapse-btn .sidebar-icon-fold {
+  display: block !important;
+}
+
+#sidebar:not(.sidebar-collapsed) .sidebar-collapse-btn .sidebar-icon-hamburger {
+  display: none !important;
+}
+
 #sidebar.sidebar-collapsed .sidebar-nav {
   overflow: visible !important;
   padding-left: 0.25rem !important;
