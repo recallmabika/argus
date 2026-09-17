@@ -20,7 +20,7 @@
                 <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="h-12 sm:h-14 w-auto rounded-lg object-contain flex-shrink-0 group-hover:scale-105 transition-transform" />
                 <div class="flex flex-col">
                     <span class="text-xl sm:text-2xl font-black tracking-widest text-slate-900 dark:text-white leading-none">ARTIS</span>
-                    <span class="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 tracking-wider mt-0.5">Incident Security</span>
+                    <!--span class="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 tracking-wider mt-0.5">Incident Security</span-->
                 </div>
             </a>
 
@@ -33,10 +33,13 @@
                 <a href="#compliance" class="hover:text-slate-900 dark:hover:text-white transition">Custody &amp; Trust</a>
             </nav>
 
-            <!-- Actions: Theme Switcher & Console Launch (No icons, no shadows, thin text) -->
+            <!-- Actions: Theme Switcher, Demo Request & Console Launch -->
             <div class="flex items-center space-x-3">
                 <button type="button" onclick="toggleLandingTheme()" class="px-3 py-1.5 text-[10px] font-light tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-cyber-800 rounded transition" title="Toggle Light/Dark Theme">
                     THEME
+                </button>
+                <button type="button" onclick="openDemoModal()" class="px-3.5 py-1.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-600 hover:border-cyan-500 text-slate-700 dark:text-slate-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition">
+                    Request Demo
                 </button>
                 <a href="/console" class="px-5 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
                     Launch SOC Console
@@ -46,12 +49,12 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="space-y-24 pb-20">
+    <main class="space-y-20 pb-20">
 
         <!-- =============================================================== -->
-        <!-- Hero Section: World Map in Motion / Video-like Animation Loop   -->
+        <!-- Hero Section: Full Window Coverage, Dynamic Crest Reveal & Stats -->
         <!-- =============================================================== -->
-        <section id="overview" class="relative min-h-[94vh] flex flex-col justify-center items-center pt-20 pb-16 overflow-hidden">
+        <section id="overview" class="relative min-h-screen flex flex-col justify-between items-center pt-16 sm:pt-20 overflow-hidden">
             
             <!-- Motion-Animated World Map Video-Like Background Layer -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
@@ -69,35 +72,56 @@
                 <div class="absolute inset-0 cyber-grid-bg opacity-20"></div>
             </div>
 
-            <!-- Foreground Hero Content -->
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <!-- Top breathing spacer -->
+            <div class="w-full"></div>
+
+            <!-- Foreground Hero Content (Centered, reduced margin-x) -->
+            <div class="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-6 my-auto">
                 
-                <div class="text-center max-w-4xl mx-auto space-y-6">
-                    <!-- Main Catchphrase (Ultra-thin, elegant, no chunky black bolding) -->
-                    <h1 class="text-4xl sm:text-6xl md:text-7xl font-extralight tracking-tight text-slate-900 dark:text-white leading-[1.12]">
-                        Continuous Threat Command Across <span class="font-light text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400">Global, Continental &amp; National</span> Horizons
-                    </h1>
-
-                    <!-- Description (Justified text alignment, thin, clear, calm) -->
-                    <p class="text-justify text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-light max-w-2xl mx-auto">
-                        High-velocity ingestion telemetry, automated MITRE ATT&amp;CK correlation, remote hardware digital forensics, and cryptographically signed PDF evidence chain of custody across international nodes, Pan-African perimeters, and Zimbabwe national infrastructure.
-                    </p>
-
-                    <!-- CTAs (No icons, no unnecessary drop shadows, thin text) -->
-                    <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-                        <a href="/console" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
-                            <span>Open Operational Console</span>
-                        </a>
-                        <a href="#geospatial-matrix" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-700 hover:border-slate-400 dark:hover:border-cyber-600 bg-white/50 dark:bg-cyber-800/40 backdrop-blur-sm text-slate-700 dark:text-slate-300 transition">
-                            <span>Inspect Defense Matrix</span>
-                        </a>
+                <!-- Impressive Dynamic ARTIS Crest Reveal -->
+                <div class="artis-hero-crest flex flex-col items-center justify-center">
+                    <div class="relative group cursor-pointer" onclick="window.location.href='#overview'" title="ARTIS Sovereign Threat Command">
+                        <!-- Luminous pulsing aura -->
+                        <div class="artis-crest-glow"></div>
+                        <!-- High-res Logo Badge -->
+                        <div class="relative z-10 p-2.5 sm:p-3 rounded-2xl bg-white/90 dark:bg-cyber-800/90 border border-slate-200/80 dark:border-cyber-600/70 shadow-lg backdrop-blur-md group-hover:scale-105 group-hover:border-cyan-500/60 transition-all duration-300 flex items-center justify-center">
+                            <img src="/static/img/logo.jpg" alt="ARTIS Emblem" class="artis-crest-logo h-16 sm:h-20 w-auto rounded-xl object-contain" />
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 mt-3 text-[10px] font-mono tracking-[0.25em] text-slate-400 dark:text-slate-500 uppercase">
+                        <span>SOVEREIGN THREAT COMMAND &amp; FORENSICS</span>
                     </div>
                 </div>
 
-                <!-- Real-Time Telemetry Metrics Ribbon (Seamless border-separated grid filling page width, zero div radius) -->
-                <div class="mt-16 w-full max-w-6xl mx-auto border-y border-slate-200/70 dark:border-cyber-700/70 bg-white/30 dark:bg-cyber-900/40 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/70 dark:divide-cyber-700/70">
+                <!-- Main Catchphrase (Ultra-thin, elegant, no chunky black bolding) -->
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extralight tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+                    Continuous Threat Command Across <span class="font-light text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400">Global, Continental &amp; National</span> Horizons
+                </h1>
+
+                <!-- Description (Justified text alignment, thin, clear, calm) -->
+                <p class="text-justify text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-light max-w-2xl mx-auto">
+                    High-velocity ingestion telemetry, automated MITRE ATT&amp;CK correlation, remote hardware digital forensics, and cryptographically signed PDF evidence chain of custody across international nodes, Pan-African perimeters, and Zimbabwe national infrastructure.
+                </p>
+
+                <!-- CTAs (Professional actions: Console, Request Demo, Inspect Matrix) -->
+                <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <a href="/console" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                        <span>Open Operational Console</span>
+                    </a>
+                    <button type="button" onclick="openDemoModal()" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-cyan-600 hover:bg-cyan-500 text-white transition">
+                        <span>Request a Demo</span>
+                    </button>
+                    <a href="#geospatial-matrix" class="px-6 py-2.5 rounded text-xs font-light tracking-wider uppercase border border-slate-300 dark:border-cyber-700 hover:border-slate-400 dark:hover:border-cyber-600 bg-white/50 dark:bg-cyber-800/40 backdrop-blur-sm text-slate-700 dark:text-slate-300 transition">
+                        <span>Inspect Defense Matrix</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Real-Time Telemetry Metrics Ribbon (Seamless border-separated grid filling page width, zero div radius, anchored to bottom with zero bottom gap, reduced margin-x) -->
+            <div class="relative z-10 w-full border-t border-slate-200/70 dark:border-cyber-700/70 bg-white/40 dark:bg-cyber-900/60 backdrop-blur-xs">
+                <div class="w-full px-2 sm:px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/70 dark:divide-cyber-700/70">
                     
-                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Active Endpoints
                         </div>
@@ -107,7 +131,7 @@
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">Real Hardware Discovered</p>
                     </div>
 
-                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Active Threats
                         </div>
@@ -117,7 +141,7 @@
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">MITRE ATT&amp;CK Correlated</p>
                     </div>
 
-                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Root Authority
                         </div>
@@ -127,7 +151,7 @@
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">SHA-256 PDF Verified</p>
                     </div>
 
-                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                    <div class="p-5 sm:p-6 lg:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
                         <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Organizations
                         </div>
@@ -138,8 +162,6 @@
                     </div>
 
                 </div>
-
-
             </div>
         </section>
 
@@ -469,6 +491,89 @@
             </div>
         </div>
     </footer>
+
+    <!-- =============================================================== -->
+    <!-- Executive Demo Request Modal                                    -->
+    <!-- =============================================================== -->
+    <div id="demoModal" class="demo-modal-backdrop fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 hidden opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="demo-modal-card bg-white dark:bg-cyber-900 border border-slate-200 dark:border-cyber-700/80 rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative transform scale-95 transition-transform duration-300">
+            <!-- Modal Header -->
+            <div class="flex items-start justify-between">
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">Executive Briefing</span>
+                        <span class="text-[10px] font-mono text-slate-400">SOC ARCHITECTURE</span>
+                    </div>
+                    <h3 class="text-xl font-light text-slate-900 dark:text-white">Schedule an ARTIS Platform Demo</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-light">Tailored live briefing on sovereign telemetry ingestion, MITRE ATT&amp;CK threat correlation, and digital forensic chain of custody.</p>
+                </div>
+                <button type="button" onclick="closeDemoModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-cyber-800 transition" title="Close Modal">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Demo Request Form -->
+            <form id="demoRequestForm" onsubmit="handleDemoSubmit(event)" class="space-y-4 text-xs font-light">
+                <div class="space-y-1">
+                    <label for="demoName" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Full Name</label>
+                    <input type="text" id="demoName" required placeholder="e.g. Tendai Chikore" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                </div>
+
+                <div class="space-y-1">
+                    <label for="demoEmail" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Official / Work Email</label>
+                    <input type="email" id="demoEmail" required placeholder="t.chikore@enterprise.co.zw" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label for="demoOrg" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Organization / Agency</label>
+                        <input type="text" id="demoOrg" required placeholder="Commercial Bank / Agency" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="demoRole" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Role / Title</label>
+                        <select id="demoRole" class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition">
+                            <option value="ciso">CISO / Chief Security Officer</option>
+                            <option value="soc_lead">Head of SOC / Lead Analyst</option>
+                            <option value="it_director">IT Director / Infrastructure Lead</option>
+                            <option value="forensic_investigator">Digital Forensic Investigator</option>
+                            <option value="executive">Government / Enterprise Executive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="demoNotes" class="block text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-300">Deployment Scope &amp; Focus Area</label>
+                    <textarea id="demoNotes" rows="2" placeholder="Describe primary interest: Pan-African perimeter telemetry, national SOC command, or forensic evidence integrity..." class="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-cyber-800/80 border border-slate-300 dark:border-cyber-700 text-slate-900 dark:text-white focus:border-blue-500 focus:outline-none transition resize-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeDemoModal()" class="px-4 py-2 rounded text-xs font-light text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                        Confirm Demo Request
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success State Container (hidden by default) -->
+            <div id="demoSuccessState" class="hidden text-center py-6 space-y-4">
+                <div class="w-12 h-12 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 flex items-center justify-center font-mono text-xl">
+                    ✓
+                </div>
+                <div class="space-y-1">
+                    <h4 class="text-base font-light text-slate-900 dark:text-white">Briefing Request Received</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-light max-w-sm mx-auto">Thank you. An ARTIS Lead Solutions Architect has been assigned and will reach out with credentials for your dedicated walkthrough sandbox.</p>
+                </div>
+                <div class="p-3 rounded-lg bg-slate-50 dark:bg-cyber-800/50 border border-slate-200 dark:border-cyber-700 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    Reference ID: <span id="demoRefId" class="text-blue-600 dark:text-cyan-400 font-semibold">ARTIS-DEMO-2026-X7</span>
+                </div>
+                <button type="button" onclick="closeDemoModal()" class="px-5 py-2 rounded text-xs font-light tracking-wider uppercase bg-slate-200 dark:bg-cyber-700 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-cyber-600 transition">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Pure Modular External JavaScript (Zero inline script) -->
     <script src="/static/js/landing.js"></script>

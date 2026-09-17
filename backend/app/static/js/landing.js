@@ -512,3 +512,65 @@ function setupSmoothScroll() {
         });
     });
 }
+
+// =========================================================================
+// Executive Demo Request Modal Management
+// =========================================================================
+function openDemoModal() {
+    const modal = document.getElementById('demoModal');
+    if (!modal) return;
+    const form = document.getElementById('demoRequestForm');
+    const success = document.getElementById('demoSuccessState');
+    if (form) form.classList.remove('hidden');
+    if (success) success.classList.add('hidden');
+    
+    modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+    modal.classList.add('opacity-100', 'pointer-events-auto');
+    const card = modal.querySelector('.demo-modal-card');
+    if (card) {
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+    }
+}
+
+function closeDemoModal() {
+    const modal = document.getElementById('demoModal');
+    if (!modal) return;
+    const card = modal.querySelector('.demo-modal-card');
+    if (card) {
+        card.classList.remove('scale-100');
+        card.classList.add('scale-95');
+    }
+    modal.classList.remove('opacity-100', 'pointer-events-auto');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+function handleDemoSubmit(e) {
+    e.preventDefault();
+    const token = 'ARTIS-DEMO-' + Math.floor(1000 + Math.random() * 9000);
+    const refEl = document.getElementById('demoRefId');
+    if (refEl) refEl.textContent = token;
+    
+    const form = document.getElementById('demoRequestForm');
+    const success = document.getElementById('demoSuccessState');
+    if (form) form.classList.add('hidden');
+    if (success) success.classList.remove('hidden');
+}
+
+// Close demo modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeDemoModal();
+    }
+});
+
+// Close demo modal on backdrop click
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('demoModal');
+    if (modal && e.target === modal) {
+        closeDemoModal();
+    }
+});
