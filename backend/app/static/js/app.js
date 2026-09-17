@@ -171,7 +171,7 @@ function updatePullButtonLabels() {
         if (!btn) return;
         const labelSpan = btn.querySelector('.label');
         if (id === mainCardId) {
-            btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900/10 dark:bg-white/10 text-blue-600 dark:text-blue-400 border border-slate-900 dark:border-white/30 transition flex items-center space-x-1 font-semibold cursor-default';
+            btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-900 dark:border-white/30 transition flex items-center space-x-1 font-bold cursor-default';
             btn.title = 'Currently pinned on Primary Stage';
             if (labelSpan) labelSpan.innerText = 'Primary Stage';
         } else {
@@ -431,9 +431,9 @@ function openArgusMessageBox({
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
         } else {
             accent.classList.add('bg-slate-900', 'dark:bg-white');
-            iconWrapper.classList.add('bg-slate-900/10 dark:bg-white/10', 'text-blue-500', 'border-slate-900 dark:border-white/20');
+            iconWrapper.classList.add('bg-slate-900/10 dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-900 dark:border-white/20');
             confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-900/10 dark:bg-white/10 text-blue-600 dark:text-blue-400 border border-slate-900 dark:border-white/20';
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-900 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
         }
 
@@ -551,9 +551,12 @@ function applyThemeClass(isDark) {
         }).addTo(map);
     }
 
-    // Update Chart.js labels color
+    // Update Chart.js labels color and border
     if (mitreChart) {
-        mitreChart.options.plugins.legend.labels.color = isDark ? '#94A3B8' : '#475569';
+        mitreChart.options.plugins.legend.labels.color = isDark ? '#E2E8F0' : '#1E293B';
+        if (mitreChart.data.datasets && mitreChart.data.datasets[0]) {
+            mitreChart.data.datasets[0].borderColor = isDark ? '#121215' : '#FFFFFF';
+        }
         mitreChart.update();
     }
 }
@@ -654,8 +657,9 @@ function initChart() {
             labels: ['Execution', 'Collection', 'Exfiltration', 'Discovery', 'Initial Access'],
             datasets: [{
                 data: [0, 0, 0, 0, 0],
-                backgroundColor: ['#FFFFFF', '#D1D5DB', '#9CA3AF', '#6B7280', '#374151'],
-                borderWidth: 0
+                backgroundColor: ['#EF4444', '#F59E0B', '#8B5CF6', '#06B6D4', '#10B981'],
+                borderColor: isDark ? '#121215' : '#FFFFFF',
+                borderWidth: 2
             }]
         },
         options: {
@@ -664,7 +668,7 @@ function initChart() {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: "'Plus Jakarta Sans', system-ui, sans-serif", size: 10, weight: '500' } }
+                    labels: { color: isDark ? '#E2E8F0' : '#1E293B', font: { family: "'Plus Jakarta Sans', system-ui, sans-serif", size: 10, weight: '600' } }
                 }
             }
         }
@@ -918,6 +922,15 @@ function prependAlert(alert) {
     el.classList.add('pulse-red');
     container.prepend(el);
     setTimeout(() => el.classList.remove('pulse-red'), 4000);
+
+    if (mitreChart && alert.mitre_tactic) {
+        const labels = mitreChart.data.labels;
+        const idx = labels.indexOf(alert.mitre_tactic);
+        if (idx !== -1) {
+            mitreChart.data.datasets[0].data[idx] = (mitreChart.data.datasets[0].data[idx] || 0) + 1;
+            mitreChart.update();
+        }
+    }
 }
 
 function appendAlertElement(container, alert) {
@@ -929,7 +942,7 @@ function createAlertElement(alert) {
     const sevColors = {
         'CRITICAL': 'bg-red-500/10 border-red-500/40 text-red-500 dark:text-red-400',
         'HIGH': 'bg-slate-200 dark:bg-white/15 border-slate-400 dark:border-white/30 text-slate-900 dark:text-white font-bold',
-        'MEDIUM': 'bg-slate-900/10 dark:bg-white/10 border-slate-900 dark:border-white/40 text-blue-600 dark:text-blue-400',
+        'MEDIUM': 'bg-slate-900/10 dark:bg-white/10 border-slate-900 dark:border-white/40 text-slate-800 dark:text-slate-200 font-semibold',
         'LOW': 'bg-slate-200/50 dark:bg-slate-700/30 border-slate-300 dark:border-slate-600/40 text-slate-700 dark:text-slate-300'
     };
     const borderBadge = sevColors[alert.severity] || sevColors['LOW'];
@@ -1071,7 +1084,7 @@ function switchTab(tabName) {
     ['processes', 'browser', 'clipboard', 'print'].forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         if (t === tabName) {
-            btn.className = 'pb-2 border-b-2 border-slate-900 dark:border-white text-blue-600 dark:text-blue-400 font-bold';
+            btn.className = 'pb-2 border-b-2 border-slate-900 dark:border-white text-slate-900 dark:text-white font-bold';
         } else {
             btn.className = 'pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200';
         }
@@ -1387,7 +1400,7 @@ async function fetchForensicDevices() {
                 : (isStorage
                     ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'
                     : (isHost
-                        ? 'bg-slate-900/10 dark:bg-white/10 text-blue-600 dark:text-blue-400 border-slate-900 dark:border-white/20'
+                        ? 'bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border-slate-900 dark:border-white/20 font-bold'
                         : 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'));
 
             let typeLabel = isWireless ? 'WI-FI ADB' : (isStorage ? 'MASS STORAGE' : (isHost ? 'LOCAL HOST' : 'USB CABLE'));
@@ -1598,7 +1611,7 @@ function openForensicStudio(deviceId) {
         if (deckAndroid) deckAndroid.classList.add('hidden');
         if (windowSelectGroup) windowSelectGroup.classList.remove('hidden');
         if (iconContainer) {
-            iconContainer.innerHTML = `<svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>`;
+            iconContainer.innerHTML = `<svg class="w-4 h-4 text-slate-900 dark:text-white" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>`;
         }
         currentForensicWindowId = 'desktop';
         fetchForensicWindows();
@@ -1607,7 +1620,7 @@ function openForensicStudio(deviceId) {
         if (deckAndroid) deckAndroid.classList.remove('hidden');
         if (windowSelectGroup) windowSelectGroup.classList.add('hidden');
         if (iconContainer) {
-            iconContainer.innerHTML = `<svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>`;
+            iconContainer.innerHTML = `<svg class="w-4 h-4 text-slate-900 dark:text-white" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>`;
         }
     }
 
@@ -2219,7 +2232,7 @@ async function loadForensicFiles(targetPath) {
                 <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400">${item.modified || '-'}</td>
                 <td class="py-2.5 px-4 text-right">
                     ${!isDir ? `
-                        <button onclick="downloadForensicFile('${item.path.replace(/\\/g, '/')}')" class="px-2 py-1 rounded bg-slate-900/10 dark:bg-white/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-mono text-[10px] font-semibold border border-slate-900 dark:border-white/20 transition flex items-center space-x-1 ml-auto">
+                        <button onclick="downloadForensicFile('${item.path.replace(/\\/g, '/')}')" class="px-2 py-1 rounded bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-mono text-[10px] font-semibold transition flex items-center space-x-1 ml-auto">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                             <span>SHA-256 Acquire</span>
                         </button>
@@ -2276,7 +2289,7 @@ async function downloadForensicFile(filePath) {
         URL.revokeObjectURL(url);
 
         if (logText) {
-            logText.innerHTML = `<span class="text-emerald-500 font-bold">ACQUIRED:</span> ${filename} • <b class="text-cyan-400">SHA-256:</b> ${sha256}`;
+            logText.innerHTML = `<span class="text-slate-900 dark:text-white font-bold">ACQUIRED:</span> ${filename} • <b class="text-slate-700 dark:text-slate-300">SHA-256:</b> ${sha256}`;
         }
     } catch (err) {
         console.error(err);
