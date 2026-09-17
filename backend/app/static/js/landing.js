@@ -111,6 +111,8 @@ const NODE_TELEMETRY = {
 
 document.addEventListener('DOMContentLoaded', () => {
     initLandingTheme();
+    initNavScrollTrigger();
+    initHeroMapCanvas();
     fetchLivePlatformStats();
     setupSmoothScroll();
     setMapLevel('world');
@@ -136,7 +138,6 @@ function setLandingTheme(mode, save = true) {
     }
 
     applyLandingThemeClass(isDark);
-    updateThemeIcon(isDark);
 }
 
 function applyLandingThemeClass(isDark) {
@@ -152,14 +153,183 @@ function toggleLandingTheme() {
     setLandingTheme(isDark ? 'light' : 'dark');
 }
 
-function updateThemeIcon(isDark) {
-    const iconContainer = document.getElementById('landingThemeIcon');
-    if (!iconContainer) return;
-    if (isDark) {
-        iconContainer.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>';
-    } else {
-        iconContainer.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
+// =========================================================================
+// Scroll-Revealed Navigation Bar (Visible only when scrolling past hero)
+// =========================================================================
+function initNavScrollTrigger() {
+    const nav = document.getElementById('mainNav');
+    if (!nav) return;
+
+    const onScroll = () => {
+        // When user scrolls down past 220px (leaving top of hero)
+        if (window.scrollY > 220) {
+            nav.classList.remove('-translate-y-full', 'opacity-0', 'pointer-events-none');
+            nav.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+            nav.classList.add('-translate-y-full', 'opacity-0', 'pointer-events-none');
+            nav.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+}
+
+// =========================================================================
+// Cinematic World Map Hero Canvas Telemetry (Video-like fluid animation)
+// =========================================================================
+let heroCanvasAnimId = null;
+
+function initHeroMapCanvas() {
+    const canvas = document.getElementById('heroMapCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const NODES = [
+        { name: 'Harare', x: 0.55, y: 0.70 },
+        { name: 'Johannesburg', x: 0.54, y: 0.77 },
+        { name: 'Nairobi', x: 0.58, y: 0.54 },
+        { name: 'Lagos', x: 0.46, y: 0.51 },
+        { name: 'London', x: 0.48, y: 0.28 },
+        { name: 'Frankfurt', x: 0.51, y: 0.29 },
+        { name: 'New York', x: 0.28, y: 0.32 },
+        { name: 'San Francisco', x: 0.18, y: 0.34 },
+        { name: 'Tokyo', x: 0.84, y: 0.36 },
+        { name: 'Singapore', x: 0.76, y: 0.55 },
+        { name: 'Sydney', x: 0.88, y: 0.79 },
+        { name: 'Dubai', x: 0.61, y: 0.41 },
+        { name: 'Sao Paulo', x: 0.35, y: 0.74 }
+    ];
+
+    const CONNECTIONS = [
+        [0, 1], [0, 2], [0, 4], [1, 2], [2, 11],
+        [3, 4], [3, 5], [4, 6], [4, 5], [5, 11],
+        [6, 7], [6, 12], [7, 8], [8, 9], [9, 10],
+        [11, 8], [11, 9]
+    ];
+
+    // Initialize packets traveling along links
+    const packets = CONNECTIONS.map(([fromIdx, toIdx], i) => ({
+        from: fromIdx,
+        to: toIdx,
+        progress: (i * 0.17) % 1,
+        speed: 0.003 + (i % 4) * 0.0015
+    }));
+
+    // Active node pulse rings
+    const rings = NODES.map((_, i) => ({
+        radius: (i * 4) % 14,
+        maxRadius: 16,
+        speed: 0.15 + (i % 3) * 0.05
+    }));
+
+    let width = 0;
+    let height = 0;
+
+    function resize() {
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = rect.width;
+        height = rect.height;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.scale(dpr, dpr);
     }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    function draw() {
+        // Pause animation when scrolled deep past the hero
+        if (window.scrollY > 900) {
+            heroCanvasAnimId = requestAnimationFrame(draw);
+            return;
+        }
+
+        ctx.clearRect(0, 0, width, height);
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const lineColor = isDark ? 'rgba(56, 189, 248, 0.18)' : 'rgba(2, 132, 199, 0.18)';
+        const packetColor = isDark ? 'rgba(34, 211, 238, 0.85)' : 'rgba(14, 165, 233, 0.85)';
+        const nodeColor = isDark ? 'rgba(56, 189, 248, 0.7)' : 'rgba(2, 132, 199, 0.7)';
+        const ringColor = isDark ? 'rgba(56, 189, 248, ' : 'rgba(2, 132, 199, ';
+
+        // 1. Draw static and curved network connection arcs
+        CONNECTIONS.forEach(([fromIdx, toIdx]) => {
+            const n1 = NODES[fromIdx];
+            const n2 = NODES[toIdx];
+            const x1 = n1.x * width;
+            const y1 = n1.y * height;
+            const x2 = n2.x * width;
+            const y2 = n2.y * height;
+
+            const midX = (x1 + x2) / 2;
+            const midY = Math.min(y1, y2) - Math.abs(x2 - x1) * 0.12;
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.quadraticCurveTo(midX, midY, x2, y2);
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        });
+
+        // 2. Draw packets moving along curved routes
+        packets.forEach(p => {
+            p.progress += p.speed;
+            if (p.progress >= 1) p.progress = 0;
+
+            const n1 = NODES[p.from];
+            const n2 = NODES[p.to];
+            const x1 = n1.x * width;
+            const y1 = n1.y * height;
+            const x2 = n2.x * width;
+            const y2 = n2.y * height;
+
+            const midX = (x1 + x2) / 2;
+            const midY = Math.min(y1, y2) - Math.abs(x2 - x1) * 0.12;
+
+            const t = p.progress;
+            // Quadratic Bezier: B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
+            const curX = Math.pow(1 - t, 2) * x1 + 2 * (1 - t) * t * midX + Math.pow(t, 2) * x2;
+            const curY = Math.pow(1 - t, 2) * y1 + 2 * (1 - t) * t * midY + Math.pow(t, 2) * y2;
+
+            ctx.beginPath();
+            ctx.arc(curX, curY, 2, 0, Math.PI * 2);
+            ctx.fillStyle = packetColor;
+            ctx.fill();
+        });
+
+        // 3. Draw nodes and radar pulse rings
+        NODES.forEach((n, idx) => {
+            const nx = n.x * width;
+            const ny = n.y * height;
+
+            // Pulse ring
+            const ring = rings[idx];
+            ring.radius += ring.speed;
+            if (ring.radius >= ring.maxRadius) ring.radius = 2;
+            const alpha = Math.max(0, 1 - ring.radius / ring.maxRadius) * 0.45;
+
+            ctx.beginPath();
+            ctx.arc(nx, ny, ring.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = ringColor + alpha + ')';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Core node dot
+            ctx.beginPath();
+            ctx.arc(nx, ny, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = nodeColor;
+            ctx.fill();
+        });
+
+        heroCanvasAnimId = requestAnimationFrame(draw);
+    }
+
+    draw();
 }
 
 let mapTransitionTimer = null;
@@ -172,11 +342,11 @@ function renderNodeInspectorSkeleton() {
     const sensorsEl = document.getElementById('nodeDetailSensors');
     const descEl = document.getElementById('nodeDetailDesc');
 
-    if (nameEl) nameEl.innerHTML = '<span class="inline-block h-5 w-48 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
-    if (regionEl) regionEl.innerHTML = '<span class="inline-block h-3.5 w-28 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
-    if (statusEl) statusEl.innerHTML = '<span class="inline-block h-4 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
-    if (latencyEl) latencyEl.innerHTML = '<span class="inline-block h-4 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
-    if (sensorsEl) sensorsEl.innerHTML = '<span class="inline-block h-4 w-32 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (nameEl) nameEl.innerHTML = '<span class="inline-block h-4 w-40 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (regionEl) regionEl.innerHTML = '<span class="inline-block h-3 w-24 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (statusEl) statusEl.innerHTML = '<span class="inline-block h-3.5 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (latencyEl) latencyEl.innerHTML = '<span class="inline-block h-3.5 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (sensorsEl) sensorsEl.innerHTML = '<span class="inline-block h-3.5 w-28 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
     if (descEl) descEl.innerHTML = '<span class="block h-3 w-full bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse mb-1.5"></span><span class="block h-3 w-3/4 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
 }
 
@@ -187,9 +357,9 @@ function setMapLevel(level) {
     buttons.forEach(btn => {
         const btnLevel = btn.getAttribute('data-level');
         if (btnLevel === level) {
-            btn.className = 'map-nav-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-blue-600 text-white shadow-lg shadow-blue-500/30';
+            btn.className = 'map-nav-btn px-4 py-1.5 rounded-lg text-xs font-normal tracking-wide transition bg-blue-600 text-white';
         } else {
-            btn.className = 'map-nav-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600';
+            btn.className = 'map-nav-btn px-4 py-1.5 rounded-lg text-xs font-light tracking-wide transition text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600';
         }
     });
 
@@ -220,7 +390,7 @@ function setMapLevel(level) {
             if (descEl) descEl.textContent = 'Continuous global attack surface intelligence and cross-border adversary vector correlation.';
             if (badgeEl) {
                 badgeEl.textContent = 'GLOBAL VISIBILITY';
-                badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
             }
             inspectNode('world-af');
         } else if (level === 'africa') {
@@ -228,7 +398,7 @@ function setMapLevel(level) {
             if (descEl) descEl.textContent = 'Regional infrastructure security and unified inter-institutional threat intelligence across SADC.';
             if (badgeEl) {
                 badgeEl.textContent = 'CONTINENTAL MATRIX';
-                badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
             }
             inspectNode('africa-sadc');
         } else if (level === 'zimbabwe') {
@@ -236,7 +406,7 @@ function setMapLevel(level) {
             if (descEl) descEl.textContent = 'Primary tactical command, commercial banking protection hubs, and high-security border gateway endpoints.';
             if (badgeEl) {
                 badgeEl.textContent = 'NATIONAL COMMAND';
-                badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+                badgeEl.className = 'text-[10px] font-mono font-normal px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
             }
             inspectNode('zim-harare');
         }
@@ -264,9 +434,9 @@ function inspectNode(nodeKey) {
     if (statusEl) {
         statusEl.textContent = node.status;
         if (node.status.includes('PRIMARY') || node.status.includes('ACTIVE')) {
-            statusEl.className = 'font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400';
+            statusEl.className = 'font-mono text-xs font-normal text-cyan-600 dark:text-cyan-400';
         } else {
-            statusEl.className = 'font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400';
+            statusEl.className = 'font-mono text-xs font-normal text-emerald-600 dark:text-emerald-400';
         }
     }
     if (latencyEl) latencyEl.textContent = node.latency;
