@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThreatStreamFeed } from '../components/threats/ThreatStreamFeed';
 import { AlertStats } from '../types';
 import { api } from '../services/api';
@@ -33,7 +33,7 @@ export const ThreatStreamPage: React.FC = () => {
       {/* Dedicated Threat KPI Summary Cards Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Threats */}
-        <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 flex flex-col justify-between shadow-xs">
+        <div className="bg-white dark:bg-cyber-card rounded-sm p-4 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Active Threats
@@ -44,15 +44,15 @@ export const ThreatStreamPage: React.FC = () => {
             </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <h3 className="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-light text-slate-900 dark:text-white font-sans tracking-tight">
               {stats ? stats.open : 0}
             </h3>
-            <span className="text-[10px] font-medium text-slate-400 font-mono">UNRESOLVED</span>
+            <span className="text-[10px] font-mono text-slate-400 font-semibold">LIVE FEED</span>
           </div>
         </div>
 
         {/* Critical / High Ratio */}
-        <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 flex flex-col justify-between shadow-xs">
+        <div className="bg-white dark:bg-cyber-card rounded-sm p-4 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Critical / High
@@ -60,15 +60,15 @@ export const ThreatStreamPage: React.FC = () => {
             <Flame className="w-4 h-4 text-orange-500" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <h3 className="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-light text-slate-900 dark:text-white font-sans tracking-tight">
               {stats ? `${stats.critical} / ${stats.high}` : '0 / 0'}
             </h3>
-            <span className="text-[10px] font-medium text-slate-400 font-mono">SEV RATIO</span>
+            <span className="text-[10px] font-mono text-slate-400 font-semibold">SEV TIER</span>
           </div>
         </div>
 
         {/* Monitored Endpoints */}
-        <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 flex flex-col justify-between shadow-xs">
+        <div className="bg-white dark:bg-cyber-card rounded-sm p-4 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Monitored Fleet
@@ -76,15 +76,15 @@ export const ThreatStreamPage: React.FC = () => {
             <Laptop className="w-4 h-4 text-slate-400" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <h3 className="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-light text-slate-900 dark:text-white font-sans tracking-tight">
               {fleetCount}
             </h3>
-            <span className="text-[10px] font-medium text-emerald-500 font-mono font-bold">ONLINE</span>
+            <span className="text-[10px] font-mono text-emerald-500 font-semibold">ONLINE</span>
           </div>
         </div>
 
         {/* Audit Logged */}
-        <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 flex flex-col justify-between shadow-xs">
+        <div className="bg-white dark:bg-cyber-card rounded-sm p-4 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Audit Logged
@@ -92,10 +92,10 @@ export const ThreatStreamPage: React.FC = () => {
             <ClipboardCheck className="w-4 h-4 text-slate-400" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <h3 className="text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-light text-slate-900 dark:text-white font-sans tracking-tight">
               {auditCount}
             </h3>
-            <span className="text-[10px] font-medium text-slate-400 font-mono">ENTRIES</span>
+            <span className="text-[10px] font-mono text-slate-400 font-semibold">COMPLIANT</span>
           </div>
         </div>
       </div>

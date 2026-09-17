@@ -39,7 +39,7 @@ export const WirelessConnectModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[80] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-sm w-full max-w-md shadow-2xl overflow-hidden flex flex-col text-xs">
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">

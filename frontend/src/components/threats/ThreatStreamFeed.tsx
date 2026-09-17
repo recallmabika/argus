@@ -53,7 +53,7 @@ export const ThreatStreamFeed: React.FC<ThreatStreamFeedProps> = ({
   }, [alerts, sevFilter, searchQuery]);
 
   return (
-    <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 sm:p-5 shadow-xs space-y-4 h-full" id="threats">
+    <div className="bg-white dark:bg-cyber-card rounded-sm p-4 sm:p-5 shadow-xs space-y-4 h-full" id="threats">
       {/* Stream Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50 flex-wrap gap-2">
         <div className="flex items-center space-x-2">
@@ -64,8 +64,8 @@ export const ThreatStreamFeed: React.FC<ThreatStreamFeedProps> = ({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-            Live Telemetry Incident &amp; Threat Ingestion Feed
+          <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            Live Threat Feed
           </h2>
         </div>
         <div className="flex items-center space-x-3 text-[11px] font-mono text-slate-400">
@@ -73,10 +73,10 @@ export const ThreatStreamFeed: React.FC<ThreatStreamFeedProps> = ({
           {onPullToMain && (
             <button
               onClick={onPullToMain}
-              className={`px-2 py-0.5 rounded-sm text-[10px] font-mono border transition flex items-center space-x-1 ${
+              className={`px-2 py-0.5 rounded-sm text-[10px] font-mono transition flex items-center space-x-1 ${
                 isMainStage
-                  ? 'bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-cyber-600 font-semibold'
-                  : 'border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 font-semibold'
+                  : 'bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
               title={isMainStage ? 'Currently on Primary Stage' : 'Pull into Main Stage'}
             >
@@ -94,7 +94,7 @@ export const ThreatStreamFeed: React.FC<ThreatStreamFeedProps> = ({
           <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-semibold mr-1">
             Filter:
           </span>
-          <div className="flex items-center border border-slate-200 dark:border-cyber-700/70 rounded-sm divide-x divide-slate-200 dark:divide-cyber-700/70 overflow-hidden text-xs">
+          <div className="flex items-center rounded-sm divide-x divide-slate-200 dark:divide-cyber-700/70 overflow-hidden text-xs">
             {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as const).map((sev) => (
               <button
                 key={sev}
@@ -120,15 +120,15 @@ export const ThreatStreamFeed: React.FC<ThreatStreamFeedProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Filter host, command, tactic..."
-              className="pl-8 pr-3 py-1.5 rounded-sm text-xs font-mono w-60 bg-white dark:bg-cyber-900/60 border border-slate-200 dark:border-cyber-700/60 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:border-slate-400 dark:focus:border-cyber-500 focus:outline-none transition"
+              className="pl-8 pr-3 py-1.5 rounded-sm text-xs font-mono w-60 bg-slate-100 dark:bg-cyber-800/70 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 dark:focus:ring-cyber-500 focus:outline-none transition"
             />
           </div>
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-sm text-xs font-mono border transition ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-sm text-xs font-mono transition cursor-pointer ${
               isPaused
-                ? 'border-amber-400 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 font-bold'
-                : 'border-slate-200 dark:border-cyber-700/60 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/60'
+                ? 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 font-bold'
+                : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-cyber-700/60'
             }`}
             title="Pause or Resume incoming live threat stream"
           >

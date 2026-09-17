@@ -213,7 +213,7 @@ export const DashboardPage: React.FC = () => {
           }}
           className={`panel-card w-full h-full flex flex-col flex-1 transition-all duration-200 ${
             draggedCard === cardId ? 'opacity-40 scale-[0.98]' : ''
-          } ${isPulsing ? 'ring-2 ring-slate-900 dark:ring-white ring-offset-2' : ''}`}
+          } ${isPulsing ? 'ring-2 ring-slate-900 dark:ring-white ring-offset-2 rounded-sm' : ''}`}
         >
           {renderCard(cardId, isMain)}
         </div>
