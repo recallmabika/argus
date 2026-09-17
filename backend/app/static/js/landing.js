@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initLandingTheme();
     initNavScrollTrigger();
     initHeroMapCanvas();
+    initHeroAlternatingLogo();
     fetchLivePlatformStats();
     setupSmoothScroll();
     setMapLevel('world');
@@ -574,3 +575,80 @@ document.addEventListener('click', (e) => {
         closeDemoModal();
     }
 });
+
+// =========================================================================
+// Dynamic Alternating Chevron Logo Panel & Content Push System
+// Every 5s: Left -> Disappear (750ms) -> Right -> Disappear (750ms) -> Loop
+// =========================================================================
+let heroAlternatingTimer = null;
+let heroAlternatingStep = 0; // 0: left, 1: exit-left, 2: right, 3: exit-right
+
+function initHeroAlternatingLogo() {
+    const arena = document.getElementById('heroArena');
+    const leftPanel = document.getElementById('heroLeftPanel');
+    const rightPanel = document.getElementById('heroRightPanel');
+    const contentBlock = document.getElementById('heroContentBlock');
+
+    if (!arena || !leftPanel || !rightPanel || !contentBlock) return;
+
+    function applyState(state) {
+        arena.classList.remove('state-left', 'state-right', 'state-neutral');
+        leftPanel.classList.remove('active');
+        rightPanel.classList.remove('active');
+
+        if (state === 'left') {
+            arena.classList.add('state-left');
+            leftPanel.classList.add('active');
+        } else if (state === 'right') {
+            arena.classList.add('state-right');
+            rightPanel.classList.add('active');
+        } else {
+            arena.classList.add('state-neutral');
+        }
+    }
+
+    function step() {
+        if (heroAlternatingStep === 0) {
+            // Display Logo on Left (pushes content to right) for 5 seconds
+            applyState('left');
+            heroAlternatingTimer = setTimeout(() => {
+                heroAlternatingStep = 1;
+                step();
+            }, 5000);
+        } else if (heroAlternatingStep === 1) {
+            // Disappear from left
+            applyState('neutral');
+            heroAlternatingTimer = setTimeout(() => {
+                heroAlternatingStep = 2;
+                step();
+            }, 750);
+        } else if (heroAlternatingStep === 2) {
+            // Display Logo on Right (pushes content to left) for 5 seconds
+            applyState('right');
+            heroAlternatingTimer = setTimeout(() => {
+                heroAlternatingStep = 3;
+                step();
+            }, 5000);
+        } else if (heroAlternatingStep === 3) {
+            // Disappear from right
+            applyState('neutral');
+            heroAlternatingTimer = setTimeout(() => {
+                heroAlternatingStep = 0;
+                step();
+            }, 750);
+        }
+    }
+
+    // Start cycle
+    heroAlternatingStep = 0;
+    step();
+
+    // Pause / Resume cleanly on page visibility changes
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            if (heroAlternatingTimer) clearTimeout(heroAlternatingTimer);
+        } else {
+            step();
+        }
+    });
+}

@@ -471,4 +471,113 @@
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
 }
 
+/* =========================================================================
+   Hero Alternating Chevron Logo Panel & Content Push System
+   ========================================================================= */
+.hero-chevron-panel {
+  position: absolute;
+  top: 50%;
+  z-index: 25;
+  filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.12)) drop-shadow(0 8px 10px rgba(0, 0, 0, 0.08));
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
 
+.dark .hero-chevron-panel {
+  filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.03));
+}
+
+.hero-chevron-panel.hero-panel-left {
+  left: 0;
+  transform: translate(-125%, -50%);
+  opacity: 0;
+}
+
+.hero-chevron-panel.hero-panel-left.active {
+  transform: translate(0%, -50%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-chevron-panel.hero-panel-right {
+  right: 0;
+  transform: translate(125%, -50%);
+  opacity: 0;
+}
+
+.hero-chevron-panel.hero-panel-right.active {
+  transform: translate(0%, -50%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Content block smooth push transition */
+#heroContentBlock {
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), margin 0.85s cubic-bezier(0.16, 1, 0.3, 1), width 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+  will-change: transform, margin, width;
+}
+
+@media (min-width: 1024px) {
+  #heroArena.state-left #heroContentBlock {
+    margin-left: auto;
+    margin-right: 0;
+    width: 55%;
+    text-align: left;
+  }
+  #heroArena.state-left #heroContentBlock .hero-cta-group {
+    justify-content: flex-start;
+  }
+  #heroArena.state-left #heroContentBlock p {
+    text-align: left;
+    margin-left: 0;
+  }
+
+  #heroArena.state-right #heroContentBlock {
+    margin-right: auto;
+    margin-left: 0;
+    width: 55%;
+    text-align: left;
+  }
+  #heroArena.state-right #heroContentBlock .hero-cta-group {
+    justify-content: flex-start;
+  }
+  #heroArena.state-right #heroContentBlock p {
+    text-align: left;
+    margin-left: 0;
+  }
+
+  #heroArena.state-neutral #heroContentBlock {
+    margin-left: auto;
+    margin-right: auto;
+    width: 75%;
+    text-align: center;
+  }
+  #heroArena.state-neutral #heroContentBlock .hero-cta-group {
+    justify-content: center;
+  }
+  #heroArena.state-neutral #heroContentBlock p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-chevron-panel {
+    display: none;
+  }
+  #heroContentBlock {
+    width: 100%;
+    text-align: center;
+    margin: 0 auto;
+  }
+  #heroContentBlock .hero-cta-group {
+    justify-content: center;
+  }
+  #heroContentBlock p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
