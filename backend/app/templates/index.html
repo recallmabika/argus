@@ -23,10 +23,10 @@
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none">
         
         <!-- Sidebar Header / Brand -->
-        <div class="p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="w-auto h-14 rounded-sm object-cover shadow-sm flex-shrink-0" />
-                <div>
+        <div class="sidebar-header p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
+            <div onclick="toggleSidebar()" class="sidebar-brand-group flex items-center space-x-3 cursor-pointer group" title="Toggle Sidebar (Ctrl+B)">
+                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-auto h-12 rounded-md object-contain shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform" />
+                <div class="sidebar-text">
                     <h1 class="text-2xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
                         ARTIS
                     </h1>
@@ -34,108 +34,217 @@
                 </div>
             </div>
             <!-- Collapse / Hide Sidebar button -->
-            <button onclick="toggleSidebar()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Hide Sidebar">
+            <button onclick="toggleSidebar()" class="sidebar-collapse-btn p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Collapse Sidebar (Ctrl+B)">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
             </button>
         </div>
 
         <!-- Navigation Links -->
-        <div class="flex-1 overflow-y-auto custom-scrollbar px-3 py-4 space-y-6 text-xs">
+        <div class="sidebar-nav flex-1 overflow-y-auto custom-scrollbar px-3 py-4 space-y-6 text-xs">
             <!-- Section: Monitoring -->
-            <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monitoring & SOC</div>
+            <div class="sidebar-section space-y-1">
+                <div class="sidebar-section-title px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monitoring &amp; SOC</div>
+                <div class="sidebar-section-divider hidden border-t border-slate-200 dark:border-cyber-700/60 my-2 mx-1"></div>
                 
-                <a href="#dashboard" class="flex items-center justify-between px-3 py-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold transition">
-                    <div class="flex items-center space-x-2.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                        <span>SOC Overview</span>
+                <a href="#dashboard" class="sidebar-link relative flex items-center justify-between px-3 py-2.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        <span class="sidebar-text">SOC Overview</span>
                     </div>
-                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                    <span class="sidebar-badge w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">SOC Overview</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">Active</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Live Telemetry &amp; Incident Triage</span>
+                    </div>
                 </a>
 
-                <a href="#threats" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <div class="flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        <span>Threat Stream</span>
+                <a href="#threats" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span class="sidebar-text">Threat Stream</span>
                     </div>
-                    <span id="sideActiveThreats" class="px-1.5 py-0.2 rounded font-mono font-bold text-[10px] bg-red-500/10 text-red-500">0</span>
+                    <span id="sideActiveThreats" class="sidebar-badge px-1.5 py-0.2 rounded font-mono font-bold text-[10px] bg-red-500/10 text-red-500">0</span>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Threat Stream</span>
+                            <span id="sideActiveThreatsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-red-500/20 text-red-400 border border-red-500/30 font-bold">0 Live</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Real-Time MITRE ATT&amp;CK Vectors</span>
+                    </div>
                 </a>
 
-                <a href="#devices" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <div class="flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        <span>Org Devices</span>
+                <a href="#devices" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span class="sidebar-text">Org Devices</span>
                     </div>
-                    <span id="sideEndpoints" class="px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">0</span>
+                    <span id="sideEndpoints" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">0</span>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Org Devices</span>
+                            <span id="sideEndpointsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">0 Fleet</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Monitored Endpoints &amp; Inventory</span>
+                    </div>
                 </a>
 
-                <a href="#branches" class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    <span>Branch Geolocation</span>
+                <a href="#branches" class="sidebar-link relative flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        <span class="sidebar-text">Branch Geolocation</span>
+                    </div>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Branch Geolocation</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">GeoMap</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Global Asset &amp; Facility Tracking</span>
+                    </div>
                 </a>
             </div>
 
             <!-- Section: Forensics & Response -->
-            <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 small-caps">Forensics & Response</div>
+            <div class="sidebar-section space-y-1">
+                <div class="sidebar-section-title px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 small-caps">Forensics &amp; Response</div>
+                <div class="sidebar-section-divider hidden border-t border-slate-200 dark:border-cyber-700/60 my-2 mx-1"></div>
                 
-                <a href="#forensics" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <div class="flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                        <span>Device Forensics Bridge</span>
+                <a href="#forensics" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        <span class="sidebar-text">Device Forensics Bridge</span>
                     </div>
-                    <span id="sideForensicsCount" class="px-1.5 py-0.2 rounded font-mono text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold border border-cyan-500/20">1</span>
+                    <span id="sideForensicsCount" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold border border-cyan-500/20">1</span>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Forensics Bridge</span>
+                            <span id="sideForensicsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">1 Target</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Hardware ADB &amp; Wi-Fi Remote Mirror</span>
+                    </div>
                 </a>
 
-                <button onclick="openReportModal()" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Export Incident PDF</span>
-                </button>
-
-                <button onclick="openVerifyModal()" class="w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Verify PDF Signature</span>
-                </button>
-
-                <button onclick="toggleAuditDrawer()" class="w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition">
-                    <div class="flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span>Access Audit Trail</span>
+                <button onclick="openReportModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="sidebar-text">Export Incident PDF</span>
                     </div>
-                    <span id="sideAuditCount" class="font-mono text-[10px] text-slate-400">0</span>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Export PDF</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-semibold">Signed</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Executive Monochrome Report PDF</span>
+                    </div>
+                </button>
+
+                <button onclick="openVerifyModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="sidebar-text">Verify PDF Signature</span>
+                    </div>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Verify Signature</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">SHA-256</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Cryptographic Tamper-Check</span>
+                    </div>
+                </button>
+
+                <button onclick="toggleAuditDrawer()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="sidebar-text">Access Audit Trail</span>
+                    </div>
+                    <span id="sideAuditCount" class="sidebar-badge font-mono text-[10px] text-slate-400">0</span>
+
+                    <!-- Unique Floating Tooltip on Hover -->
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Audit Trail</span>
+                            <span id="sideAuditTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-500/20 text-purple-400 border border-purple-500/30 font-semibold">0 Logs</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Tamper-Evident Security Log</span>
+                    </div>
                 </button>
             </div>
         </div>
 
         <!-- Sidebar Footer: Theme Switcher & Connection Indicator -->
-        <div class="p-3 border-t border-slate-200 dark:border-cyber-700/60 space-y-3 bg-slate-50 dark:bg-cyber-900/40">
+        <div class="sidebar-footer p-3 border-t border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-900/40">
             
-            <!-- Theme Selection Segmented Control -->
-            <div>
-                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 px-1">Theme</div>
-                <div class="grid grid-cols-3 gap-1 bg-slate-200 dark:bg-cyber-700/60 p-1 rounded-lg text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                    <button id="themeBtn-light" onclick="setTheme('light')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                        <span>Light</span>
-                    </button>
-                    <button id="themeBtn-dark" onclick="setTheme('dark')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                        <span>Dark</span>
-                    </button>
-                    <button id="themeBtn-system" onclick="setTheme('system')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        <span>Auto</span>
-                    </button>
+            <!-- Full Expanded Footer -->
+            <div class="sidebar-footer-full space-y-3">
+                <!-- Theme Selection Segmented Control -->
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5 px-1">Theme</div>
+                    <div class="grid grid-cols-3 gap-1 bg-slate-200 dark:bg-cyber-700/60 p-1 rounded-lg text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                        <button id="themeBtn-light" onclick="setTheme('light')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <span>Light</span>
+                        </button>
+                        <button id="themeBtn-dark" onclick="setTheme('dark')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                            <span>Dark</span>
+                        </button>
+                        <button id="themeBtn-system" onclick="setTheme('system')" class="py-1 rounded flex items-center justify-center space-x-1 hover:text-blue-600 dark:hover:text-white transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <span>Auto</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Status -->
+                <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-200/50 dark:bg-cyber-700/40 border border-slate-300/60 dark:border-cyber-600/30 text-[10px]">
+                    <div class="flex items-center space-x-1.5">
+                        <span id="wsStatusDot" class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span id="wsStatusText" class="font-mono font-medium text-slate-600 dark:text-slate-300">LIVE FEED</span>
+                    </div>
+                    <span class="font-mono text-slate-400">WS://</span>
                 </div>
             </div>
 
-            <!-- Live Status -->
-            <div class="flex items-center justify-between px-2 py-1.5 rounded-lg bg-slate-200/50 dark:bg-cyber-700/40 border border-slate-300/60 dark:border-cyber-600/30 text-[10px]">
-                <div class="flex items-center space-x-1.5">
-                    <span id="wsStatusDot" class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span id="wsStatusText" class="font-mono font-medium text-slate-600 dark:text-slate-300">LIVE FEED</span>
+            <!-- Compact Collapsed Footer -->
+            <div class="sidebar-footer-compact hidden flex-col items-center space-y-2 py-1">
+                <button onclick="cycleTheme()" class="sidebar-link relative p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700/60 transition group" title="Toggle Theme">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Theme Mode</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">Switch</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Toggle Dark / Light Theme</span>
+                    </div>
+                </button>
+
+                <div class="sidebar-link relative flex items-center justify-center p-2 cursor-default group">
+                    <span class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                            <span class="font-bold text-xs text-white">Live Stream</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-green-500/20 text-green-400 border border-green-500/30 font-semibold">WS://</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Real-Time SOC Event Bus Connected</span>
+                    </div>
                 </div>
-                <span class="font-mono text-slate-400">WS://</span>
             </div>
         </div>
     </aside>
@@ -1364,6 +1473,11 @@ Connected to target subsystem. Type a shell command below or click a preset.
             }
         }
 
+        function cycleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            setTheme(isDark ? 'light' : 'dark');
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('mobileBackdrop');
@@ -1496,6 +1610,8 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 const stats = await res.json();
                 document.getElementById('statActiveThreats').innerText = stats.open || 0;
                 document.getElementById('sideActiveThreats').innerText = stats.open || 0;
+                const sideThreatsTip = document.getElementById('sideActiveThreatsTooltip');
+                if (sideThreatsTip) sideThreatsTip.innerText = `${stats.open || 0} Live`;
                 document.getElementById('statCriticalHigh').innerText = `${stats.critical} / ${stats.high}`;
             } catch (e) {
                 console.error(e);
@@ -1592,6 +1708,8 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 const devices = await res.json();
                 document.getElementById('statEndpoints').innerText = devices.length;
                 document.getElementById('sideEndpoints').innerText = devices.length;
+                const sideEndpointsTip = document.getElementById('sideEndpointsTooltip');
+                if (sideEndpointsTip) sideEndpointsTip.innerText = `${devices.length} Fleet`;
 
                 const tbody = document.getElementById('devicesTableBody');
                 if (devices.length > 0) {
@@ -1841,6 +1959,8 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 const logs = await res.json();
                 document.getElementById('statAuditCount').innerText = logs.length;
                 document.getElementById('sideAuditCount').innerText = logs.length;
+                const sideAuditTip = document.getElementById('sideAuditTooltip');
+                if (sideAuditTip) sideAuditTip.innerText = `${logs.length} Logs`;
                 const list = document.getElementById('auditList');
                 if (logs.length > 0) {
                     list.innerHTML = '';
@@ -1913,6 +2033,8 @@ Connected to target subsystem. Type a shell command below or click a preset.
 
                 const badge = document.getElementById('sideForensicsCount');
                 if (badge) badge.innerText = devices.length;
+                const forensicsTip = document.getElementById('sideForensicsTooltip');
+                if (forensicsTip) forensicsTip.innerText = `${devices.length} Target${devices.length === 1 ? '' : 's'}`;
 
                 const grid = document.getElementById('forensicDevicesGrid');
                 if (!grid) return;
