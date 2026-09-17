@@ -15,6 +15,7 @@ from app.api.v1.reports import router as reports_router
 from app.api.v1.audit import router as audit_router
 from app.api.v1.users import router as users_router
 from app.api.v1.forensics import router as forensics_router
+from app.api.v1.spatial import router as spatial_router
 from app.services.websocket_manager import ws_manager
 
 
@@ -55,6 +56,7 @@ app.include_router(reports_router, prefix=f"{settings.API_V1_STR}/reports", tags
 app.include_router(audit_router, prefix=f"{settings.API_V1_STR}/audit", tags=["Audit"])
 app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["Users"])
 app.include_router(forensics_router, prefix=f"{settings.API_V1_STR}/forensics", tags=["Digital Forensics"])
+app.include_router(spatial_router, prefix=f"{settings.API_V1_STR}/spatial", tags=["Spatial Intelligence & Telemetry"])
 
 
 @app.get("/", response_class=HTMLResponse)
