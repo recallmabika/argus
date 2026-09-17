@@ -33,6 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             toggleSidebar();
         }
+
+        // Handle active MessageBox modal
+        const msgModal = document.getElementById('argusMessageBoxModal');
+        if (msgModal && !msgModal.classList.contains('hidden')) {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                const cancelBtn = document.getElementById('argusMsgCancelBtn');
+                const isConfirm = cancelBtn && !cancelBtn.classList.contains('hidden');
+                resolveArgusMessageBox(isConfirm ? false : true);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                resolveArgusMessageBox(true);
+            }
+        }
     });
 
     // Sync layout on viewport resize
@@ -285,9 +299,199 @@ function closeSettingsModal() {
     document.getElementById('settingsModal').classList.add('hidden');
 }
 
+// =========================================================================
+// Artis Executive MessageBox Subsystem
+// Replaces browser alerts & confirms with themed, non-blocking modal dialogs.
+// =========================================================================
+let argusMessageBoxResolver = null;
+
+function showArgusAlert(options) {
+    if (typeof options === 'string') {
+        options = { message: options };
+    }
+    return openArgusMessageBox({
+        type: options.type || 'info',
+        title: options.title || 'System Notification',
+        message: options.message || '',
+        badge: options.badge,
+        digest: options.digest,
+        digestLabel: options.digestLabel,
+        details: options.details,
+        confirmText: options.confirmText || 'Acknowledge',
+        showCancel: false
+    });
+}
+
+function showArgusConfirm(options) {
+    if (typeof options === 'string') {
+        options = { message: options };
+    }
+    return openArgusMessageBox({
+        type: options.type || 'warning',
+        title: options.title || 'Action Confirmation',
+        message: options.message || '',
+        badge: options.badge || 'CONFIRMATION',
+        details: options.details,
+        confirmText: options.confirmText || 'Confirm',
+        cancelText: options.cancelText || 'Cancel',
+        showCancel: true
+    });
+}
+
+function openArgusMessageBox({
+    type = 'info',
+    title = 'System Notice',
+    message = '',
+    badge = '',
+    digest = '',
+    digestLabel = 'SHA-256 Digest',
+    details = '',
+    confirmText = 'OK',
+    cancelText = 'Cancel',
+    showCancel = false
+}) {
+    return new Promise((resolve) => {
+        argusMessageBoxResolver = resolve;
+
+        const modal = document.getElementById('argusMessageBoxModal');
+        const card = document.getElementById('argusMsgCard');
+        const accent = document.getElementById('argusMsgAccent');
+        const iconWrapper = document.getElementById('argusMsgIconWrapper');
+        const icon = document.getElementById('argusMsgIcon');
+        const titleEl = document.getElementById('argusMsgTitle');
+        const badgeEl = document.getElementById('argusMsgBadge');
+        const descEl = document.getElementById('argusMsgDescription');
+        const digestBox = document.getElementById('argusMsgDigestBox');
+        const digestLabelEl = document.getElementById('argusMsgDigestLabel');
+        const digestValEl = document.getElementById('argusMsgDigestVal');
+        const detailsBox = document.getElementById('argusMsgDetailsBox');
+        const cancelBtn = document.getElementById('argusMsgCancelBtn');
+        const confirmBtn = document.getElementById('argusMsgConfirmBtn');
+
+        if (!modal) {
+            resolve(showCancel ? false : true);
+            return;
+        }
+
+        titleEl.textContent = title;
+        descEl.textContent = message;
+
+        if (badge) {
+            badgeEl.textContent = badge;
+            badgeEl.classList.remove('hidden');
+        } else {
+            badgeEl.classList.add('hidden');
+        }
+
+        if (digest) {
+            digestLabelEl.textContent = digestLabel;
+            digestValEl.textContent = digest;
+            digestBox.classList.remove('hidden');
+        } else {
+            digestBox.classList.add('hidden');
+        }
+
+        if (details) {
+            detailsBox.textContent = details;
+            detailsBox.classList.remove('hidden');
+        } else {
+            detailsBox.classList.add('hidden');
+        }
+
+        confirmBtn.textContent = confirmText;
+        if (showCancel) {
+            cancelBtn.textContent = cancelText;
+            cancelBtn.classList.remove('hidden');
+        } else {
+            cancelBtn.classList.add('hidden');
+        }
+
+        accent.className = 'absolute top-0 left-6 right-6 h-1 rounded-full shadow-sm';
+        iconWrapper.className = 'flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border';
+        confirmBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold text-white shadow-md transition';
+
+        if (type === 'success') {
+            accent.classList.add('bg-emerald-500', 'shadow-emerald-500/30');
+            iconWrapper.classList.add('bg-emerald-500/10', 'text-emerald-500', 'border-emerald-500/20');
+            confirmBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500', 'shadow-emerald-500/20');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>';
+        } else if (type === 'danger') {
+            accent.classList.add('bg-rose-500', 'shadow-rose-500/30');
+            iconWrapper.classList.add('bg-rose-500/10', 'text-rose-500', 'border-rose-500/20');
+            confirmBtn.classList.add('bg-rose-600', 'hover:bg-rose-500', 'shadow-rose-500/20');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>';
+        } else if (type === 'warning') {
+            accent.classList.add('bg-amber-500', 'shadow-amber-500/30');
+            iconWrapper.classList.add('bg-amber-500/10', 'text-amber-500', 'border-amber-500/20');
+            confirmBtn.classList.add('bg-amber-600', 'hover:bg-amber-500', 'shadow-amber-500/20');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+        } else {
+            accent.classList.add('bg-blue-500', 'shadow-blue-500/30');
+            iconWrapper.classList.add('bg-blue-500/10', 'text-blue-500', 'border-blue-500/20');
+            confirmBtn.classList.add('bg-blue-600', 'hover:bg-blue-500', 'shadow-blue-500/20');
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+        }
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            if (card) {
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            }
+            if (confirmBtn) confirmBtn.focus();
+        }, 10);
+    });
+}
+
+function resolveArgusMessageBox(result) {
+    const modal = document.getElementById('argusMessageBoxModal');
+    const card = document.getElementById('argusMsgCard');
+    if (card) {
+        card.classList.remove('scale-100');
+        card.classList.add('scale-95');
+    }
+    setTimeout(() => {
+        if (modal) modal.classList.add('hidden');
+        if (argusMessageBoxResolver) {
+            argusMessageBoxResolver(result);
+            argusMessageBoxResolver = null;
+        }
+    }, 120);
+}
+
+function copyArgusDigest() {
+    const valEl = document.getElementById('argusMsgDigestVal');
+    const textEl = document.getElementById('argusMsgCopyText');
+    if (!valEl) return;
+    navigator.clipboard.writeText(valEl.textContent.trim()).then(() => {
+        if (textEl) {
+            textEl.textContent = 'Copied!';
+            setTimeout(() => { textEl.textContent = 'Copy'; }, 2000);
+        }
+    });
+}
+
+// Intercept any legacy native alert() or confirm() throughout the entire system
+window.alert = function(msg) {
+    return showArgusAlert({ message: msg });
+};
+window.confirm = function(msg) {
+    return showArgusConfirm({ message: msg });
+};
+
 function lockSession() {
     closeProfileDropdown();
-    alert('SOC Session Locked. Re-authenticate to access sensitive telemetry.');
+    showArgusAlert({
+        title: 'SOC Session Locked',
+        badge: 'SECURITY SUSPENSION',
+        message: 'Your operational console has been locked. Re-authenticate to access sensitive telemetry.',
+        type: 'warning',
+        confirmText: 'Acknowledge'
+    });
 }
 
 // Theme Management: Light, Dark, System
@@ -806,7 +1010,13 @@ async function submitGenerateReport() {
         document.getElementById('reportResultBlock').classList.remove('hidden');
         fetchAudit();
     } catch (e) {
-        alert('Error generating report: ' + e);
+        showArgusAlert({
+            title: 'Report Generation Failed',
+            badge: 'ERROR',
+            message: 'Unable to cryptographically compile and sign incident assessment report.',
+            details: String(e),
+            type: 'danger'
+        });
     } finally {
         btn.innerText = 'Generate & Sign';
         btn.disabled = false;
@@ -825,7 +1035,12 @@ function closeVerifyModal() {
 async function submitVerifyReport() {
     const fileInput = document.getElementById('verifyFileInput');
     if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Please select a PDF file first.');
+        showArgusAlert({
+            title: 'Report File Required',
+            badge: 'INPUT REQUIRED',
+            message: 'Please select an incident report PDF file from your device before initiating signature verification.',
+            type: 'warning'
+        });
         return;
     }
 
@@ -853,7 +1068,13 @@ async function submitVerifyReport() {
         `;
         box.classList.remove('hidden');
     } catch (e) {
-        alert('Verification failed: ' + e);
+        showArgusAlert({
+            title: 'Verification Failed',
+            badge: 'SIGNATURE ERROR',
+            message: 'Cryptographic validation could not be completed for the uploaded report.',
+            details: String(e),
+            type: 'danger'
+        });
     }
 }
 
@@ -1114,12 +1335,26 @@ async function submitWirelessConnect() {
 }
 
 async function disconnectForensicDevice(deviceId) {
-    if (!confirm(`Disconnect wireless endpoint ${deviceId}?`)) return;
+    const confirmed = await showArgusConfirm({
+        title: 'Disconnect Endpoint',
+        badge: 'DISCONNECT CONFIRMATION',
+        message: `Are you sure you want to terminate the wireless connection to endpoint "${deviceId}"? Active ADB bridges and forensic monitoring sessions will be closed.`,
+        confirmText: 'Disconnect Endpoint',
+        cancelText: 'Cancel',
+        type: 'danger'
+    });
+    if (!confirmed) return;
     try {
         await fetch(`/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/disconnect`, { method: 'POST' });
         fetchForensicDevices();
     } catch (err) {
         console.error(err);
+        showArgusAlert({
+            title: 'Disconnection Failed',
+            badge: 'ERROR',
+            message: `Unable to disconnect wireless endpoint "${deviceId}": ${err.message}`,
+            type: 'danger'
+        });
     }
 }
 
@@ -1734,7 +1969,15 @@ async function downloadForensicScreenshot() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    alert(`Visual Evidence Frame Acquired!\n\nSHA-256 Digest:\n${sha256Hex}\n\nEvidence snapshot saved to downloads.`);
+    showArgusAlert({
+        title: 'Visual Evidence Frame Acquired',
+        badge: 'CHAIN OF CUSTODY SECURED',
+        message: 'Evidence frame capture was cryptographically hashed and downloaded to local storage.',
+        digest: sha256Hex,
+        digestLabel: 'SHA-256 Digest',
+        type: 'success',
+        confirmText: 'Acknowledge'
+    });
 }
 
 // ==========================================
