@@ -376,6 +376,7 @@ function toggleSidebar() {
         const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
         localStorage.setItem('artis-sidebar-collapsed', isCollapsed ? 'true' : 'false');
     }
+    syncSidebarToggleIcon();
 
     // Invalidate Leaflet map & Chart resize to immediately fill full viewport width
     setTimeout(() => {
@@ -386,6 +387,18 @@ function toggleSidebar() {
         if (map) map.invalidateSize();
         if (mitreChart) mitreChart.resize();
     }, 350);
+}
+
+function syncSidebarToggleIcon() {
+    const sidebar = document.getElementById('sidebar');
+    const icon = document.getElementById('sidebarToggleIcon');
+    if (!sidebar || !icon) return;
+    const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+    if (isCollapsed) {
+        icon.classList.add('rotate-180');
+    } else {
+        icon.classList.remove('rotate-180');
+    }
 }
 
 function restoreSidebarState() {
@@ -405,6 +418,7 @@ function restoreSidebarState() {
         sidebar.classList.remove('sidebar-open');
         if (backdrop) backdrop.classList.add('hidden');
     }
+    syncSidebarToggleIcon();
 }
 
 function initMap() {
