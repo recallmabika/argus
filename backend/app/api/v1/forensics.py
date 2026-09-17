@@ -25,15 +25,20 @@ class WirelessConnectRequest(BaseModel):
 
 
 class InputControlRequest(BaseModel):
-    type: str = Field(default="tap", description="Action type: tap, swipe, key, text")
-    x: Optional[float] = Field(default=0.5, description="Relative horizontal coordinate (0.0 to 1.0)")
-    y: Optional[float] = Field(default=0.5, description="Relative vertical coordinate (0.0 to 1.0)")
+    action: Optional[str] = Field(default=None, description="Action name: click, right_click, double_click, mouse_move, wheel, drag, tap, swipe, key, text")
+    type: Optional[str] = Field(default="click", description="Fallback action type")
+    window_id: Optional[str] = Field(default=None, description="Specific HWND window identifier if targeting window")
+    x: Optional[float] = Field(default=0.5, description="Relative horizontal coordinate (0.0 to 1.0) or pixel")
+    y: Optional[float] = Field(default=0.5, description="Relative vertical coordinate (0.0 to 1.0) or pixel")
     x1: Optional[float] = Field(default=0.5)
     y1: Optional[float] = Field(default=0.5)
     x2: Optional[float] = Field(default=0.5)
     y2: Optional[float] = Field(default=0.5)
     duration: Optional[int] = Field(default=300, description="Swipe duration in ms")
-    key: Optional[str] = Field(default="BACK", description="Hardware key name (BACK, HOME, RECENTS, POWER, etc.)")
+    delta: Optional[int] = Field(default=-120, description="Mouse wheel scroll delta")
+    deltaY: Optional[int] = Field(default=-120, description="Mouse wheel scroll delta Y")
+    button: Optional[str] = Field(default="left", description="Mouse button: left, right, middle")
+    key: Optional[str] = Field(default="ENTER", description="Hardware key name (ENTER, ESC, TAB, WIN, BACK, HOME, RECENTS, POWER, etc.)")
     text: Optional[str] = Field(default="", description="Text string to type")
 
 
@@ -48,6 +53,17 @@ async def list_forensic_devices():
     return {
         "count": len(devices),
         "devices": devices
+    }
+
+
+@router.get("/devices/{device_id}/windows", summary="List genuine open application windows for targeting")
+async def list_device_windows(device_id: str):
+    """Returns all active application windows open on the workstation."""
+    windows = forensics_manager.list_windows(device_id)
+    return {
+        "device_id": device_id,
+        "count": len(windows),
+        "windows": windows
     }
 
 
@@ -67,13 +83,17 @@ async def disconnect_forensic_device(device_id: str):
 
 
 @router.get("/devices/{device_id}/screen", summary="Capture single live visual screen frame")
-async def get_screen_frame(device_id: str):
-    """Returns a real JPEG frame of the target device's active display."""
-    frame_bytes = forensics_manager.get_screen_frame(device_id)
+async def get_screen_frame(
+    device_id: str,
+    window_id: Optional[str] = Query(default=None, description="Optional HWND or 'active' for window targeting"),
+    quality: int = Query(default=92, description="JPEG quality (85-95)")
+):
+    """Returns a real, high-definition JPEG frame of the target device's display or chosen application window."""
+    frame_bytes = forensics_manager.get_screen_frame(device_id, window_id=window_id, quality=quality)
     if not frame_bytes:
         raise HTTPException(status_code=404, detail="Screen capture unavailable for this device.")
     
-    res = forensics_manager.get_device_resolution(device_id)
+    res = forensics_manager.get_device_resolution(device_id, window_id=window_id)
     headers = {
         "X-Device-Width": str(res["width"]),
         "X-Device-Height": str(res["height"]),
@@ -83,11 +103,11 @@ async def get_screen_frame(device_id: str):
     return Response(content=frame_bytes, media_type="image/jpeg", headers=headers)
 
 
-@router.post("/devices/{device_id}/input", summary="Send visual remote control input (tap/swipe/keys)")
+@router.post("/devices/{device_id}/input", summary="Send visual remote control input (mouse/touch/keys)")
 async def send_device_input(device_id: str, req: InputControlRequest):
     """
-    Sends touch taps, swipes, hardware keys (Back, Home, Recents, Power),
-    or text characters to physically navigate the device from the PC.
+    Sends mouse clicks, right clicks, wheel scrolls, touch taps, swipes,
+    hardware keys, or text characters to physically navigate the device or PC window.
     """
     action_dict = req.model_dump()
     result = forensics_manager.send_input_action(device_id, action_dict)

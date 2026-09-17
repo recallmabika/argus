@@ -889,15 +889,29 @@
                     <!-- Left: Interactive Canvas Screen Display -->
                     <div class="flex-1 flex flex-col bg-slate-950 rounded-xl border border-slate-800 p-2 overflow-hidden relative">
                         <!-- Top status bar inside canvas container -->
-                        <div class="flex items-center justify-between px-3 py-1.5 text-[10px] text-slate-400 bg-slate-900/90 rounded-lg border border-slate-800 mb-2 z-10 select-none">
+                        <div class="flex flex-wrap items-center justify-between px-3 py-1.5 text-[10px] text-slate-400 bg-slate-900/90 rounded-lg border border-slate-800 mb-2 z-10 select-none gap-2">
                             <div class="flex items-center space-x-2">
                                 <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                 <span class="font-mono font-semibold text-slate-300">LIVE INTERACTIVE DECK</span>
                                 <span class="text-slate-600">•</span>
-                                <span id="screenResolutionTag" class="font-mono text-cyan-400">1080x2400</span>
+                                <span id="screenResolutionTag" class="font-mono text-cyan-400">1920x1080</span>
                             </div>
+
+                            <!-- Target Window Selector (for Desktop Host Workstation) -->
+                            <div class="flex items-center space-x-1.5" id="windowSelectGroup">
+                                <span class="text-slate-600">•</span>
+                                <label for="forensicWindowSelect" class="text-[10px] text-slate-400 font-medium hidden sm:inline">Target Window:</label>
+                                <select id="forensicWindowSelect" onchange="onForensicWindowChange()" class="bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 rounded px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:border-cyan-500 max-w-[210px] truncate">
+                                    <option value="desktop">🖥️ Full Desktop (Display 1)</option>
+                                    <option value="active">🪟 Active / Foreground Window</option>
+                                </select>
+                                <button onclick="fetchForensicWindows()" title="Scan & Refresh Open Application Windows" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                </button>
+                            </div>
+
                             <div class="flex items-center space-x-3">
-                                <span class="text-[10px] text-slate-400 hidden sm:inline">Click to Tap • Drag to Swipe</span>
+                                <span class="text-[10px] text-slate-400 hidden lg:inline" id="mouseHelpText">Click to Tap • Right-Click for Menu • Wheel to Scroll</span>
                                 <button onclick="fetchScreenFrame()" title="Refresh Frame" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                     <span>Refresh</span>
@@ -912,27 +926,79 @@
                         <!-- Canvas Center Stage -->
                         <div class="flex-1 flex items-center justify-center overflow-hidden relative" id="canvasContainer">
                             <canvas id="forensicScreenCanvas" class="max-h-full max-w-full rounded-lg shadow-2xl cursor-crosshair object-contain bg-black border border-slate-800"></canvas>
+                            <!-- Smooth Virtual Mouse Pointer Overlay -->
+                            <div id="canvasMousePointer" class="pointer-events-none absolute w-5 h-5 text-cyan-400 transform -translate-x-1 -translate-y-1 transition-transform duration-75 hidden z-20">
+                                <svg class="w-5 h-5 filter drop-shadow(0 1px 2px rgba(0,0,0,0.9))" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/></svg>
+                            </div>
                             <div id="screenLoadingOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center text-slate-300 space-y-2 hidden">
                                 <svg class="w-8 h-8 text-cyan-400 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
                                 <span class="font-mono text-xs">Capturing Hardware Framebuffer...</span>
                             </div>
                         </div>
 
-                        <!-- Touch feedback banner -->
-                        <div id="canvasGestureHint" class="text-center text-[10px] text-slate-500 font-mono py-1">
-                            Ready for analyst navigation. Click anywhere to tap, drag to swipe down/up/left/right.
+                        <!-- Mouse and touch feedback banner -->
+                        <div id="canvasGestureHint" class="text-center text-[10px] text-slate-400 font-mono py-1 flex items-center justify-center space-x-4">
+                            <span>Ready for analyst navigation. Left-click to click, right-click for context menu, mouse wheel to scroll.</span>
                         </div>
                     </div>
 
                     <!-- Right: Remote Hardware & Navigation Deck -->
                     <div class="w-full md:w-80 flex flex-col space-y-3 overflow-y-auto custom-scrollbar">
-                        <!-- Navigation Deck: Back / Home / Recents -->
-                        <div class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-2.5">
+
+                        <!-- Workstation Desktop Mouse & Shortcut Controls (Active for PC / HOST-LOCAL-BRIDGE) -->
+                        <div id="deckWorkstationControls" class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hardware Navigation</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Workstation Mouse</span>
+                                <span class="text-[9px] font-mono text-cyan-500">PRECISION POINTER</span>
+                            </div>
+                            <!-- Primary Mouse Click Buttons -->
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="sendMouseAction('left_click')" class="py-2 px-1 rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold text-white flex flex-col items-center justify-center space-y-1 transition shadow-sm shadow-blue-500/20">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/></svg>
+                                    <span class="text-[10px]">LEFT CLICK</span>
+                                </button>
+                                <button onclick="sendMouseAction('double_click')" class="py-2 px-1 rounded-lg bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 font-semibold text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center space-y-1 transition border border-slate-300/50 dark:border-cyber-600/50 shadow-xs">
+                                    <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    <span class="text-[10px]">DBL CLICK</span>
+                                </button>
+                                <button onclick="sendMouseAction('right_click')" class="py-2 px-1 rounded-lg bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 font-semibold text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center space-y-1 transition border border-slate-300/50 dark:border-cyber-600/50 shadow-xs">
+                                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                                    <span class="text-[10px]">RIGHT CLICK</span>
+                                </button>
+                            </div>
+
+                            <!-- Mouse Wheel Scroll Controls -->
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <button onclick="sendMouseAction('wheel_up')" class="py-1.5 px-1 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium flex items-center justify-center space-x-1.5 border border-slate-200 dark:border-cyber-600/40 transition">
+                                    <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    <span class="text-[10px]">SCROLL UP</span>
+                                </button>
+                                <button onclick="sendMouseAction('wheel_down')" class="py-1.5 px-1 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium flex items-center justify-center space-x-1.5 border border-slate-200 dark:border-cyber-600/40 transition">
+                                    <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    <span class="text-[10px]">SCROLL DOWN</span>
+                                </button>
+                            </div>
+
+                            <!-- Desktop Keystroke Shortcuts -->
+                            <div class="pt-2 border-t border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                                <span class="text-[9px] font-mono text-slate-400">DESKTOP SYSTEM SHORTCUTS</span>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button onclick="sendHardwareKey('WIN')" class="py-1 px-1 rounded bg-slate-200/80 dark:bg-cyber-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-[10px] font-mono transition">⊞ WIN</button>
+                                    <button onclick="sendHardwareKey('ENTER')" class="py-1 px-1 rounded bg-slate-200/80 dark:bg-cyber-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-[10px] font-mono transition">↵ ENTER</button>
+                                    <button onclick="sendHardwareKey('ESC')" class="py-1 px-1 rounded bg-slate-200/80 dark:bg-cyber-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-[10px] font-mono transition">ESC</button>
+                                    <button onclick="sendHardwareKey('ALTTAB')" class="py-1 px-1 rounded bg-slate-200/80 dark:bg-cyber-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-[10px] font-mono transition">ALT+TAB</button>
+                                    <button onclick="sendHardwareKey('TASKMGR')" class="py-1 px-1 rounded bg-slate-200/80 dark:bg-cyber-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-[10px] font-mono transition">TASKS</button>
+                                    <button onclick="sendHardwareKey('F5')" class="py-1 px-1 rounded bg-slate-200/80 dark:bg-cyber-700 hover:bg-slate-300 text-slate-700 dark:text-slate-300 text-[10px] font-mono transition">F5 REFRESH</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Android Mobile Hardware Navigation (Active for Android Devices) -->
+                        <div id="deckAndroidControls" class="p-3 bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 rounded-xl space-y-2.5 hidden">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mobile Navigation</span>
                                 <span class="text-[9px] font-mono text-cyan-500">KEYEVENT EMULATOR</span>
                             </div>
-                            <!-- 3 Main Android Nav Buttons -->
                             <div class="grid grid-cols-3 gap-2">
                                 <button onclick="sendHardwareKey('BACK')" class="py-2 px-1 rounded-lg bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 font-semibold text-slate-800 dark:text-slate-200 flex flex-col items-center justify-center space-y-1 transition border border-slate-300/50 dark:border-cyber-600/50 shadow-xs">
                                     <svg class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -948,7 +1014,6 @@
                                 </button>
                             </div>
 
-                            <!-- Hardware Keys: Power & Audio -->
                             <div class="grid grid-cols-3 gap-2 pt-1">
                                 <button onclick="sendHardwareKey('POWER')" class="py-1.5 px-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-semibold flex items-center justify-center space-x-1 border border-rose-500/20 transition">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -1999,6 +2064,9 @@ Connected to target subsystem. Type a shell command below or click a preset.
         let dragStartCoords = null;
         let dragStartTime = 0;
         let activeForensicTab = 'screen';
+        let currentForensicWindowId = 'desktop';
+        let currentTargetWindows = [];
+        let lastWheelDispatchTime = 0;
 
         function formatBytes(bytes, decimals = 2) {
             if (!bytes || bytes === 0) return '0 B';
@@ -2222,15 +2290,57 @@ Connected to target subsystem. Type a shell command below or click a preset.
             const modal = document.getElementById('forensicStudioModal');
             if (!modal) return;
 
-            document.getElementById('studioDeviceName').innerText = currentForensicDevice.model || currentForensicDevice.name || 'Target Device';
-            document.getElementById('studioDeviceId').innerText = currentForensicDevice.id;
-            document.getElementById('studioDevicePlatform').innerText = currentForensicDevice.platform || 'Android';
+            const isHost = (deviceId === 'HOST-LOCAL-BRIDGE' || currentForensicDevice.type === 'host' || currentForensicDevice.type === 'HOST_WORKSTATION');
+            const isWireless = currentForensicDevice.connection && (currentForensicDevice.connection.toLowerCase().includes('wireless') || currentForensicDevice.connection.toLowerCase().includes('wi-fi'));
+
+            const nameEl = document.getElementById('studioDeviceName');
+            if (nameEl) nameEl.innerText = isHost ? 'Local Host Workstation (Windows)' : (currentForensicDevice.model || currentForensicDevice.name || 'Target Device');
+
+            const idEl = document.getElementById('studioDeviceId');
+            if (idEl) idEl.innerText = currentForensicDevice.id;
+
+            const platEl = document.getElementById('studioDevicePlatform');
+            if (platEl) platEl.innerText = isHost ? 'Windows 11 / x64 Host Workstation' : (currentForensicDevice.platform || 'Android');
 
             const typeBadge = document.getElementById('studioDeviceTypeBadge');
             if (typeBadge) {
-                const isWireless = currentForensicDevice.connection === 'wireless';
-                const isHost = currentForensicDevice.type === 'host';
-                typeBadge.innerText = isWireless ? 'WI-FI ADB' : (isHost ? 'LOCAL HOST' : 'USB CABLE');
+                typeBadge.innerText = isHost ? 'LOCAL HOST' : (isWireless ? 'WI-FI ADB' : 'USB CABLE');
+            }
+
+            const protoBadge = document.getElementById('studioProtocolBadge');
+            if (protoBadge) {
+                protoBadge.innerText = isHost ? 'Windows Native OS Bridge' : (isWireless ? 'ADB over Wi-Fi' : 'ADB USB Cable');
+            }
+
+            const mouseHelp = document.getElementById('mouseHelpText');
+            if (mouseHelp) {
+                mouseHelp.innerText = isHost 
+                    ? 'Left-Click • Right-Click Menu • Wheel Scroll • Smooth Pointer' 
+                    : 'Click to Tap • Drag to Swipe • Hardware Keys';
+            }
+
+            // Toggle between Host Workstation deck and Mobile phone deck
+            const deckWorkstation = document.getElementById('deckWorkstationControls');
+            const deckAndroid = document.getElementById('deckAndroidControls');
+            const windowSelectGroup = document.getElementById('windowSelectGroup');
+            const iconContainer = document.getElementById('studioDeviceIcon');
+
+            if (isHost) {
+                if (deckWorkstation) deckWorkstation.classList.remove('hidden');
+                if (deckAndroid) deckAndroid.classList.add('hidden');
+                if (windowSelectGroup) windowSelectGroup.classList.remove('hidden');
+                if (iconContainer) {
+                    iconContainer.innerHTML = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`;
+                }
+                currentForensicWindowId = 'desktop';
+                fetchForensicWindows();
+            } else {
+                if (deckWorkstation) deckWorkstation.classList.add('hidden');
+                if (deckAndroid) deckAndroid.classList.remove('hidden');
+                if (windowSelectGroup) windowSelectGroup.classList.add('hidden');
+                if (iconContainer) {
+                    iconContainer.innerHTML = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`;
+                }
             }
 
             modal.classList.remove('hidden');
@@ -2243,6 +2353,52 @@ Connected to target subsystem. Type a shell command below or click a preset.
             if (autoChk && autoChk.checked) {
                 toggleAutoStream(true);
             }
+        }
+
+        async function fetchForensicWindows() {
+            if (!currentForensicDeviceId || currentForensicDeviceId !== 'HOST-LOCAL-BRIDGE') return;
+            try {
+                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/windows`);
+                if (!res.ok) return;
+                const data = await res.json();
+                currentTargetWindows = data.windows || [];
+
+                const select = document.getElementById('forensicWindowSelect');
+                if (!select) return;
+
+                const currentVal = select.value;
+                let html = `
+                    <option value="desktop">🖥️ Full Desktop (Display 1 - 1920x1080)</option>
+                    <option value="active">🪟 Active / Foreground Window</option>
+                `;
+
+                currentTargetWindows.forEach(w => {
+                    const isSel = (currentVal === w.hwnd) ? 'selected' : '';
+                    const star = w.is_active ? '⭐ ' : '🪟 ';
+                    const titleSafe = (w.title || 'Window').replace(/[<>&"]/g, '');
+                    html += `<option value="${w.hwnd}" ${isSel}>${star}${titleSafe} (${w.width}x${w.height})</option>`;
+                });
+
+                select.innerHTML = html;
+                if (currentVal && select.querySelector(`option[value="${currentVal}"]`)) {
+                    select.value = currentVal;
+                }
+            } catch (err) {
+                console.error("Error loading windows:", err);
+            }
+        }
+
+        function onForensicWindowChange() {
+            const select = document.getElementById('forensicWindowSelect');
+            if (select) {
+                currentForensicWindowId = select.value;
+            }
+            const hint = document.getElementById('canvasGestureHint');
+            if (hint) {
+                const selText = select ? select.options[select.selectedIndex]?.text : '';
+                hint.innerText = `Target stream changed to: ${selText}. Refreshing stream...`;
+            }
+            fetchScreenFrame();
         }
 
         function openForensicStorage(deviceId) {
@@ -2301,15 +2457,172 @@ Connected to target subsystem. Type a shell command below or click a preset.
         }
 
         // ==========================================
-        // Visual Touch / Swipe Interactive Canvas
+        // Visual Mouse & Touch Interactive Canvas
         // ==========================================
         function setupCanvasListeners() {
             const canvas = document.getElementById('forensicScreenCanvas');
             if (!canvas || canvas.dataset.listenersBound) return;
             canvas.dataset.listenersBound = "true";
 
-            canvas.addEventListener('mousedown', (e) => {
+            // Track mousemove over canvas for smooth virtual pointer
+            canvas.addEventListener('mousemove', (e) => {
                 if (!currentForensicDeviceId) return;
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const canvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+                // Update virtual pointer overlay position
+                const pointer = document.getElementById('canvasMousePointer');
+                const container = document.getElementById('canvasContainer');
+                if (pointer && container) {
+                    const cRect = container.getBoundingClientRect();
+                    pointer.style.left = `${e.clientX - cRect.left}px`;
+                    pointer.style.top = `${e.clientY - cRect.top}px`;
+                    pointer.classList.remove('hidden');
+                }
+
+                // Update live coordinate readout in gesture hint bar
+                const hint = document.getElementById('canvasGestureHint');
+                if (hint) {
+                    hint.innerHTML = `<span class="text-cyan-400 font-bold">X: ${Math.round(canvasX)}</span> <span class="text-slate-600">|</span> <span class="text-cyan-400 font-bold">Y: ${Math.round(canvasY)}</span> <span class="text-slate-600">•</span> <span>Left-Click to Select • Right-Click for Context • Scroll Wheel to Navigate</span>`;
+                }
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                const pointer = document.getElementById('canvasMousePointer');
+                if (pointer) pointer.classList.add('hidden');
+                const hint = document.getElementById('canvasGestureHint');
+                if (hint) {
+                    hint.innerText = "Ready for analyst navigation. Left-click to click, right-click for context menu, mouse wheel to scroll.";
+                }
+            });
+
+            // Standard Click (Left Click)
+            canvas.addEventListener('click', async (e) => {
+                if (!currentForensicDeviceId || isCanvasDragging) return;
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const canvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const startX = Math.max(0, Math.min(Math.round(canvasX), canvas.width));
+                const startY = Math.max(0, Math.min(Math.round(canvasY), canvas.height));
+
+                const isHost = (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE');
+                const hint = document.getElementById('canvasGestureHint');
+                if (hint) hint.innerText = `Executing ${isHost ? 'LEFT CLICK' : 'TAP'} at (${startX}, ${startY})...`;
+                showCanvasTapEffect(startX, startY);
+
+                try {
+                    await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'click',
+                            x: startX,
+                            y: startY,
+                            window_id: isHost ? currentForensicWindowId : null
+                        })
+                    });
+                    setTimeout(fetchScreenFrame, 300);
+                } catch (err) {
+                    console.error("Click error:", err);
+                }
+            });
+
+            // Right Click (Context Menu)
+            canvas.addEventListener('contextmenu', async (e) => {
+                e.preventDefault();
+                if (!currentForensicDeviceId) return;
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const canvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const startX = Math.max(0, Math.min(Math.round(canvasX), canvas.width));
+                const startY = Math.max(0, Math.min(Math.round(canvasY), canvas.height));
+
+                const hint = document.getElementById('canvasGestureHint');
+                if (hint) hint.innerText = `Executing RIGHT CLICK at (${startX}, ${startY})...`;
+                showCanvasRightClickEffect(startX, startY);
+
+                try {
+                    await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'right_click',
+                            x: startX,
+                            y: startY,
+                            window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null
+                        })
+                    });
+                    setTimeout(fetchScreenFrame, 300);
+                } catch (err) {
+                    console.error("Right-click error:", err);
+                }
+            });
+
+            // Double Click
+            canvas.addEventListener('dblclick', async (e) => {
+                if (!currentForensicDeviceId) return;
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const canvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const startX = Math.max(0, Math.min(Math.round(canvasX), canvas.width));
+                const startY = Math.max(0, Math.min(Math.round(canvasY), canvas.height));
+
+                showCanvasTapEffect(startX, startY);
+                try {
+                    await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'double_click',
+                            x: startX,
+                            y: startY,
+                            window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null
+                        })
+                    });
+                    setTimeout(fetchScreenFrame, 350);
+                } catch (err) {
+                    console.error("Double-click error:", err);
+                }
+            });
+
+            // Mouse Wheel (Smooth Scrolling)
+            canvas.addEventListener('wheel', async (e) => {
+                e.preventDefault();
+                if (!currentForensicDeviceId) return;
+                const now = Date.now();
+                if (now - lastWheelDispatchTime < 140) return;
+                lastWheelDispatchTime = now;
+
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const canvasY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                const delta = e.deltaY < 0 ? 120 : -120;
+
+                const hint = document.getElementById('canvasGestureHint');
+                if (hint) hint.innerText = `Executing WHEEL SCROLL ${delta > 0 ? 'UP' : 'DOWN'}...`;
+
+                try {
+                    await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'wheel',
+                            delta: delta,
+                            x: Math.round(canvasX),
+                            y: Math.round(canvasY),
+                            window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null
+                        })
+                    });
+                    setTimeout(fetchScreenFrame, 300);
+                } catch (err) {
+                    console.error("Wheel error:", err);
+                }
+            }, { passive: false });
+
+            // Drag / Swipe Tracking
+            canvas.addEventListener('mousedown', (e) => {
+                if (!currentForensicDeviceId || e.button !== 0) return;
                 const rect = canvas.getBoundingClientRect();
                 dragStartCoords = {
                     clientX: e.clientX,
@@ -2318,15 +2631,15 @@ Connected to target subsystem. Type a shell command below or click a preset.
                     canvasY: (e.clientY - rect.top) * (canvas.height / rect.height)
                 };
                 dragStartTime = Date.now();
-                isCanvasDragging = true;
+                isCanvasDragging = false;
             });
 
             window.addEventListener('mouseup', async (e) => {
-                if (!isCanvasDragging || !dragStartCoords || !currentForensicDeviceId) {
+                if (!dragStartCoords || !currentForensicDeviceId) {
+                    dragStartCoords = null;
                     isCanvasDragging = false;
                     return;
                 }
-                isCanvasDragging = false;
                 const canvas = document.getElementById('forensicScreenCanvas');
                 if (!canvas) return;
                 const rect = canvas.getBoundingClientRect();
@@ -2343,43 +2656,33 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 const endX = Math.max(0, Math.min(Math.round(endCanvasX), canvas.width));
                 const endY = Math.max(0, Math.min(Math.round(endCanvasY), canvas.height));
 
-                const hint = document.getElementById('canvasGestureHint');
+                dragStartCoords = null;
 
-                if (dist < 15 && dt < 450) {
-                    // Tap action
-                    if (hint) hint.innerText = `Executing TAP at (${startX}, ${startY})...`;
-                    showCanvasTapEffect(startX, startY);
-                    try {
-                        await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'tap', x: startX, y: startY })
-                        });
-                        setTimeout(fetchScreenFrame, 350);
-                    } catch (err) {
-                        console.error("Tap error:", err);
-                    }
-                } else {
-                    // Swipe action
-                    const durationMs = Math.min(Math.max(dt, 200), 800);
-                    if (hint) hint.innerText = `Executing SWIPE (${startX}, ${startY}) -> (${endX}, ${endY}) [${durationMs}ms]...`;
+                // Only treat as drag if moved more than 25px
+                if (dist >= 25) {
+                    isCanvasDragging = true;
+                    setTimeout(() => { isCanvasDragging = false; }, 100);
+                    const durationMs = Math.min(Math.max(dt, 150), 800);
+                    const hint = document.getElementById('canvasGestureHint');
+                    if (hint) hint.innerText = `Executing DRAG (${startX}, ${startY}) -> (${endX}, ${endY})...`;
                     showCanvasSwipeEffect(startX, startY, endX, endY);
                     try {
                         await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                action: 'swipe',
+                                action: 'drag',
                                 x1: startX,
                                 y1: startY,
                                 x2: endX,
                                 y2: endY,
-                                duration: durationMs
+                                duration: durationMs,
+                                window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null
                             })
                         });
-                        setTimeout(fetchScreenFrame, 500);
+                        setTimeout(fetchScreenFrame, 450);
                     } catch (err) {
-                        console.error("Swipe error:", err);
+                        console.error("Drag error:", err);
                     }
                 }
             });
@@ -2391,11 +2694,26 @@ Connected to target subsystem. Type a shell command below or click a preset.
             const ctx = canvas.getContext('2d');
             ctx.save();
             ctx.beginPath();
-            ctx.arc(x, y, 28, 0, 2 * Math.PI, false);
-            ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+            ctx.arc(x, y, 24, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'rgba(6, 182, 212, 0.35)';
             ctx.fill();
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.5;
             ctx.strokeStyle = '#06b6d4';
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function showCanvasRightClickEffect(x, y) {
+            const canvas = document.getElementById('forensicScreenCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, 26, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.35)';
+            ctx.fill();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#f59e0b';
             ctx.stroke();
             ctx.restore();
         }
@@ -2409,14 +2727,58 @@ Connected to target subsystem. Type a shell command below or click a preset.
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.strokeStyle = 'rgba(6, 182, 212, 0.8)';
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 5;
             ctx.lineCap = 'round';
             ctx.stroke();
             ctx.beginPath();
-            ctx.arc(x2, y2, 14, 0, 2 * Math.PI, false);
+            ctx.arc(x2, y2, 12, 0, 2 * Math.PI, false);
             ctx.fillStyle = '#06b6d4';
             ctx.fill();
             ctx.restore();
+        }
+
+        async function sendMouseAction(actionType) {
+            if (!currentForensicDeviceId) return;
+            const canvas = document.getElementById('forensicScreenCanvas');
+            const midX = canvas ? canvas.width / 2 : 960;
+            const midY = canvas ? canvas.height / 2 : 540;
+            const hint = document.getElementById('canvasGestureHint');
+            if (hint) hint.innerText = `Dispatching ${actionType.replace('_', ' ').toUpperCase()}...`;
+
+            let payload = { action: actionType, window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null };
+            if (actionType === 'left_click') {
+                payload.action = 'click';
+                payload.x = midX;
+                payload.y = midY;
+                showCanvasTapEffect(midX, midY);
+            } else if (actionType === 'right_click') {
+                payload.action = 'right_click';
+                payload.x = midX;
+                payload.y = midY;
+                showCanvasRightClickEffect(midX, midY);
+            } else if (actionType === 'double_click') {
+                payload.action = 'double_click';
+                payload.x = midX;
+                payload.y = midY;
+                showCanvasTapEffect(midX, midY);
+            } else if (actionType === 'wheel_up') {
+                payload.action = 'wheel';
+                payload.delta = 120;
+            } else if (actionType === 'wheel_down') {
+                payload.action = 'wheel';
+                payload.delta = -120;
+            }
+
+            try {
+                await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                setTimeout(fetchScreenFrame, 300);
+            } catch (err) {
+                console.error("Mouse action error:", err);
+            }
         }
 
         async function fetchScreenFrame() {
@@ -2424,7 +2786,10 @@ Connected to target subsystem. Type a shell command below or click a preset.
             const canvas = document.getElementById('forensicScreenCanvas');
             if (!canvas) return;
             try {
-                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/screen?t=${Date.now()}`);
+                const winParam = (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE' && currentForensicWindowId) 
+                    ? `&window_id=${encodeURIComponent(currentForensicWindowId)}` 
+                    : '';
+                const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/screen?quality=94${winParam}&t=${Date.now()}`);
                 if (!res.ok) return;
                 const blob = await res.blob();
                 lastScreenshotBlob = blob;
@@ -2432,15 +2797,17 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 const img = new Image();
                 const url = URL.createObjectURL(blob);
                 img.onload = () => {
-                    canvas.width = img.naturalWidth || 1080;
-                    canvas.height = img.naturalHeight || 2400;
+                    canvas.width = img.naturalWidth || 1920;
+                    canvas.height = img.naturalHeight || 1080;
                     const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0);
                     URL.revokeObjectURL(url);
                     currentScreenResolution = { width: canvas.width, height: canvas.height };
 
                     const tag = document.getElementById('screenResolutionTag');
-                    if (tag) tag.innerText = `${canvas.width}x${canvas.height}`;
+                    if (tag) tag.innerText = `${canvas.width}x${canvas.height} [100% Crisp]`;
 
                     const ratioTag = document.getElementById('studioRatioBadge');
                     if (ratioTag) ratioTag.innerText = canvas.height > canvas.width ? 'Portrait' : 'Landscape';
@@ -2464,12 +2831,16 @@ Connected to target subsystem. Type a shell command below or click a preset.
         async function sendHardwareKey(keyName) {
             if (!currentForensicDeviceId) return;
             const hint = document.getElementById('canvasGestureHint');
-            if (hint) hint.innerText = `Dispatching hardware key: ${keyName}...`;
+            if (hint) hint.innerText = `Dispatching key: ${keyName}...`;
             try {
                 await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'key', key: keyName })
+                    body: JSON.stringify({ 
+                        action: 'key', 
+                        key: keyName,
+                        window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null
+                    })
                 });
                 setTimeout(fetchScreenFrame, 350);
             } catch (err) {
@@ -2486,7 +2857,11 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/input`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'text', text: text })
+                    body: JSON.stringify({ 
+                        action: 'text', 
+                        text: text,
+                        window_id: (currentForensicDeviceId === 'HOST-LOCAL-BRIDGE') ? currentForensicWindowId : null
+                    })
                 });
                 if (input) input.value = '';
                 setTimeout(fetchScreenFrame, 350);

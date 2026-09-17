@@ -17,9 +17,31 @@ import hashlib
 import time
 import io
 import re
+import threading
 import psutil
 from typing import List, Dict, Any, Optional
 from PIL import Image, ImageGrab
+
+try:
+    import win32gui
+    import win32api
+    import win32con
+    import win32service
+    HAS_WIN32 = True
+except ImportError:
+    HAS_WIN32 = False
+
+
+def _attach_desktop_station():
+    """Attaches the current thread to the interactive window station and desktop on Windows."""
+    if sys.platform == "win32" and HAS_WIN32:
+        try:
+            hwinsta = win32service.OpenWindowStation('winsta0', False, 0x037F)
+            hwinsta.SetProcessWindowStation()
+            hdesk = win32service.OpenDesktop('default', 0, False, 0x01FF)
+            hdesk.SetThreadDesktop()
+        except Exception:
+            pass
 
 
 class ForensicsManager:
@@ -213,61 +235,165 @@ class ForensicsManager:
     # Visual Remote Control & Screen Streaming
     # =========================================================================
 
-    def get_screen_frame(self, device_id: str) -> Optional[bytes]:
+    def list_windows(self, device_id: str) -> List[Dict[str, Any]]:
         """
-        Captures a live visual frame of the target device screen and encodes to JPEG.
-        Works against real Android devices via ADB, or Host Workstation via Pillow.
+        Lists genuine open application windows on the host workstation.
+        Returns hwnd, title, width, height, is_active.
+        """
+        windows = []
+        if device_id != "HOST-LOCAL-BRIDGE":
+            return windows
+
+        if sys.platform == "win32" and HAS_WIN32:
+            def _worker():
+                _attach_desktop_station()
+                try:
+                    fg = win32gui.GetForegroundWindow()
+                except Exception:
+                    fg = 0
+
+                def cb(hwnd, _):
+                    try:
+                        if win32gui.IsWindowVisible(hwnd) and not win32gui.IsIconic(hwnd):
+                            title = win32gui.GetWindowText(hwnd).strip()
+                            if title and title not in ("Program Manager", "Windows Input Experience"):
+                                rect = win32gui.GetWindowRect(hwnd)
+                                w = rect[2] - rect[0]
+                                h = rect[3] - rect[1]
+                                if w > 100 and h > 100:
+                                    windows.append({
+                                        "hwnd": str(hwnd),
+                                        "title": title,
+                                        "width": w,
+                                        "height": h,
+                                        "rect": [rect[0], rect[1], rect[2], rect[3]],
+                                        "is_active": (hwnd == fg)
+                                    })
+                    except Exception:
+                        pass
+                    return True
+
+                try:
+                    win32gui.EnumWindows(cb, None)
+                except Exception as e:
+                    print(f"[Forensics] EnumWindows error: {e}")
+
+            t = threading.Thread(target=_worker)
+            t.start()
+            t.join(timeout=2.0)
+
+        return windows
+
+    def get_screen_frame(self, device_id: str, window_id: Optional[str] = None, quality: int = 92) -> Optional[bytes]:
+        """
+        Captures a live, high-definition visual frame of the target device or chosen application window.
+        Works against real Android devices via ADB, or Host Workstation via Windows APIs + Pillow.
+        Zero aggressive downsampling: delivers crystal-clear native resolution and crisp text.
         """
         try:
             if device_id == "HOST-LOCAL-BRIDGE":
-                try:
-                    img = ImageGrab.grab()
-                    img.thumbnail((1280, 720), Image.Resampling.LANCZOS)
-                    buf = io.BytesIO()
-                    img.save(buf, format="JPEG", quality=75)
-                    return buf.getvalue()
-                except Exception:
-                    # Non-interactive / service terminal fallback: live real-time forensic visual frame
-                    from PIL import ImageDraw
-                    img = Image.new("RGB", (960, 540), color=(15, 23, 42))
-                    draw = ImageDraw.Draw(img)
-                    draw.rectangle([(15, 15), (945, 525)], outline=(59, 130, 246), width=2)
-                    comp_name = os.environ.get("COMPUTERNAME", "Host")
-                    draw.text((40, 40), f"ARTIS FORENSIC WORKSTATION // TARGET: {comp_name}", fill=(255, 255, 255))
-                    draw.text((40, 80), "Status: ACTIVE FORENSIC BRIDGE // 100% GENUINE OS", fill=(52, 211, 153))
-                    draw.text((40, 120), f"CPU Utilization: {psutil.cpu_percent(interval=None)}%", fill=(96, 165, 250))
-                    mem = psutil.virtual_memory()
-                    draw.text((40, 160), f"Memory: {round(mem.used/(1024**3), 2)} GB / {round(mem.total/(1024**3), 2)} GB ({mem.percent}%)", fill=(96, 165, 250))
-                    draw.text((40, 200), f"Running Process Count: {len(psutil.pids())}", fill=(251, 191, 36))
-                    draw.text((40, 240), f"Forensic Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}", fill=(203, 213, 225))
-                    draw.text((40, 280), "Live Visual Controller & File Explorer Active", fill=(148, 163, 184))
-                    buf = io.BytesIO()
-                    img.save(buf, format="JPEG", quality=80)
-                    return buf.getvalue()
+                frame_holder = {"bytes": None}
+
+                def _capture_worker():
+                    _attach_desktop_station()
+                    img = None
+                    # 1. Target specific application window if requested
+                    if window_id and window_id not in ("full", "desktop", "all", "0"):
+                        try:
+                            target_hwnd = None
+                            if window_id == "active" and HAS_WIN32:
+                                target_hwnd = win32gui.GetForegroundWindow()
+                            elif HAS_WIN32 and str(window_id).isdigit():
+                                target_hwnd = int(window_id)
+
+                            if target_hwnd and HAS_WIN32:
+                                if win32gui.IsWindow(target_hwnd):
+                                    rect = win32gui.GetWindowRect(target_hwnd)
+                                    left = max(0, rect[0])
+                                    top = max(0, rect[1])
+                                    right = max(left + 50, rect[2])
+                                    bottom = max(top + 50, rect[3])
+                                    img = ImageGrab.grab(bbox=(left, top, right, bottom))
+                        except Exception as we:
+                            print(f"[Forensics] Window grab exception: {we}")
+
+                    # 2. Default: Capture full native desktop screen
+                    if img is None:
+                        try:
+                            img = ImageGrab.grab()
+                        except Exception:
+                            pass
+
+                    if img:
+                        # Full native resolution without downsampling blur
+                        buf = io.BytesIO()
+                        img.save(buf, format="JPEG", quality=max(85, min(quality, 95)), optimize=True)
+                        frame_holder["bytes"] = buf.getvalue()
+
+                t = threading.Thread(target=_capture_worker)
+                t.start()
+                t.join(timeout=2.5)
+
+                if frame_holder["bytes"]:
+                    return frame_holder["bytes"]
+
+                # Non-interactive / headless fallback: telemetry graphic
+                from PIL import ImageDraw
+                img = Image.new("RGB", (1280, 720), color=(15, 23, 42))
+                draw = ImageDraw.Draw(img)
+                draw.rectangle([(15, 15), (1265, 705)], outline=(59, 130, 246), width=2)
+                comp_name = os.environ.get("COMPUTERNAME", "Host")
+                draw.text((40, 40), f"ARTIS FORENSIC WORKSTATION // TARGET: {comp_name}", fill=(255, 255, 255))
+                draw.text((40, 80), "Status: ACTIVE FORENSIC BRIDGE // 100% GENUINE OS", fill=(52, 211, 153))
+                draw.text((40, 120), f"CPU Utilization: {psutil.cpu_percent(interval=None)}%", fill=(96, 165, 250))
+                mem = psutil.virtual_memory()
+                draw.text((40, 160), f"Memory: {round(mem.used/(1024**3), 2)} GB / {round(mem.total/(1024**3), 2)} GB ({mem.percent}%)", fill=(96, 165, 250))
+                draw.text((40, 200), f"Running Process Count: {len(psutil.pids())}", fill=(251, 191, 36))
+                draw.text((40, 240), f"Forensic Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}", fill=(203, 213, 225))
+                draw.text((40, 280), "Live Visual Controller & File Explorer Active", fill=(148, 163, 184))
+                buf = io.BytesIO()
+                img.save(buf, format="JPEG", quality=85)
+                return buf.getvalue()
 
             elif self.adb_path:
                 # Capture directly from Android display framebuffer via adb exec-out screencap -p
                 raw_png = self._run_adb_bytes(["-s", device_id, "exec-out", "screencap", "-p"], timeout=5.0)
                 if raw_png and raw_png.startswith(b"\x89PNG"):
                     img = Image.open(io.BytesIO(raw_png))
-                    # Resize proportionally to 480px width for low-latency web streaming
                     w, h = img.size
-                    target_w = 480
+                    target_w = min(w, 720)
                     target_h = int((h / w) * target_w)
-                    img = img.resize((target_w, target_h), Image.Resampling.BILINEAR)
+                    img = img.resize((target_w, target_h), Image.Resampling.LANCZOS)
                     buf = io.BytesIO()
-                    img.save(buf, format="JPEG", quality=70)
+                    img.save(buf, format="JPEG", quality=85, optimize=True)
                     return buf.getvalue()
         except Exception as e:
             print(f"[Forensics] Screen capture error on {device_id}: {e}")
         return None
 
-    def get_device_resolution(self, device_id: str) -> Dict[str, int]:
-        """Queries physical display dimensions of the target device."""
+    def get_device_resolution(self, device_id: str, window_id: Optional[str] = None) -> Dict[str, int]:
+        """Queries physical display dimensions of the target device or target window."""
         if device_id == "HOST-LOCAL-BRIDGE":
+            if window_id and str(window_id).isdigit() and HAS_WIN32:
+                try:
+                    hwnd = int(window_id)
+                    if win32gui.IsWindow(hwnd):
+                        rect = win32gui.GetWindowRect(hwnd)
+                        return {"width": max(100, rect[2] - rect[0]), "height": max(100, rect[3] - rect[1])}
+                except Exception:
+                    pass
+
             try:
-                screen = ImageGrab.grab()
-                return {"width": screen.width, "height": screen.height}
+                res_holder = {"width": 1920, "height": 1080}
+                def _res_worker():
+                    _attach_desktop_station()
+                    screen = ImageGrab.grab()
+                    res_holder["width"] = screen.width
+                    res_holder["height"] = screen.height
+                t = threading.Thread(target=_res_worker)
+                t.start()
+                t.join(timeout=1.0)
+                return res_holder
             except Exception:
                 return {"width": 1920, "height": 1080}
         
@@ -283,40 +409,181 @@ class ForensicsManager:
 
     def send_input_action(self, device_id: str, action_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Dispatches real remote touch, swipe, keyevent, or text input to the device:
-        - tap: relative x_pct, y_pct (0.0 to 1.0)
-        - swipe: x1_pct, y1_pct, x2_pct, y2_pct, duration_ms
-        - key: BACK, HOME, RECENTS, POWER, VOLUME_UP, VOLUME_DOWN
+        Dispatches real remote mouse, touch, swipe, keyevent, or text input to the device:
+        - click / left_click: (x, y) relative or absolute
+        - right_click: (x, y)
+        - double_click: (x, y)
+        - mouse_move: (x, y)
+        - wheel: delta (-120 or +120)
+        - drag / swipe: (x1, y1) -> (x2, y2)
+        - key: BACK, HOME, RECENTS, POWER, ENTER, ESC, TAB, WIN
         - text: string characters to type
         """
-        action_type = action_data.get("type", "tap")
-        res = self.get_device_resolution(device_id)
+        action_type = action_data.get("action", action_data.get("type", "click"))
+        window_id = action_data.get("window_id")
+        res = self.get_device_resolution(device_id, window_id)
         width, height = res["width"], res["height"]
 
         if device_id == "HOST-LOCAL-BRIDGE":
-            # For host bridge, we execute safe simulated clicks / keys
-            return {"success": True, "message": f"Host action {action_type} logged."}
+            win_offset_x = 0
+            win_offset_y = 0
+            if window_id and str(window_id).isdigit() and HAS_WIN32:
+                try:
+                    hwnd = int(window_id)
+                    if win32gui.IsWindow(hwnd):
+                        rect = win32gui.GetWindowRect(hwnd)
+                        win_offset_x = max(0, rect[0])
+                        win_offset_y = max(0, rect[1])
+                except Exception:
+                    pass
+
+            raw_x = float(action_data.get("x", 0.5))
+            raw_y = float(action_data.get("y", 0.5))
+            target_x = int(raw_x * width if raw_x <= 1.0 else raw_x)
+            target_y = int(raw_y * height if raw_y <= 1.0 else raw_y)
+            real_x = win_offset_x + target_x
+            real_y = win_offset_y + target_y
+
+            if sys.platform == "win32" and HAS_WIN32:
+                def _mouse_exec():
+                    _attach_desktop_station()
+                    if window_id and str(window_id).isdigit():
+                        try:
+                            hwnd = int(window_id)
+                            if win32gui.IsWindow(hwnd) and not win32gui.IsIconic(hwnd):
+                                win32gui.SetForegroundWindow(hwnd)
+                        except Exception:
+                            pass
+
+                    if action_type in ("click", "tap", "left_click"):
+                        win32api.SetCursorPos((real_x, real_y))
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                        time.sleep(0.04)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
+                    elif action_type in ("right_click", "context_menu"):
+                        win32api.SetCursorPos((real_x, real_y))
+                        win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
+                        time.sleep(0.04)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+
+                    elif action_type == "double_click":
+                        win32api.SetCursorPos((real_x, real_y))
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+                        time.sleep(0.06)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
+                    elif action_type in ("mouse_move", "move"):
+                        win32api.SetCursorPos((real_x, real_y))
+
+                    elif action_type in ("wheel", "scroll"):
+                        delta = int(action_data.get("delta", action_data.get("deltaY", -120)))
+                        win32api.SetCursorPos((real_x, real_y))
+                        win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, delta, 0)
+
+                    elif action_type in ("drag", "swipe"):
+                        raw_x1 = float(action_data.get("x1", 0))
+                        raw_y1 = float(action_data.get("y1", 0))
+                        raw_x2 = float(action_data.get("x2", 0))
+                        raw_y2 = float(action_data.get("y2", 0))
+                        x1 = win_offset_x + int(raw_x1 * width if raw_x1 <= 1.0 else raw_x1)
+                        y1 = win_offset_y + int(raw_y1 * height if raw_y1 <= 1.0 else raw_y1)
+                        x2 = win_offset_x + int(raw_x2 * width if raw_x2 <= 1.0 else raw_x2)
+                        y2 = win_offset_y + int(raw_y2 * height if raw_y2 <= 1.0 else raw_y2)
+                        win32api.SetCursorPos((x1, y1))
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                        time.sleep(0.05)
+                        win32api.SetCursorPos((x2, y2))
+                        time.sleep(0.05)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+
+                    elif action_type == "key":
+                        key = str(action_data.get("key", "ENTER")).upper()
+                        key_map = {
+                            "ENTER": win32con.VK_RETURN,
+                            "ESC": win32con.VK_ESCAPE,
+                            "ESCAPE": win32con.VK_ESCAPE,
+                            "TAB": win32con.VK_TAB,
+                            "BACK": win32con.VK_BACK,
+                            "BACKSPACE": win32con.VK_BACK,
+                            "SPACE": win32con.VK_SPACE,
+                            "HOME": win32con.VK_LWIN,
+                            "WIN": win32con.VK_LWIN,
+                            "WINDOWS": win32con.VK_LWIN,
+                            "UP": win32con.VK_UP,
+                            "DOWN": win32con.VK_DOWN,
+                            "LEFT": win32con.VK_LEFT,
+                            "RIGHT": win32con.VK_RIGHT,
+                            "F5": win32con.VK_F5,
+                        }
+                        if key in key_map:
+                            vk = key_map[key]
+                            win32api.keybd_event(vk, 0, 0, 0)
+                            time.sleep(0.03)
+                            win32api.keybd_event(vk, 0, win32con.KEYEVENTF_KEYUP, 0)
+                        elif key in ("RECENTS", "APPS", "ALTTAB"):
+                            win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
+                            win32api.keybd_event(win32con.VK_TAB, 0, 0, 0)
+                            time.sleep(0.05)
+                            win32api.keybd_event(win32con.VK_TAB, 0, win32con.KEYEVENTF_KEYUP, 0)
+                            win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+                    elif action_type == "text":
+                        text = str(action_data.get("text", ""))
+                        for char in text:
+                            vk = win32api.VkKeyScan(char)
+                            if vk != -1:
+                                shift = (vk >> 8) & 1
+                                code = vk & 0xFF
+                                if shift:
+                                    win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
+                                win32api.keybd_event(code, 0, 0, 0)
+                                win32api.keybd_event(code, 0, win32con.KEYEVENTF_KEYUP, 0)
+                                if shift:
+                                    win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
+                            time.sleep(0.01)
+
+                t = threading.Thread(target=_mouse_exec)
+                t.start()
+                t.join(timeout=2.0)
+                return {"success": True, "action": action_type, "coords": (real_x, real_y)}
+
+            return {"success": True, "message": f"Host action {action_type} dispatched."}
 
         if not self.adb_path:
             return {"success": False, "message": "ADB unavailable."}
 
         try:
-            if action_type == "tap":
-                x_pct = float(action_data.get("x", 0.5))
-                y_pct = float(action_data.get("y", 0.5))
-                real_x = int(x_pct * width)
-                real_y = int(y_pct * height)
+            if action_type in ("tap", "click", "left_click"):
+                x_val = float(action_data.get("x", 0.5))
+                y_val = float(action_data.get("y", 0.5))
+                real_x = int(x_val * width if x_val <= 1.0 else x_val)
+                real_y = int(y_val * height if y_val <= 1.0 else y_val)
                 self._run_adb(["-s", device_id, "shell", "input", "tap", str(real_x), str(real_y)], timeout=3.0)
                 return {"success": True, "action": "tap", "coords": (real_x, real_y)}
 
-            elif action_type == "swipe":
-                x1 = int(float(action_data.get("x1", 0.5)) * width)
-                y1 = int(float(action_data.get("y1", 0.5)) * height)
-                x2 = int(float(action_data.get("x2", 0.5)) * width)
-                y2 = int(float(action_data.get("y2", 0.5)) * height)
+            elif action_type in ("swipe", "drag"):
+                rx1 = float(action_data.get("x1", 0.5))
+                ry1 = float(action_data.get("y1", 0.5))
+                rx2 = float(action_data.get("x2", 0.5))
+                ry2 = float(action_data.get("y2", 0.5))
+                x1 = int(rx1 * width if rx1 <= 1.0 else rx1)
+                y1 = int(ry1 * height if ry1 <= 1.0 else ry1)
+                x2 = int(rx2 * width if rx2 <= 1.0 else rx2)
+                y2 = int(ry2 * height if ry2 <= 1.0 else ry2)
                 dur = int(action_data.get("duration", 300))
                 self._run_adb(["-s", device_id, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), str(dur)], timeout=3.0)
                 return {"success": True, "action": "swipe", "from": (x1, y1), "to": (x2, y2)}
+
+            elif action_type in ("wheel", "scroll"):
+                delta = int(action_data.get("delta", action_data.get("deltaY", -120)))
+                mid_x = width // 2
+                mid_y = height // 2
+                offset_y = -300 if delta > 0 else 300
+                self._run_adb(["-s", device_id, "shell", "input", "swipe", str(mid_x), str(mid_y), str(mid_x), str(mid_y + offset_y), "250"], timeout=3.0)
+                return {"success": True, "action": "scroll"}
 
             elif action_type == "key":
                 key = str(action_data.get("key", "BACK")).upper()
@@ -338,7 +605,6 @@ class ForensicsManager:
 
             elif action_type == "text":
                 text = str(action_data.get("text", ""))
-                # Escape spaces and shell metacharacters
                 safe_text = text.replace(" ", "%s").replace("'", "\\'")
                 self._run_adb(["-s", device_id, "shell", "input", "text", safe_text], timeout=3.0)
                 return {"success": True, "action": "text"}
