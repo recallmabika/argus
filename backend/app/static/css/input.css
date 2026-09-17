@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -20,11 +26,6 @@
   }
   .pulse-red {
     animation: pulse-border 1.5s infinite;
-  }
-  .small-caps {
-    font-variant-caps: all-small-caps;
-    font-variant: small-caps;
-    letter-spacing: 0.05em;
   }
 }
 

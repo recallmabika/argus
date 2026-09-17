@@ -664,7 +664,7 @@ function initChart() {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { color: isDark ? '#94A3B8' : '#475569', font: { size: 10 } }
+                    labels: { color: isDark ? '#94A3B8' : '#475569', font: { family: "'Plus Jakarta Sans', system-ui, sans-serif", size: 10, weight: '500' } }
                 }
             }
         }
@@ -934,7 +934,7 @@ function createAlertElement(alert) {
     };
     const borderBadge = sevColors[alert.severity] || sevColors['LOW'];
 
-    div.className = `p-3 rounded-lg border ${borderBadge} flex flex-col space-y-1.5 transition shadow-sm dark:shadow-none`;
+    div.className = `p-3 rounded-lg border ${borderBadge} flex flex-col space-y-1.5 transition`;
     div.innerHTML = `
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
@@ -1001,7 +1001,7 @@ async function fetchDevices() {
                     <td class="py-2.5 px-3 font-mono font-bold ${riskColor}">${d.risk_score} / 100</td>
                     <td class="py-2.5 px-3">${statusBadge}</td>
                     <td class="py-2.5 px-3 text-right">
-                        <button onclick="openDeviceDetail('${d.id}')" class="px-2.5 py-1 rounded bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-blue-600 dark:text-blue-400 font-medium">Inspect</button>
+                        <button onclick="openDeviceDetail('${d.id}')" class="px-2.5 py-1 rounded bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-cyber-600 font-medium text-[11px] transition">Inspect</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
