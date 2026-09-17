@@ -11,13 +11,17 @@
 <body class="bg-slate-50 dark:bg-cyber-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200 antialiased selection:bg-cyan-500 selection:text-white">
 
     <!-- Top Executive Navigation Bar (Revealed on scrolling past the hero) -->
-    <header id="mainNav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 transform -translate-y-full opacity-0 pointer-events-none bg-white/95 dark:bg-cyber-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-cyber-800/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+    <!-- Top Executive Navigation Bar (Revealed on scrolling past the hero with smooth slide motion) -->
+    <header id="mainNav" class="landing-nav-sliding fixed top-0 left-0 right-0 z-50 transform -translate-y-full opacity-0 pointer-events-none bg-white/95 dark:bg-cyber-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-cyber-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
             
-            <!-- Brand Identity (Clean, minimal typography, no ping icons) -->
-            <a href="/" class="flex items-center space-x-2">
-                <span class="text-sm font-light tracking-widest text-slate-900 dark:text-white uppercase">ARTIS</span>
-                <span class="text-[9px] font-mono px-1 py-0.5 rounded border border-slate-300 dark:border-cyber-700 text-slate-500 dark:text-slate-400">SOC</span>
+            <!-- Brand Identity: Big ARTIS Logo + Professional Typography -->
+            <a href="/" class="flex items-center space-x-3 group">
+                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="h-12 sm:h-14 w-auto rounded-lg object-contain flex-shrink-0 group-hover:scale-105 transition-transform" />
+                <div class="flex flex-col">
+                    <span class="text-xl sm:text-2xl font-black tracking-widest text-slate-900 dark:text-white leading-none">ARTIS</span>
+                    <span class="text-[10px] sm:text-xs font-medium text-slate-500 dark:text-slate-400 tracking-wider mt-0.5">Incident Security</span>
+                </div>
             </a>
 
             <!-- Navigation Anchor Links (Very thin text, no icons) -->
@@ -31,10 +35,10 @@
 
             <!-- Actions: Theme Switcher & Console Launch (No icons, no shadows, thin text) -->
             <div class="flex items-center space-x-3">
-                <button type="button" onclick="toggleLandingTheme()" class="px-2.5 py-1 text-[10px] font-light tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-cyber-800 rounded transition" title="Toggle Light/Dark Theme">
+                <button type="button" onclick="toggleLandingTheme()" class="px-3 py-1.5 text-[10px] font-light tracking-widest uppercase text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-cyber-800 rounded transition" title="Toggle Light/Dark Theme">
                     THEME
                 </button>
-                <a href="/console" class="px-4 py-1.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
+                <a href="/console" class="px-5 py-2.5 rounded text-xs font-light tracking-wider uppercase bg-blue-600 hover:bg-blue-500 text-white transition">
                     Launch SOC Console
                 </a>
             </div>
@@ -51,36 +55,31 @@
             
             <!-- Motion-Animated World Map Video-Like Background Layer -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
-                <!-- Cinematic panning/zooming world map layer -->
-                <div class="absolute -inset-12 hero-map-motion opacity-25 dark:opacity-20 flex items-center justify-center">
+                <!-- Cinematic panning/zooming world map layer (Clean, visible, reduced opacity restriction) -->
+                <div class="absolute -inset-12 hero-map-motion opacity-75 dark:opacity-70 flex items-center justify-center">
                     <img src="/static/img/map_world_cyber_blue.png" alt="World Map Background" class="w-full h-full object-cover">
                 </div>
                 <!-- Dynamic HTML5 canvas drawing real-time telemetry arcs, packet trails, and coordinate pings -->
                 <canvas id="heroMapCanvas" class="absolute inset-0 w-full h-full"></canvas>
                 <!-- Subtle sweeping horizontal radar beam line -->
                 <div class="hero-radar-beam"></div>
-                <!-- Atmospheric vignette ensuring thin typography is crystal clear -->
-                <div class="absolute inset-0 bg-gradient-to-b from-slate-50/50 via-slate-50/85 to-slate-50 dark:from-cyber-900/50 dark:via-cyber-900/85 dark:to-cyber-900"></div>
+                <!-- Atmospheric subtle vignette keeping map crisp and typography legible -->
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-50/20 via-slate-50/35 to-slate-50/80 dark:from-cyber-900/20 dark:via-cyber-900/40 dark:to-cyber-900/80"></div>
                 <!-- Subtle Cyber Grid -->
-                <div class="absolute inset-0 cyber-grid-bg opacity-25"></div>
+                <div class="absolute inset-0 cyber-grid-bg opacity-20"></div>
             </div>
 
             <!-- Foreground Hero Content -->
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                 
                 <div class="text-center max-w-4xl mx-auto space-y-6">
-                    <!-- Category Badge (Thin, no ping dot) -->
-                    <div class="inline-flex items-center px-3 py-1 rounded-full border border-slate-300/70 dark:border-cyber-700/60 text-slate-600 dark:text-slate-400 text-[10px] font-light uppercase tracking-widest bg-white/40 dark:bg-cyber-800/40 backdrop-blur-sm">
-                        <span>Sovereign Cyber Incident Security &amp; Forensics</span>
-                    </div>
-
                     <!-- Main Catchphrase (Ultra-thin, elegant, no chunky black bolding) -->
                     <h1 class="text-4xl sm:text-6xl md:text-7xl font-extralight tracking-tight text-slate-900 dark:text-white leading-[1.12]">
                         Continuous Threat Command Across <span class="font-light text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400">Global, Continental &amp; National</span> Horizons
                     </h1>
 
-                    <!-- Description (Thin, clear, calm) -->
-                    <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed font-light max-w-2xl mx-auto">
+                    <!-- Description (Justified text alignment, thin, clear, calm) -->
+                    <p class="text-justify text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-light max-w-2xl mx-auto">
                         High-velocity ingestion telemetry, automated MITRE ATT&amp;CK correlation, remote hardware digital forensics, and cryptographically signed PDF evidence chain of custody across international nodes, Pan-African perimeters, and Zimbabwe national infrastructure.
                     </p>
 
@@ -95,48 +94,51 @@
                     </div>
                 </div>
 
-                <!-- Real-Time Telemetry Metrics Ribbon (No icons, no shadows, very thin text) -->
-                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto w-full">
+                <!-- Real-Time Telemetry Metrics Ribbon (Seamless border-separated grid filling page width, zero div radius) -->
+                <div class="mt-16 w-full max-w-6xl mx-auto border-y border-slate-200/70 dark:border-cyber-700/70 bg-white/30 dark:bg-cyber-900/40 grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/70 dark:divide-cyber-700/70">
                     
-                    <div class="p-4 rounded-xl bg-white/60 dark:bg-cyber-900/60 backdrop-blur-sm border border-slate-200/80 dark:border-cyber-800/80 space-y-1">
-                        <div class="text-[10px] font-light uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                        <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Active Endpoints
                         </div>
-                        <div class="text-2xl sm:text-3xl font-extralight text-slate-900 dark:text-white font-mono flex items-center min-h-[2.25rem]" id="statLiveDevices">
-                            <span class="inline-block h-6 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
+                        <div class="text-3xl sm:text-4xl font-extralight text-slate-900 dark:text-white font-mono flex items-center justify-center min-h-[2.5rem]" id="statLiveDevices">
+                            <span class="inline-block h-6 w-14 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
                         </div>
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">Real Hardware Discovered</p>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-white/60 dark:bg-cyber-900/60 backdrop-blur-sm border border-slate-200/80 dark:border-cyber-800/80 space-y-1">
-                        <div class="text-[10px] font-light uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                        <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Active Threats
                         </div>
-                        <div class="text-2xl sm:text-3xl font-extralight text-rose-600 dark:text-rose-400 font-mono flex items-center min-h-[2.25rem]" id="statActiveAlerts">
-                            <span class="inline-block h-6 w-10 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
+                        <div class="text-3xl sm:text-4xl font-extralight text-rose-600 dark:text-rose-400 font-mono flex items-center justify-center min-h-[2.5rem]" id="statActiveAlerts">
+                            <span class="inline-block h-6 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
                         </div>
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">MITRE ATT&amp;CK Correlated</p>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-white/60 dark:bg-cyber-900/60 backdrop-blur-sm border border-slate-200/80 dark:border-cyber-800/80 space-y-1">
-                        <div class="text-[10px] font-light uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                        <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Root Authority
                         </div>
-                        <div class="text-2xl sm:text-3xl font-extralight text-emerald-600 dark:text-emerald-400 font-mono flex items-center min-h-[2.25rem]">Ed25519</div>
+                        <div class="text-3xl sm:text-4xl font-extralight text-emerald-600 dark:text-emerald-400 font-mono flex items-center justify-center min-h-[2.5rem]">
+                            Ed25519
+                        </div>
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">SHA-256 PDF Verified</p>
                     </div>
 
-                    <div class="p-4 rounded-xl bg-white/60 dark:bg-cyber-900/60 backdrop-blur-sm border border-slate-200/80 dark:border-cyber-800/80 space-y-1">
-                        <div class="text-[10px] font-light uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    <div class="p-6 sm:p-7 space-y-1.5 text-center flex flex-col justify-center items-center">
+                        <div class="text-[10px] font-medium uppercase tracking-widest text-slate-400 dark:text-slate-500">
                             Organizations
                         </div>
-                        <div class="text-2xl sm:text-3xl font-extralight text-blue-600 dark:text-blue-400 font-mono flex items-center min-h-[2.25rem]" id="statActiveOrgs">
-                            <span class="inline-block h-6 w-8 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
+                        <div class="text-3xl sm:text-4xl font-extralight text-blue-600 dark:text-blue-400 font-mono flex items-center justify-center min-h-[2.5rem]" id="statActiveOrgs">
+                            <span class="inline-block h-6 w-10 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
                         </div>
                         <p class="text-[10px] text-slate-400 dark:text-slate-500 font-light">CBZ, Bizmark, Argus</p>
                     </div>
 
                 </div>
+
 
             </div>
         </section>
