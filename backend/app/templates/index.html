@@ -20,73 +20,103 @@
     <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm hidden lg:hidden"></div>
 
     <!-- Collapsible & Fixed Sidebar -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-[65] w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-[65] w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none transition-all duration-200">
         
-        <!-- Sidebar Header / Brand -->
-        <div class="sidebar-header p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
-            <div onclick="toggleSidebar()" class="sidebar-brand-group flex items-center space-x-3 cursor-pointer group" title="Toggle Sidebar (Ctrl+B)">
-                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-auto h-12 rounded-md object-contain shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform" />
+        <!-- Sidebar Header / Brand & Toggle -->
+        <div class="sidebar-header p-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
+            <div onclick="toggleSidebar()" class="sidebar-brand-group flex items-center space-x-2.5 cursor-pointer group" title="ARTIS Incident Security">
+                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-auto h-9 rounded-md object-contain shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform" />
                 <div class="sidebar-text">
-                    <h1 class="text-2xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
+                    <h1 class="text-xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
                         ARTIS
                     </h1>
-                    <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">Incident Security</p>
+                    <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Incident Security</p>
                 </div>
             </div>
-            <!-- Collapse / Hide Sidebar button -->
-            <button onclick="toggleSidebar()" class="sidebar-collapse-btn p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Collapse Sidebar (Ctrl+B)">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="2"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3v18"/>
-                    <path d="M12 9l-4 3 4 3V9z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+            <!-- Collapse / Expand Sidebar button (fold in expanded, hamburger in collapsed) -->
+            <button onclick="toggleSidebar()" class="sidebar-collapse-btn p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Toggle Sidebar (Ctrl+B)">
+                <!-- Fold icon (expanded view) -->
+                <svg class="sidebar-icon-fold w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <path d="M4 6h16"/>
+                    <path d="M4 12h10"/>
+                    <path d="M14 8.5l-3.5 3.5 3.5 3.5"/>
+                    <path d="M4 18h16"/>
+                </svg>
+                <!-- Hamburger icon (collapsed view) -->
+                <svg class="sidebar-icon-hamburger hidden w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <line x1="4" y1="6" x2="20" y2="6"/>
+                    <line x1="4" y1="12" x2="20" y2="12"/>
+                    <line x1="4" y1="18" x2="20" y2="18"/>
                 </svg>
             </button>
         </div>
 
         <!-- Navigation Links -->
-        <div class="sidebar-nav flex-1 overflow-y-auto custom-scrollbar px-3 py-4 space-y-6 text-xs">
+        <div class="sidebar-nav flex-1 overflow-y-auto custom-scrollbar px-2.5 py-3 space-y-5 text-xs">
             <!-- Section: Monitoring -->
             <div class="sidebar-section space-y-1">
-                <div class="sidebar-section-title px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monitoring &amp; SOC</div>
+                <div class="sidebar-section-title px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monitoring &amp; SOC</div>
                 
-                <a href="#dashboard" class="sidebar-link relative flex items-center justify-between px-3 py-2.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold transition group">
+                <!-- Item 1: SOC Overview -->
+                <a href="#dashboard" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg bg-slate-100 dark:bg-cyber-700/60 text-slate-900 dark:text-white font-medium transition group" title="SOC Overview">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                        <span class="sidebar-text">SOC Overview</span>
+                        <svg class="w-4 h-4 text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <rect width="7" height="7" x="3" y="3" rx="1"/>
+                            <rect width="7" height="7" x="14" y="3" rx="1"/>
+                            <rect width="7" height="7" x="14" y="14" rx="1"/>
+                            <rect width="7" height="7" x="3" y="14" rx="1"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">SOC Overview</span>
+                            <span class="sidebar-text-compact hidden">Overview</span>
+                        </span>
                     </div>
-                    <span class="sidebar-badge w-1.5 h-1.5 rounded-full bg-blue-500"></span>
 
                     <!-- Unique Floating Tooltip on Hover -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">SOC Overview</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">Active</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-200 font-semibold">Active</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Live Telemetry &amp; Incident Triage</span>
                     </div>
                 </a>
 
-                <a href="#threats" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 2: Threat Stream -->
+                <a href="#threats" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Threat Stream">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        <span class="sidebar-text">Threat Stream</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Threat Stream</span>
+                            <span class="sidebar-text-compact hidden">Threats</span>
+                        </span>
                     </div>
-                    <span id="sideActiveThreats" class="sidebar-badge px-1.5 py-0.2 rounded font-mono font-bold text-[10px] bg-red-500/10 text-red-500">0</span>
+                    <span id="sideActiveThreats" class="sidebar-badge px-1.5 py-0.2 rounded font-mono font-semibold text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-700 dark:text-slate-300">0</span>
 
                     <!-- Unique Floating Tooltip on Hover -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Threat Stream</span>
-                            <span id="sideActiveThreatsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-red-500/20 text-red-400 border border-red-500/30 font-bold">0 Live</span>
+                            <span id="sideActiveThreatsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-bold">0 Live</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Real-Time MITRE ATT&amp;CK Vectors</span>
                     </div>
                 </a>
 
-                <a href="#devices" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 3: Org Devices -->
+                <a href="#devices" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Org Devices">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>
-                        <span class="sidebar-text">Org Devices</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect width="20" height="14" x="2" y="3" rx="2"/>
+                            <line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/>
+                            <line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Org Devices</span>
+                            <span class="sidebar-text-compact hidden">Devices</span>
+                        </span>
                     </div>
                     <span id="sideEndpoints" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">0</span>
 
@@ -100,17 +130,23 @@
                     </div>
                 </a>
 
-                <a href="#branches" class="sidebar-link relative flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 4: Branch Geolocation -->
+                <a href="#branches" class="sidebar-link relative flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Branch Geolocation">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                        <span class="sidebar-text">Branch Geolocation</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Branch Geolocation</span>
+                            <span class="sidebar-text-compact hidden">Branches</span>
+                        </span>
                     </div>
 
                     <!-- Unique Floating Tooltip on Hover -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Branch Geolocation</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">GeoMap</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">GeoMap</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Global Asset &amp; Facility Tracking</span>
                     </div>
@@ -119,62 +155,87 @@
 
             <!-- Section: Forensics & Response -->
             <div class="sidebar-section space-y-1">
-                <div class="sidebar-section-title px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 small-caps">Forensics &amp; Response</div>
+                <div class="sidebar-section-title px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 small-caps">Forensics &amp; Response</div>
                 <div class="sidebar-section-divider hidden border-t border-slate-200 dark:border-cyber-700/60 my-2 mx-1"></div>
                 
-                <a href="#forensics" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 5: Forensics Bridge -->
+                <a href="#forensics" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Device Forensics Bridge">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>
-                        <span class="sidebar-text">Device Forensics Bridge</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
+                            <line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Device Forensics Bridge</span>
+                            <span class="sidebar-text-compact hidden">Forensics</span>
+                        </span>
                     </div>
-                    <span id="sideForensicsCount" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold border border-cyan-500/20">1</span>
+                    <span id="sideForensicsCount" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 font-semibold">1</span>
 
                     <!-- Unique Floating Tooltip on Hover -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Forensics Bridge</span>
-                            <span id="sideForensicsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold">1 Target</span>
+                            <span id="sideForensicsTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">1 Target</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Hardware ADB &amp; Wi-Fi Remote Mirror</span>
                     </div>
                 </a>
 
-                <button onclick="openReportModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 6: Export Incident PDF -->
+                <button onclick="openReportModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Export Incident PDF">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span class="sidebar-text">Export Incident PDF</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Export Incident PDF</span>
+                            <span class="sidebar-text-compact hidden">Export</span>
+                        </span>
                     </div>
 
                     <!-- Unique Floating Tooltip on Hover -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Export PDF</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-semibold">Signed</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">Signed</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Executive Monochrome Report PDF</span>
                     </div>
                 </button>
 
-                <button onclick="openVerifyModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 7: Verify PDF Signature -->
+                <button onclick="openVerifyModal()" class="sidebar-link relative w-full text-left flex items-center space-x-2.5 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Verify PDF Signature">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span class="sidebar-text">Verify PDF Signature</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Verify PDF Signature</span>
+                            <span class="sidebar-text-compact hidden">Verify</span>
+                        </span>
                     </div>
 
                     <!-- Unique Floating Tooltip on Hover -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Verify Signature</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">SHA-256</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">SHA-256</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Cryptographic Tamper-Check</span>
                     </div>
                 </button>
 
-                <button onclick="toggleAuditDrawer()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
+                <!-- Item 8: Access Audit Trail -->
+                <button onclick="toggleAuditDrawer()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Access Audit Trail">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <span class="sidebar-text">Access Audit Trail</span>
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Access Audit Trail</span>
+                            <span class="sidebar-text-compact hidden">Audit</span>
+                        </span>
                     </div>
                     <span id="sideAuditCount" class="sidebar-badge font-mono text-[10px] text-slate-400">0</span>
 
@@ -182,7 +243,7 @@
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Audit Trail</span>
-                            <span id="sideAuditTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-500/20 text-purple-400 border border-purple-500/30 font-semibold">0 Logs</span>
+                            <span id="sideAuditTooltip" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">0 Logs</span>
                         </div>
                         <span class="text-[10px] text-slate-400 font-normal">Tamper-Evident Security Log</span>
                     </div>
@@ -494,8 +555,36 @@
                         </div>
 
                         <div id="alertContainer" class="flex-1 overflow-y-auto space-y-2.5 pt-3 custom-scrollbar min-h-[300px]">
-                            <div class="text-center py-20 text-slate-400 text-xs">
-                                Listening for telemetry events... Run agent or threat test to stream live incidents.
+                            <!-- Skeleton Ghost Stream -->
+                            <div class="alert-skeleton p-3 rounded-lg border border-slate-200 dark:border-cyber-700/50 bg-slate-50 dark:bg-cyber-800/40 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2 w-2/3">
+                                        <div class="w-14 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                        <div class="w-1/2 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                    </div>
+                                    <div class="w-12 h-3 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                </div>
+                                <div class="w-4/5 h-3 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+                            </div>
+                            <div class="alert-skeleton p-3 rounded-lg border border-slate-200 dark:border-cyber-700/50 bg-slate-50 dark:bg-cyber-800/40 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2 w-2/3">
+                                        <div class="w-12 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                        <div class="w-3/5 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                    </div>
+                                    <div class="w-12 h-3 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                </div>
+                                <div class="w-2/3 h-3 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+                            </div>
+                            <div class="alert-skeleton p-3 rounded-lg border border-slate-200 dark:border-cyber-700/50 bg-slate-50 dark:bg-cyber-800/40 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2 w-2/3">
+                                        <div class="w-16 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                        <div class="w-2/5 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                    </div>
+                                    <div class="w-12 h-3 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                </div>
+                                <div class="w-3/4 h-3 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
                             </div>
                         </div>
                     </div>
@@ -564,8 +653,33 @@
                                     </tr>
                                 </thead>
                                 <tbody id="devicesTableBody" class="divide-y divide-slate-200 dark:divide-cyber-700/40 text-slate-700 dark:text-slate-300">
-                                    <tr>
-                                        <td colspan="7" class="py-8 text-center text-slate-400">No devices connected yet. Launch agent-desktop to enroll.</td>
+                                    <!-- Skeleton Device Rows -->
+                                    <tr class="device-skeleton">
+                                        <td class="py-3 px-3"><div class="h-3.5 w-28 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-24 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-4 w-14 bg-slate-200 dark:bg-cyber-700/60 rounded-full animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3 text-right"><div class="h-6 w-14 ml-auto bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                    </tr>
+                                    <tr class="device-skeleton">
+                                        <td class="py-3 px-3"><div class="h-3.5 w-32 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-4 w-14 bg-slate-200 dark:bg-cyber-700/60 rounded-full animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3 text-right"><div class="h-6 w-14 ml-auto bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                    </tr>
+                                    <tr class="device-skeleton">
+                                        <td class="py-3 px-3"><div class="h-3.5 w-24 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-24 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-3.5 w-28 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-4 w-14 bg-slate-200 dark:bg-cyber-700/60 rounded-full animate-pulse"></div></td>
+                                        <td class="py-3 px-3"><div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                                        <td class="py-3 px-3 text-right"><div class="h-6 w-14 ml-auto bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -624,8 +738,37 @@
 
                 <!-- Attached Target Devices Grid -->
                 <div id="forensicDevicesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pt-1">
-                    <div class="p-6 text-center text-slate-400 text-xs col-span-full border border-dashed border-slate-200 dark:border-cyber-700/60 rounded-xl">
-                        Scanning USB bus and wireless ports for forensic targets...
+                    <div class="forensic-skeleton p-4 bg-slate-50 dark:bg-cyber-800/40 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 w-2/3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-cyber-700/70 animate-pulse"></div>
+                                <div class="space-y-1.5 flex-1">
+                                    <div class="h-3.5 w-3/4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                    <div class="h-2.5 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded-full animate-pulse"></div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <div class="h-7 flex-1 bg-slate-200 dark:bg-cyber-700/60 rounded-lg animate-pulse"></div>
+                            <div class="h-7 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded-lg animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="forensic-skeleton p-4 bg-slate-50 dark:bg-cyber-800/40 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 w-2/3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-cyber-700/70 animate-pulse"></div>
+                                <div class="space-y-1.5 flex-1">
+                                    <div class="h-3.5 w-3/4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                                    <div class="h-2.5 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded-full animate-pulse"></div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <div class="h-7 flex-1 bg-slate-200 dark:bg-cyber-700/60 rounded-lg animate-pulse"></div>
+                            <div class="h-7 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded-lg animate-pulse"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -730,7 +873,22 @@
             </button>
         </div>
         <div id="auditList" class="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scrollbar text-xs">
-            <p class="text-slate-400 text-center py-10">No audit events logged yet.</p>
+            <div class="audit-skeleton p-2.5 bg-slate-100 dark:bg-cyber-800/50 rounded border border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                <div class="flex justify-between">
+                    <div class="h-3 w-20 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-12 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3.5 w-3/4 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div>
+                <div class="h-2.5 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+            <div class="audit-skeleton p-2.5 bg-slate-100 dark:bg-cyber-800/50 rounded border border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                <div class="flex justify-between">
+                    <div class="h-3 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-12 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3.5 w-2/3 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div>
+                <div class="h-2.5 w-3/5 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
         </div>
     </div>
 

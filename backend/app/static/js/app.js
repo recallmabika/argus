@@ -709,6 +709,112 @@ function initWebSocket() {
     };
 }
 
+// ==========================================
+// Skeleton Placeholder Screen Generators
+// ==========================================
+function renderAlertsSkeleton(container, count = 3) {
+    if (!container) return;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="alert-skeleton p-3 rounded-lg border border-slate-200 dark:border-cyber-700/50 bg-slate-50 dark:bg-cyber-800/40 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 w-2/3">
+                        <div class="w-14 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                        <div class="w-1/2 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    </div>
+                    <div class="w-12 h-3 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="w-4/5 h-3 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+function renderDevicesSkeleton(tbody, rows = 4) {
+    if (!tbody) return;
+    let html = '';
+    for (let i = 0; i < rows; i++) {
+        html += `
+            <tr class="device-skeleton">
+                <td class="py-3 px-3"><div class="h-3.5 w-28 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-3 px-3"><div class="h-3.5 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-3 px-3"><div class="h-3.5 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-3 px-3"><div class="h-3.5 w-24 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-3 px-3"><div class="h-4 w-14 bg-slate-200 dark:bg-cyber-700/60 rounded-full animate-pulse"></div></td>
+                <td class="py-3 px-3"><div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-3 px-3 text-right"><div class="h-6 w-14 ml-auto bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+            </tr>
+        `;
+    }
+    tbody.innerHTML = html;
+}
+
+function renderForensicDevicesSkeleton(grid, count = 2) {
+    if (!grid) return;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="forensic-skeleton p-4 bg-slate-50 dark:bg-cyber-800/40 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 w-2/3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-cyber-700/70 animate-pulse"></div>
+                        <div class="space-y-1.5 flex-1">
+                            <div class="h-3.5 w-3/4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                            <div class="h-2.5 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="h-4 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded-full animate-pulse"></div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <div class="h-7 flex-1 bg-slate-200 dark:bg-cyber-700/60 rounded-lg animate-pulse"></div>
+                    <div class="h-7 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded-lg animate-pulse"></div>
+                </div>
+            </div>
+        `;
+    }
+    grid.innerHTML = html;
+}
+
+function renderAuditSkeleton(list, count = 3) {
+    if (!list) return;
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="audit-skeleton p-2.5 bg-slate-100 dark:bg-cyber-800/50 rounded border border-slate-200 dark:border-cyber-700/50 space-y-1.5">
+                <div class="flex justify-between">
+                    <div class="h-3 w-20 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-12 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3.5 w-3/4 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div>
+                <div class="h-2.5 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+        `;
+    }
+    list.innerHTML = html;
+}
+
+function renderForensicFilesSkeleton(tbody, rows = 5) {
+    if (!tbody) return;
+    let html = '';
+    for (let i = 0; i < rows; i++) {
+        html += `
+            <tr class="file-skeleton">
+                <td class="py-2.5 px-4 flex items-center space-x-2">
+                    <div class="w-4 h-4 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse flex-shrink-0"></div>
+                    <div class="h-3.5 w-36 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </td>
+                <td class="py-2.5 px-3"><div class="h-3 w-14 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-2.5 px-3"><div class="h-3 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-2.5 px-3"><div class="h-3 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+                <td class="py-2.5 px-4 text-right"><div class="h-6 w-20 ml-auto bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></div></td>
+            </tr>
+        `;
+    }
+    tbody.innerHTML = html;
+}
+
 async function fetchInitialData() {
     await Promise.all([
         fetchAlerts(),
@@ -737,7 +843,8 @@ async function fetchAlerts() {
         const res = await fetch('/api/v1/alerts?limit=25');
         const alerts = await res.json();
         const container = document.getElementById('alertContainer');
-        if (alerts.length > 0) {
+        if (!container) return;
+        if (alerts && alerts.length > 0) {
             container.innerHTML = '';
             const tacticCounts = { 'Execution': 0, 'Collection': 0, 'Exfiltration': 0, 'Discovery': 0, 'Initial Access': 0 };
             alerts.forEach(a => {
@@ -746,8 +853,16 @@ async function fetchAlerts() {
                     tacticCounts[a.mitre_tactic]++;
                 }
             });
-            mitreChart.data.datasets[0].data = Object.values(tacticCounts);
-            mitreChart.update();
+            if (mitreChart) {
+                mitreChart.data.datasets[0].data = Object.values(tacticCounts);
+                mitreChart.update();
+            }
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-20 text-slate-400 text-xs">
+                    Listening for telemetry events... Run agent or threat test to stream live incidents.
+                </div>
+            `;
         }
     } catch (e) {
         console.error(e);
@@ -756,7 +871,8 @@ async function fetchAlerts() {
 
 function prependAlert(alert) {
     const container = document.getElementById('alertContainer');
-    if (container.children.length === 1 && container.innerText.includes('Listening for telemetry')) {
+    if (!container) return;
+    if (container.querySelector('.alert-skeleton') || container.innerText.includes('Listening for telemetry')) {
         container.innerHTML = '';
     }
     const el = createAlertElement(alert);
@@ -826,7 +942,8 @@ async function fetchDevices() {
         if (sideEndpointsTip) sideEndpointsTip.innerText = `${devices.length} Fleet`;
 
         const tbody = document.getElementById('devicesTableBody');
-        if (devices.length > 0) {
+        if (!tbody) return;
+        if (devices && devices.length > 0) {
             tbody.innerHTML = '';
             devices.forEach(d => {
                 const tr = document.createElement('tr');
@@ -859,6 +976,8 @@ async function fetchDevices() {
                     }
                 }
             });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400">No devices connected yet. Launch agent-desktop to enroll.</td></tr>';
         }
     } catch (e) {
         console.error(e);
@@ -1093,7 +1212,8 @@ async function fetchAudit() {
         const sideAuditTip = document.getElementById('sideAuditTooltip');
         if (sideAuditTip) sideAuditTip.innerText = `${logs.length} Logs`;
         const list = document.getElementById('auditList');
-        if (logs.length > 0) {
+        if (!list) return;
+        if (logs && logs.length > 0) {
             list.innerHTML = '';
             logs.forEach(l => {
                 const item = document.createElement('div');
@@ -1108,6 +1228,8 @@ async function fetchAudit() {
                 `;
                 list.appendChild(item);
             });
+        } else {
+            list.innerHTML = '<p class="text-slate-400 text-center py-10">No audit events logged yet.</p>';
         }
     } catch (e) {
         console.error(e);
@@ -1154,6 +1276,11 @@ function escapeHtml(text) {
 }
 
 async function fetchForensicDevices() {
+    const grid = document.getElementById('forensicDevicesGrid');
+    if (grid && (!grid.children.length || grid.querySelector('.p-6'))) {
+        renderForensicDevicesSkeleton(grid, 2);
+    }
+
     try {
         const res = await fetch('/api/v1/forensics/devices');
         if (!res.ok) return;
@@ -1992,7 +2119,7 @@ async function loadForensicFiles(targetPath) {
 
     const tbody = document.getElementById('forensicFilesTableBody');
     if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 font-mono text-xs"><svg class="w-5 h-5 mx-auto mb-2 text-cyan-500 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>Scanning device file system at ${path}...</td></tr>`;
+    renderForensicFilesSkeleton(tbody, 5);
 
     try {
         const res = await fetch(`/api/v1/forensics/devices/${encodeURIComponent(currentForensicDeviceId)}/files?path=${encodeURIComponent(path)}`);

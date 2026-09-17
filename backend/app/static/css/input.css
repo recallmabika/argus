@@ -52,34 +52,35 @@
     margin-left: 0;
   }
   #sidebar.sidebar-collapsed {
-    width: 4.25rem !important;
+    width: 5rem !important;
     overflow: visible !important;
   }
 }
 
-/* Collapsed Sidebar Rules */
+/* Collapsed Sidebar Rules (Matching Clean Monochrome Reference) */
 #sidebar.sidebar-collapsed .sidebar-header {
   padding: 0.65rem 0.25rem !important;
   justify-content: center !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-brand-group {
-  justify-content: center !important;
-  margin: 0 !important;
-}
-
-#sidebar.sidebar-collapsed .sidebar-text {
   display: none !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-collapse-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  padding: 0.4rem !important;
+}
+
+#sidebar.sidebar-collapsed .sidebar-collapse-btn .sidebar-icon-fold {
   display: none !important;
 }
 
-#sidebar.sidebar-collapsed .sidebar-logo {
-  height: 2.25rem !important;
-  width: 2.25rem !important;
-  object-fit: contain;
+#sidebar.sidebar-collapsed .sidebar-collapse-btn .sidebar-icon-hamburger {
+  display: block !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-nav {
@@ -90,18 +91,44 @@
 
 #sidebar.sidebar-collapsed .sidebar-link {
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 2.5rem !important;
-  height: 2.5rem !important;
-  margin: 0.2rem auto !important;
-  padding: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  margin: 0.35rem 0 !important;
+  padding: 0.45rem 0.2rem !important;
   border-radius: 0.5rem !important;
+  text-align: center !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-link-content {
-  gap: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
   justify-content: center !important;
+  gap: 0.25rem !important;
+  width: 100% !important;
+}
+
+#sidebar.sidebar-collapsed .sidebar-text {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin: 0 !important;
+}
+
+#sidebar.sidebar-collapsed .sidebar-text-full {
+  display: none !important;
+}
+
+#sidebar.sidebar-collapsed .sidebar-text-compact {
+  display: block !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.01em !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-badge {
@@ -114,8 +141,8 @@
 
 #sidebar.sidebar-collapsed .sidebar-section-divider {
   display: block !important;
-  margin: 0.5rem auto !important;
-  width: 1.75rem !important;
+  margin: 0.4rem auto !important;
+  width: 2rem !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-section:first-child .sidebar-section-divider {
@@ -138,11 +165,11 @@
 }
 
 #sidebar.sidebar-collapsed .sidebar-footer-compact .sidebar-link {
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 100% !important;
+  height: auto !important;
   flex-direction: column !important;
   justify-content: center !important;
-  padding: 0.2rem 0 !important;
+  padding: 0.35rem 0.2rem !important;
 }
 
 /* Sidebar Floating Cyber Tooltip */
