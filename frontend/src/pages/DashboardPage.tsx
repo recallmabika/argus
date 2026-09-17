@@ -4,6 +4,7 @@ import { MitreChartCard } from '../components/dashboard/MitreChartCard';
 import { DevicesTableCard } from '../components/dashboard/DevicesTableCard';
 import { GeolocationMapCard } from '../components/dashboard/GeolocationMapCard';
 import { ThreatStreamFeed } from '../components/threats/ThreatStreamFeed';
+import { ForensicsBridgeWorkstation } from '../components/dashboard/ForensicsBridgeWorkstation';
 import { Alert, AlertStats, Device } from '../types';
 import { api } from '../services/api';
 import { useArgusWebSocket } from '../services/websocket';
@@ -223,7 +224,12 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* 5-Card Metrics Ribbon */}
-      <MetricsRibbon stats={stats} deviceCount={devices.length} auditCount={auditCount} />
+      <MetricsRibbon
+        stats={stats}
+        deviceCount={devices.length}
+        auditCount={auditCount}
+        branchCount={new Set(devices.map((d) => d.branch_name).filter(Boolean)).size}
+      />
 
       {/* Upper Modular Section: Slots 1 & 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -236,6 +242,9 @@ export const DashboardPage: React.FC = () => {
         {renderSlot('slot3', 'lg:col-span-2', 'min-h-[380px] lg:min-h-[420px]')}
         {renderSlot('slot4', 'lg:col-span-1', 'min-h-[380px] lg:min-h-[420px]')}
       </div>
+
+      {/* Digital Forensics & Hardware Bridge Workstation */}
+      <ForensicsBridgeWorkstation />
     </div>
   );
 };

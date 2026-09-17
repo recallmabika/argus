@@ -138,3 +138,41 @@ export interface VerifyReportResponse {
   timestamp?: string;
   error?: string;
 }
+
+export interface ForensicDevice {
+  id: string;
+  name?: string;
+  model?: string;
+  type: string;
+  platform?: string;
+  status: string;
+  connection?: string;
+  battery?: { level?: number } | string;
+  total_space?: number;
+  details?: Record<string, any>;
+}
+
+export interface ForensicWindow {
+  id: string;
+  title: string;
+  handle: number | string;
+  process_name?: string;
+}
+
+export interface ForensicFile {
+  name: string;
+  type: 'file' | 'dir';
+  size?: number;
+  size_formatted?: string;
+  modified?: string;
+  path: string;
+}
+
+export interface ForensicTriage {
+  os?: string;
+  arch?: string;
+  packages_count?: number;
+  procs_count?: number;
+  battery?: any;
+  network?: any;
+}

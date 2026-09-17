@@ -8,3 +8,5 @@ export { ThreatHuntingModal } from './ThreatHuntingModal';
 export { WebhooksModal } from './WebhooksModal';
 export { KillProcessModal } from './KillProcessModal';
 export { MessageBoxModal } from './MessageBoxModal';
+export { ForensicStudioModal } from './ForensicStudioModal';
+export { WirelessConnectModal } from './WirelessConnectModal';

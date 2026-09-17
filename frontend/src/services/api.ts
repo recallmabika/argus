@@ -9,7 +9,11 @@ import {
   WebhookConfig,
   AttackChainResponse,
   ReportGenerationResponse,
-  VerifyReportResponse
+  VerifyReportResponse,
+  ForensicDevice,
+  ForensicWindow,
+  ForensicFile,
+  ForensicTriage
 } from '../types';
 
 const BASE_URL = ''; // Relative URL handled by Vite proxy or FastAPI in production
@@ -129,6 +133,61 @@ export const api = {
   async deleteWebhook(webhookId: string): Promise<{ success: boolean }> {
     const res = await fetch(`${BASE_URL}/api/v1/webhooks/${webhookId}`, {
       method: 'DELETE'
+    });
+    return handleResponse(res);
+  },
+
+  // Forensics Device Bridge & Studio
+  async getForensicDevices(): Promise<{ count: number; devices: ForensicDevice[] }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices`);
+    return handleResponse(res);
+  },
+
+  async connectWireless(ip: string, port: number = 5555): Promise<{ status: string; message: string }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/connect-wireless`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip, port })
+    });
+    return handleResponse(res);
+  },
+
+  async disconnectForensicDevice(deviceId: string): Promise<{ success: boolean }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/disconnect`, {
+      method: 'POST'
+    });
+    return handleResponse(res);
+  },
+
+  async getDeviceWindows(deviceId: string): Promise<{ count: number; windows: ForensicWindow[] }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/windows`);
+    return handleResponse(res);
+  },
+
+  async sendForensicInput(deviceId: string, payload: Record<string, any>): Promise<any> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/input`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return handleResponse(res);
+  },
+
+  async listForensicFiles(deviceId: string, path: string): Promise<{ path: string; items: ForensicFile[] }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/files?path=${encodeURIComponent(path)}`);
+    return handleResponse(res);
+  },
+
+  async getForensicTriage(deviceId: string): Promise<ForensicTriage> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/triage`);
+    return handleResponse(res);
+  },
+
+  async executeForensicShell(deviceId: string, command: string): Promise<{ output: string; exit_code?: number }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/shell`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ command })
     });
     return handleResponse(res);
   }

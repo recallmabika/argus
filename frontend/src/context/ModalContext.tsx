@@ -20,12 +20,18 @@ interface ModalContextType {
   isSettingsOpen: boolean;
   isHuntingOpen: boolean;
   isWebhooksOpen: boolean;
+  isWirelessConnectOpen: boolean;
+  activeForensicDeviceId: string | null;
   activeDeviceId: string | null;
   activeAttackChainAlertId: string | null;
   killProcessTarget: { deviceId?: string; defaultTarget?: string } | null;
   messageBox: (MessageBoxOptions & { resolve?: (val: boolean) => void }) | null;
 
   // Actions
+  openWirelessConnect: () => void;
+  closeWirelessConnect: () => void;
+  openForensicStudio: (deviceId: string) => void;
+  closeForensicStudio: () => void;
   openReport: () => void;
   closeReport: () => void;
   openVerify: () => void;
@@ -59,10 +65,18 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHuntingOpen, setIsHuntingOpen] = useState(false);
   const [isWebhooksOpen, setIsWebhooksOpen] = useState(false);
+  const [isWirelessConnectOpen, setIsWirelessConnectOpen] = useState(false);
+  const [activeForensicDeviceId, setActiveForensicDeviceId] = useState<string | null>(null);
   const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
   const [activeAttackChainAlertId, setActiveAttackChainAlertId] = useState<string | null>(null);
   const [killProcessTarget, setKillProcessTarget] = useState<{ deviceId?: string; defaultTarget?: string } | null>(null);
   const [messageBox, setMessageBox] = useState<(MessageBoxOptions & { resolve?: (val: boolean) => void }) | null>(null);
+
+  const openWirelessConnect = useCallback(() => setIsWirelessConnectOpen(true), []);
+  const closeWirelessConnect = useCallback(() => setIsWirelessConnectOpen(false), []);
+
+  const openForensicStudio = useCallback((deviceId: string) => setActiveForensicDeviceId(deviceId), []);
+  const closeForensicStudio = useCallback(() => setActiveForensicDeviceId(null), []);
 
   const openReport = useCallback(() => setIsReportOpen(true), []);
   const closeReport = useCallback(() => setIsReportOpen(false), []);
@@ -140,10 +154,16 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isSettingsOpen,
         isHuntingOpen,
         isWebhooksOpen,
+        isWirelessConnectOpen,
+        activeForensicDeviceId,
         activeDeviceId,
         activeAttackChainAlertId,
         killProcessTarget,
         messageBox,
+        openWirelessConnect,
+        closeWirelessConnect,
+        openForensicStudio,
+        closeForensicStudio,
         openReport,
         closeReport,
         openVerify,

@@ -87,8 +87,8 @@ def _render_spa_or_template(request: Request, template_name: str):
 @app.get("/", response_class=HTMLResponse)
 @app.get("/landing", response_class=HTMLResponse)
 async def get_landing_page(request: Request):
-    """Renders the original executive ARTIS landing page with full cinematic radar & geospatial matrix."""
-    return templates.TemplateResponse(request=request, name="landing.html")
+    """Renders the executive landing page (React SPA or Jinja fallback)."""
+    return _render_spa_or_template(request, "landing.html")
 
 
 @app.get("/console", response_class=HTMLResponse)
@@ -120,6 +120,14 @@ async def get_legacy_dashboard(request: Request):
 @app.get("/legacy/threats", response_class=HTMLResponse)
 async def get_legacy_threats(request: Request):
     return templates.TemplateResponse(request=request, name="threats.html")
+
+
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def spa_catch_all(request: Request, full_path: str):
+    """SPA catch-all to route any client-side paths to the React SPA index."""
+    if full_path.startswith(("api/", "static/", "assets/", "ws")):
+        return HTMLResponse(status_code=404)
+    return _render_spa_or_template(request, "index.html")
 
 
 @app.websocket("/ws")
