@@ -162,6 +162,24 @@ function updateThemeIcon(isDark) {
     }
 }
 
+let mapTransitionTimer = null;
+
+function renderNodeInspectorSkeleton() {
+    const nameEl = document.getElementById('nodeDetailName');
+    const regionEl = document.getElementById('nodeDetailRegion');
+    const statusEl = document.getElementById('nodeDetailStatus');
+    const latencyEl = document.getElementById('nodeDetailLatency');
+    const sensorsEl = document.getElementById('nodeDetailSensors');
+    const descEl = document.getElementById('nodeDetailDesc');
+
+    if (nameEl) nameEl.innerHTML = '<span class="inline-block h-5 w-48 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (regionEl) regionEl.innerHTML = '<span class="inline-block h-3.5 w-28 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (statusEl) statusEl.innerHTML = '<span class="inline-block h-4 w-20 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (latencyEl) latencyEl.innerHTML = '<span class="inline-block h-4 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (sensorsEl) sensorsEl.innerHTML = '<span class="inline-block h-4 w-32 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+    if (descEl) descEl.innerHTML = '<span class="block h-3 w-full bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse mb-1.5"></span><span class="block h-3 w-3/4 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>';
+}
+
 function setMapLevel(level) {
     currentMapLevel = level;
 
@@ -175,44 +193,59 @@ function setMapLevel(level) {
         }
     });
 
-    const panels = document.querySelectorAll('.map-view-panel');
-    panels.forEach(panel => {
-        if (panel.id === `mapPanel-${level}`) {
-            panel.classList.add('active');
-        } else {
-            panel.classList.remove('active');
-        }
-    });
-
-    const titleEl = document.getElementById('mapLevelTitle');
-    const descEl = document.getElementById('mapLevelDesc');
-    const badgeEl = document.getElementById('mapLevelBadge');
-
-    if (level === 'world') {
-        if (titleEl) titleEl.textContent = 'Global Threat Telemetry Grid';
-        if (descEl) descEl.textContent = 'Continuous global attack surface intelligence and cross-border adversary vector correlation.';
-        if (badgeEl) {
-            badgeEl.textContent = 'GLOBAL VISIBILITY';
-            badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
-        }
-        inspectNode('world-af');
-    } else if (level === 'africa') {
-        if (titleEl) titleEl.textContent = 'Pan-African Cyber Defense Shield';
-        if (descEl) descEl.textContent = 'Regional infrastructure security and unified inter-institutional threat intelligence across SADC.';
-        if (badgeEl) {
-            badgeEl.textContent = 'CONTINENTAL MATRIX';
-            badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
-        }
-        inspectNode('africa-sadc');
-    } else if (level === 'zimbabwe') {
-        if (titleEl) titleEl.textContent = 'Zimbabwe National Security Operations Center';
-        if (descEl) descEl.textContent = 'Primary tactical command, commercial banking protection hubs, and high-security border gateway endpoints.';
-        if (badgeEl) {
-            badgeEl.textContent = 'NATIONAL COMMAND';
-            badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
-        }
-        inspectNode('zim-harare');
+    const overlay = document.getElementById('mapLoadingSkeleton');
+    if (overlay) {
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        overlay.classList.add('opacity-100');
     }
+    renderNodeInspectorSkeleton();
+
+    if (mapTransitionTimer) clearTimeout(mapTransitionTimer);
+    mapTransitionTimer = setTimeout(() => {
+        const panels = document.querySelectorAll('.map-view-panel');
+        panels.forEach(panel => {
+            if (panel.id === `mapPanel-${level}`) {
+                panel.classList.add('active');
+            } else {
+                panel.classList.remove('active');
+            }
+        });
+
+        const titleEl = document.getElementById('mapLevelTitle');
+        const descEl = document.getElementById('mapLevelDesc');
+        const badgeEl = document.getElementById('mapLevelBadge');
+
+        if (level === 'world') {
+            if (titleEl) titleEl.textContent = 'Global Threat Telemetry Grid';
+            if (descEl) descEl.textContent = 'Continuous global attack surface intelligence and cross-border adversary vector correlation.';
+            if (badgeEl) {
+                badgeEl.textContent = 'GLOBAL VISIBILITY';
+                badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+            }
+            inspectNode('world-af');
+        } else if (level === 'africa') {
+            if (titleEl) titleEl.textContent = 'Pan-African Cyber Defense Shield';
+            if (descEl) descEl.textContent = 'Regional infrastructure security and unified inter-institutional threat intelligence across SADC.';
+            if (badgeEl) {
+                badgeEl.textContent = 'CONTINENTAL MATRIX';
+                badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+            }
+            inspectNode('africa-sadc');
+        } else if (level === 'zimbabwe') {
+            if (titleEl) titleEl.textContent = 'Zimbabwe National Security Operations Center';
+            if (descEl) descEl.textContent = 'Primary tactical command, commercial banking protection hubs, and high-security border gateway endpoints.';
+            if (badgeEl) {
+                badgeEl.textContent = 'NATIONAL COMMAND';
+                badgeEl.className = 'text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20';
+            }
+            inspectNode('zim-harare');
+        }
+
+        if (overlay) {
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
+    }, 180);
 }
 
 function inspectNode(nodeKey) {
@@ -269,6 +302,8 @@ async function fetchLivePlatformStats() {
 }
 
 function animateCounter(el, target) {
+    if (!el) return;
+    el.innerHTML = '';
     let current = 0;
     const duration = 800;
     const stepTime = 30;

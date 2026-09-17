@@ -815,6 +815,35 @@ function renderForensicFilesSkeleton(tbody, rows = 5) {
     tbody.innerHTML = html;
 }
 
+function renderModalTabSkeleton(contentDiv) {
+    if (!contentDiv) return;
+    contentDiv.innerHTML = `
+        <div class="space-y-3">
+            <div class="p-3 bg-slate-100 dark:bg-cyber-800/60 rounded-xl border border-slate-200 dark:border-cyber-700/50 space-y-2">
+                <div class="flex justify-between items-center">
+                    <div class="h-4 w-36 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3 w-3/4 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+            <div class="p-3 bg-slate-100 dark:bg-cyber-800/60 rounded-xl border border-slate-200 dark:border-cyber-700/50 space-y-2">
+                <div class="flex justify-between items-center">
+                    <div class="h-4 w-28 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3 w-2/3 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+            <div class="p-3 bg-slate-100 dark:bg-cyber-800/60 rounded-xl border border-slate-200 dark:border-cyber-700/50 space-y-2">
+                <div class="flex justify-between items-center">
+                    <div class="h-4 w-32 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                    <div class="h-3 w-16 bg-slate-200 dark:bg-cyber-700/70 rounded animate-pulse"></div>
+                </div>
+                <div class="h-3 w-1/2 bg-slate-200 dark:bg-cyber-700/50 rounded animate-pulse"></div>
+            </div>
+        </div>
+    `;
+}
+
 async function fetchInitialData() {
     await Promise.all([
         fetchAlerts(),
@@ -986,14 +1015,23 @@ async function fetchDevices() {
 
 async function openDeviceDetail(deviceId) {
     try {
+        const modal = document.getElementById('deviceModal');
+        const title = document.getElementById('modalDeviceTitle');
+        const sub = document.getElementById('modalDeviceSub');
+        const contentDiv = document.getElementById('modalTabContent');
+
+        if (title) title.innerText = 'Connecting Node...';
+        if (sub) sub.innerText = 'Fetching endpoint telemetry and security logs...';
+        renderModalTabSkeleton(contentDiv);
+        if (modal) modal.classList.remove('hidden');
+
         const res = await fetch(`/api/v1/devices/${deviceId}`);
         activeDeviceData = await res.json();
 
-        document.getElementById('modalDeviceTitle').innerText = `${activeDeviceData.device.hostname} — Telemetry Inspector`;
-        document.getElementById('modalDeviceSub').innerText = `OS: ${activeDeviceData.device.os_type} | User: ${activeDeviceData.device.current_user || 'unknown'} | Branch: ${activeDeviceData.device.branch_name}`;
+        if (title) title.innerText = `${activeDeviceData.device.hostname} — Telemetry Inspector`;
+        if (sub) sub.innerText = `OS: ${activeDeviceData.device.os_type} | User: ${activeDeviceData.device.current_user || 'unknown'} | Branch: ${activeDeviceData.device.branch_name}`;
 
         switchTab('processes');
-        document.getElementById('deviceModal').classList.remove('hidden');
         fetchAudit();
     } catch (e) {
         console.error(e);

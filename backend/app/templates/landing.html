@@ -104,7 +104,9 @@
                             <span class="text-[11px] font-semibold uppercase tracking-wider">Active Endpoints</span>
                             <svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
-                        <div class="text-2xl font-black text-slate-900 dark:text-white font-mono" id="statLiveDevices">0</div>
+                        <div class="text-2xl font-black text-slate-900 dark:text-white font-mono flex items-center min-h-[2rem]" id="statLiveDevices">
+                            <span class="inline-block h-6 w-12 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
+                        </div>
                         <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Real Hardware Discovered</p>
                     </div>
 
@@ -113,7 +115,9 @@
                             <span class="text-[11px] font-semibold uppercase tracking-wider">Active Threats</span>
                             <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
-                        <div class="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono" id="statActiveAlerts">0</div>
+                        <div class="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono flex items-center min-h-[2rem]" id="statActiveAlerts">
+                            <span class="inline-block h-6 w-10 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
+                        </div>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">MITRE ATT&amp;CK Correlated</p>
                     </div>
 
@@ -122,7 +126,7 @@
                             <span class="text-[11px] font-semibold uppercase tracking-wider">Root Authority</span>
                             <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
-                        <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">Ed25519</div>
+                        <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono flex items-center min-h-[2rem]">Ed25519</div>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">SHA-256 PDF Verified</p>
                     </div>
 
@@ -131,7 +135,9 @@
                             <span class="text-[11px] font-semibold uppercase tracking-wider">Organizations</span>
                             <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                         </div>
-                        <div class="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono" id="statActiveOrgs">3</div>
+                        <div class="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono flex items-center min-h-[2rem]" id="statActiveOrgs">
+                            <span class="inline-block h-6 w-8 bg-slate-200 dark:bg-cyber-700/60 rounded animate-pulse"></span>
+                        </div>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">CBZ, Bizmark, Argus</p>
                     </div>
 
@@ -187,6 +193,18 @@
                     <!-- Left / Center: Interactive Map Stage (8 Cols) -->
                     <div class="lg:col-span-8 p-6 relative flex items-center justify-center bg-slate-950 overflow-hidden min-h-[420px] lg:min-h-[560px]">
                         
+                        <!-- Map Loading Radar Acquisition Skeleton Overlay -->
+                        <div id="mapLoadingSkeleton" class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center space-y-4 opacity-0 pointer-events-none transition-opacity duration-200">
+                            <div class="relative flex items-center justify-center w-16 h-16">
+                                <div class="w-16 h-16 rounded-full border-2 border-cyan-500/20 border-t-cyan-400 animate-spin"></div>
+                                <div class="w-8 h-8 rounded-full bg-cyan-500/20 animate-ping absolute"></div>
+                            </div>
+                            <div class="text-center space-y-2">
+                                <div class="h-3 w-36 bg-slate-800/80 rounded animate-pulse mx-auto"></div>
+                                <div class="h-2.5 w-24 bg-slate-800/60 rounded animate-pulse mx-auto"></div>
+                            </div>
+                        </div>
+
                         <!-- Map 1: Global World Threat Grid -->
                         <div id="mapPanel-world" class="map-view-panel active w-full h-full flex items-center justify-center relative">
                             <img src="/static/img/map_world_cyber_blue.png" alt="Global Threat Grid" class="w-full h-auto max-h-[520px] object-contain select-none rounded-xl">
