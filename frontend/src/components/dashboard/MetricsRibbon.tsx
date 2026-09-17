@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ShieldAlert, Laptop, Flame, Building, ClipboardCheck } from 'lucide-react';
 import { AlertStats } from '../../types';
 
@@ -6,9 +6,10 @@ interface MetricsRibbonProps {
   stats: AlertStats | null;
   deviceCount: number;
   auditCount: number;
+  branchCount?: number;
 }
 
-export const MetricsRibbon: React.FC<MetricsRibbonProps> = ({ stats, deviceCount, auditCount }) => {
+export const MetricsRibbon: React.FC<MetricsRibbonProps> = ({ stats, deviceCount, auditCount, branchCount = 0 }) => {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
       {/* Active Threats */}
@@ -72,7 +73,7 @@ export const MetricsRibbon: React.FC<MetricsRibbonProps> = ({ stats, deviceCount
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <h3 className="text-2xl sm:text-3xl font-light text-slate-900 dark:text-white font-mono tracking-tight">
-            3
+            {branchCount}
           </h3>
           <span className="text-[10px] font-mono text-slate-400 font-semibold">GEOLOCATED</span>
         </div>

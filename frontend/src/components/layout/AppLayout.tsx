@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
@@ -12,7 +12,9 @@ import {
   ThreatHuntingModal,
   WebhooksModal,
   KillProcessModal,
-  MessageBoxModal
+  MessageBoxModal,
+  ForensicStudioModal,
+  WirelessConnectModal
 } from '../modals';
 
 export const AppLayout: React.FC = () => {
@@ -60,6 +62,8 @@ export const AppLayout: React.FC = () => {
       <WebhooksModal />
       <KillProcessModal />
       <MessageBoxModal />
+      <ForensicStudioModal />
+      <WirelessConnectModal />
     </div>
   );
 };

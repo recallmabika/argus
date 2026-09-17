@@ -36,17 +36,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onToggleCollapse
 }) => {
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, isDark } = useTheme();
   const { openReport, openVerify, toggleAudit, openHunting, openWebhooks } = useModals();
 
   const [activeThreatCount, setActiveThreatCount] = useState<number>(0);
   const [endpointCount, setEndpointCount] = useState<number>(0);
   const [auditCount, setAuditCount] = useState<number>(0);
+  const [forensicCount, setForensicCount] = useState<number>(0);
 
   const loadMetrics = () => {
     api.getAlertStats().then(s => setActiveThreatCount(s.open || 0)).catch(() => {});
     api.getDevices().then(d => setEndpointCount(d.length || 0)).catch(() => {});
     api.getAuditLogs(10).then(a => setAuditCount(a.length || 0)).catch(() => {});
+    api.getForensicDevices().then(f => setForensicCount(f.devices?.length || 0)).catch(() => {});
   };
 
   useEffect(() => {
@@ -130,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </Link>
               <button
                 onClick={onToggleCollapse}
-                className="hidden lg:flex p-1.5 rounded-sm text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/50 transition focus:outline-none"
+                className="hidden lg:flex p-1.5 rounded-sm text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-cyber-700/50 transition focus:outline-none focus:text-blue-600 dark:focus:text-blue-400"
                 title="Collapse Sidebar (Ctrl+B)"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -143,30 +145,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <nav className={`flex-1 overflow-y-auto custom-scrollbar space-y-5 ${isCollapsed ? 'p-1.5' : 'p-3'}`}>
           {/* Operations Section */}
           <div className="space-y-1.5">
-            {!isCollapsed ? (
+            {!isCollapsed && (
               <div className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Operations
               </div>
-            ) : (
-              <div className="border-t border-slate-200 dark:border-cyber-700/60 my-1 mx-2"></div>
             )}
 
             {/* SOC Overview */}
             <Link
               to="/dashboard"
-              className={`rounded-sm transition group ${
+              className={`rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
               } ${
                 isActive('/dashboard')
-                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-slate-900 dark:text-white font-bold shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
               }`}
               title="SOC Operations Command"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <LayoutDashboard className="w-5 h-5 flex-shrink-0" />
+                <LayoutDashboard className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'Overview' : 'SOC Overview'}
                 </span>
@@ -176,19 +176,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Threat Stream (Dedicated Route) */}
             <Link
               to="/threats"
-              className={`rounded-sm transition group ${
+              className={`rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
               } ${
                 isActive('/threats')
-                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-slate-900 dark:text-white font-bold shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
               }`}
               title="Real-Time Threat Stream"
             >
               <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <Radio className="w-5 h-5 flex-shrink-0 text-rose-500" />
+                <Radio className="w-5 h-5 flex-shrink-0 text-rose-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
                   {isCollapsed ? 'Threats' : 'Threat Stream'}
                 </span>
@@ -205,15 +205,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Org Devices */}
             <Link
               to="/dashboard#devices"
-              className={`rounded-sm transition group ${
+              className={`rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Monitored Endpoint Fleet"
             >
               <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <Laptop className="w-5 h-5 flex-shrink-0" />
+                <Laptop className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
                   {isCollapsed ? 'Devices' : 'Org Devices'}
                 </span>
@@ -228,15 +228,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Geolocation Map */}
             <Link
               to="/dashboard#branches"
-              className={`rounded-sm transition group ${
+              className={`rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Branch Geolocation"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <MapPin className="w-5 h-5 flex-shrink-0" />
+                <MapPin className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'GeoMap' : 'Geolocation Map'}
                 </span>
@@ -254,18 +254,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="border-t border-slate-200 dark:border-cyber-700/60 my-1 mx-2"></div>
             )}
 
-            {/* Threat Hunting */}
-            <button
-              onClick={openHunting}
-              className={`w-full rounded-sm transition group ${
+            {/* Device Forensics Bridge */}
+            <Link
+              to="/dashboard#forensics"
+              className={`rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
+              title="Device Forensics Bridge"
+            >
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Smartphone className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'Forensics' : 'Device Forensics Bridge'}
+                </span>
+              </div>
+              {!isCollapsed && (
+                <span className="px-2 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400 font-semibold">
+                  {forensicCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Threat Hunting */}
+            <button
+              onClick={openHunting}
+              className={`w-full rounded-sm transition group focus:outline-none ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Threat Hunting Engine"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <Search className="w-5 h-5 flex-shrink-0" />
+                <Search className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'Hunt' : 'Threat Hunting'}
                 </span>
@@ -280,15 +303,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Export Incident PDF */}
             <button
               onClick={openReport}
-              className={`w-full rounded-sm transition group ${
+              className={`w-full rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Export Incident Report"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <FileText className="w-5 h-5 flex-shrink-0" />
+                <FileText className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'Export' : 'Export Signed PDF'}
                 </span>
@@ -298,15 +321,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Verify PDF Signature */}
             <button
               onClick={openVerify}
-              className={`w-full rounded-sm transition group ${
+              className={`w-full rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Verify Ed25519 Report Signature"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <ShieldCheck className="w-5 h-5 flex-shrink-0" />
+                <ShieldCheck className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'Verify' : 'Verify Signature'}
                 </span>
@@ -316,15 +339,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Audit Trail */}
             <button
               onClick={toggleAudit}
-              className={`w-full rounded-sm transition group ${
+              className={`w-full rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="Access Audit Log"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <ClipboardList className="w-5 h-5 flex-shrink-0" />
+                <ClipboardList className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'Audit' : 'Audit Trail'}
                 </span>
@@ -339,15 +362,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Alert Webhooks */}
             <button
               onClick={openWebhooks}
-              className={`w-full rounded-sm transition group ${
+              className={`w-full rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
               title="SIEM & Webhooks Forwarding"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <Bell className="w-5 h-5 flex-shrink-0" />
+                <Bell className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
                   {isCollapsed ? 'Webhooks' : 'Alert Webhooks'}
                 </span>
@@ -371,10 +394,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="grid grid-cols-3 gap-1 bg-slate-200 dark:bg-cyber-700/60 p-1 rounded-sm text-[11px] font-medium text-slate-600 dark:text-slate-300">
                 <button
                   onClick={() => setTheme('light')}
-                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition ${
+                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition focus:outline-none ${
                     theme === 'light'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
-                      : 'hover:text-slate-900 dark:hover:text-white'
+                      : 'hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400'
                   }`}
                 >
                   <Sun className="w-3.5 h-3.5" />
@@ -382,10 +405,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
                 <button
                   onClick={() => setTheme('dark')}
-                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition ${
+                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition focus:outline-none ${
                     theme === 'dark'
                       ? 'bg-cyber-600 text-white shadow-xs font-bold'
-                      : 'hover:text-slate-900 dark:hover:text-white'
+                      : 'hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400'
                   }`}
                 >
                   <Moon className="w-3.5 h-3.5" />
@@ -393,10 +416,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
                 <button
                   onClick={() => setTheme('system')}
-                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition ${
+                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition focus:outline-none ${
                     theme === 'system'
                       ? 'bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow-xs font-bold'
-                      : 'hover:text-slate-900 dark:hover:text-white'
+                      : 'hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400'
                   }`}
                 >
                   <Monitor className="w-3.5 h-3.5" />
@@ -405,31 +428,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center space-y-1.5 py-1">
+            <div className="flex flex-col items-center py-1">
               <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="w-full py-2 px-1 flex flex-col items-center justify-center rounded-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700/60 transition group cursor-pointer"
+                onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                className="w-full py-2 px-1 flex items-center justify-center rounded-sm text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 hover:bg-slate-200 dark:hover:bg-cyber-700/60 transition cursor-pointer focus:outline-none"
                 title="Toggle Theme"
               >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-500" />
-                ) : (
-                  <Moon className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-                )}
-                <span className="text-[7.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 leading-none mt-1">
-                  THEME
-                </span>
+                {isDark ? 'dark' : 'light'}
               </button>
-
-              <div
-                className="w-full flex flex-col items-center justify-center py-1 rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-default"
-                title="Real-Time SOC Event Bus Connected"
-              >
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-emerald-600 dark:text-emerald-400">
-                  LIVE
-                </span>
-              </div>
             </div>
           )}
         </div>

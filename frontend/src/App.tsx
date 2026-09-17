@@ -1,7 +1,9 @@
-﻿import React from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ModalProvider } from './context/ModalContext';
+import { LoadingProvider } from './context/LoadingContext';
+import { TopProgressBar } from './components/common/TopProgressBar';
 import { AppLayout } from './components/layout/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ThreatStreamPage } from './pages/ThreatStreamPage';
@@ -12,20 +14,24 @@ export const App: React.FC = () => {
     <ThemeProvider>
       <ModalProvider>
         <BrowserRouter>
-          <Routes>
-            {/* Public Landing Page */}
-            <Route path="/" element={<LandingPage />} />
+          <LoadingProvider>
+            <TopProgressBar />
+            <Routes>
+              {/* Public Landing Page */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/landing" element={<LandingPage />} />
 
-            {/* Authenticated SOC App Layout */}
-            <Route element={<AppLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/console" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/threats" element={<ThreatStreamPage />} />
-            </Route>
+              {/* Authenticated SOC App Layout */}
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/console" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/threats" element={<ThreatStreamPage />} />
+              </Route>
 
-            {/* Catch-All Fallback */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+              {/* Catch-All Fallback */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </LoadingProvider>
         </BrowserRouter>
       </ModalProvider>
     </ThemeProvider>
