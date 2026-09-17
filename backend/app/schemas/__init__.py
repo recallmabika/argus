@@ -84,3 +84,52 @@ class AuditLogOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class DeviceCommandIn(BaseModel):
+    command_type: str  # ISOLATE_NETWORK, RESTORE_NETWORK, TERMINATE_PROCESS, CAPTURE_FORENSIC_TRIAGE
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    issued_by: Optional[str] = "analyst"
+
+
+class DeviceCommandOut(BaseModel):
+    id: str
+    device_id: str
+    command_type: str
+    parameters: Dict[str, Any]
+    status: str
+    issued_by: str
+    result_summary: Optional[str]
+    created_at: datetime
+    executed_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class DeviceCommandAckIn(BaseModel):
+    command_id: str
+    status: str = "COMPLETED"  # COMPLETED or FAILED
+    result_summary: Optional[str] = None
+
+
+class WebhookConfigIn(BaseModel):
+    name: str
+    url: str
+    webhook_type: str = "GENERIC_JSON"  # DISCORD, SLACK, GENERIC_JSON, SYSLOG
+    min_severity: str = "HIGH"  # HIGH, CRITICAL, ALL
+    is_enabled: bool = True
+
+
+class WebhookConfigOut(BaseModel):
+    id: str
+    name: str
+    url: str
+    webhook_type: str
+    min_severity: str
+    is_enabled: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+

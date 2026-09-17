@@ -192,6 +192,13 @@ class DetectionEngine:
                 }
             })
 
+            # Dispatch to external channels (Discord / Slack / SIEM)
+            try:
+                from app.services.webhook_dispatcher import webhook_dispatcher
+                await webhook_dispatcher.dispatch_alert(db, alert, device)
+            except Exception as e:
+                logger.error(f"Failed to dispatch alert to external webhooks: {e}")
+
             return alert
 
         return None

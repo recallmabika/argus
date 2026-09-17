@@ -948,9 +948,11 @@ function createAlertElement(alert) {
             <div>
                 <span class="font-mono text-slate-900 dark:text-white font-semibold">${alert.mitre_technique_id || 'TXXXX'}</span>: ${alert.mitre_technique_name || 'Generic'}
             </div>
-            <div class="flex space-x-2">
-                <span>Host: <b>${alert.hostname || alert.device_id}</b></span>
-                <button onclick="resolveAlert('${alert.id}', this)" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">Mark Resolved</button>
+            <div class="flex items-center space-x-1.5">
+                <span class="mr-1 hidden sm:inline">Host: <b>${alert.hostname || alert.device_id}</b></span>
+                <button onclick="openAttackChain('${alert.id}')" class="px-2 py-0.5 rounded bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-[10px] transition">Attack Chain</button>
+                <button onclick="openDeviceDetail('${alert.device_id}')" class="px-2 py-0.5 rounded bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[10px] transition">Remediate</button>
+                <button onclick="resolveAlert('${alert.id}', this)" class="text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white font-semibold text-[10px] underline ml-1">Resolve</button>
             </div>
         </div>
     `;
@@ -1040,6 +1042,19 @@ async function openDeviceDetail(deviceId) {
 
         if (title) title.innerText = `${activeDeviceData.device.hostname} — Telemetry Inspector`;
         if (sub) sub.innerText = `OS: ${activeDeviceData.device.os_type} | User: ${activeDeviceData.device.current_user || 'unknown'} | Branch: ${activeDeviceData.device.branch_name}`;
+
+        const statusPill = document.getElementById('modalDeviceStatusPill');
+        const qBtnText = document.getElementById('btnQuarantineText');
+        const isQuarantined = activeDeviceData.device.status === 'QUARANTINED';
+        if (statusPill) {
+            statusPill.innerText = activeDeviceData.device.status || 'ONLINE';
+            statusPill.className = isQuarantined
+                ? 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 text-white dark:bg-white dark:text-black border border-current'
+                : 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
+        }
+        if (qBtnText) {
+            qBtnText.innerText = isQuarantined ? 'Restore Network' : 'Quarantine Host';
+        }
 
         switchTab('processes');
         fetchAudit();
@@ -2385,3 +2400,624 @@ function injectPresetCommand(cmd) {
     if (input) input.value = cmd;
     runForensicShell(cmd);
 }
+
+// =========================================================================
+// Active SOC Remediation Directives
+// =========================================================================
+async function handleQuarantineToggle() {
+    if (!activeDeviceData || !activeDeviceData.device) return;
+    const dev = activeDeviceData.device;
+    const isQuarantined = dev.status === 'QUARANTINED';
+    const action = isQuarantined ? 'RESTORE_NETWORK' : 'ISOLATE_NETWORK';
+
+    const confirmMsg = isQuarantined
+        ? `Restore standard network routing on endpoint ${dev.hostname}? Quarantine firewall rules will be removed.`
+        : `QUARANTINE ENDPOINT ${dev.hostname}? Workstation external traffic will be cut off immediately while keeping central SOC telemetry active.`;
+
+    const confirmed = await showArgusConfirm({
+        title: isQuarantined ? 'Restore Network Connectivity' : 'Emergency Host Quarantine',
+        message: confirmMsg,
+        confirmText: isQuarantined ? 'Restore Host' : 'Quarantine Now',
+        type: isQuarantined ? 'info' : 'danger'
+    });
+
+    if (!confirmed) return;
+
+    try {
+        const res = await fetch(`/api/v1/devices/${encodeURIComponent(dev.id)}/command`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                command_type: action,
+                parameters: {}
+            })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+            dev.status = isQuarantined ? 'ONLINE' : 'QUARANTINED';
+            const statusPill = document.getElementById('modalDeviceStatusPill');
+            const qBtnText = document.getElementById('btnQuarantineText');
+            if (statusPill) {
+                statusPill.innerText = dev.status;
+                statusPill.className = dev.status === 'QUARANTINED'
+                    ? 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 text-white dark:bg-white dark:text-black border border-current'
+                    : 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
+            }
+            if (qBtnText) {
+                qBtnText.innerText = dev.status === 'QUARANTINED' ? 'Restore Network' : 'Quarantine Host';
+            }
+
+            await showArgusAlert({
+                type: 'success',
+                title: 'Remediation Directive Queued',
+                message: `Action ${action} dispatched for ${dev.hostname}. Status: ${dev.status}. Audit ID: ${data.command.id.slice(0, 8)}.`
+            });
+            fetchDevices();
+            fetchAudit();
+        } else {
+            await showArgusAlert({ type: 'danger', title: 'Command Error', message: data.detail || 'Failed to dispatch command.' });
+        }
+    } catch (err) {
+        console.error('Quarantine command error:', err);
+        await showArgusAlert({ type: 'danger', title: 'Network Error', message: err.message });
+    }
+}
+
+function promptKillProcess() {
+    const modal = document.getElementById('killProcessModal');
+    const input = document.getElementById('killProcessInput');
+    if (input) input.value = '';
+    if (modal) modal.classList.remove('hidden');
+    if (input) setTimeout(() => input.focus(), 50);
+}
+
+function closeKillProcessModal() {
+    const modal = document.getElementById('killProcessModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function submitKillProcess() {
+    if (!activeDeviceData || !activeDeviceData.device) return;
+    const input = document.getElementById('killProcessInput');
+    const target = input ? input.value.trim() : '';
+    if (!target) {
+        await showArgusAlert({ type: 'warning', title: 'Input Required', message: 'Please enter a target PID or process executable name.' });
+        return;
+    }
+
+    const dev = activeDeviceData.device;
+    const isPid = /^\d+$/.test(target);
+    const params = isPid ? { pid: parseInt(target, 10) } : { process_name: target };
+
+    closeKillProcessModal();
+
+    try {
+        const res = await fetch(`/api/v1/devices/${encodeURIComponent(dev.id)}/command`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                command_type: 'TERMINATE_PROCESS',
+                parameters: params
+            })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+            await showArgusAlert({
+                type: 'success',
+                title: 'Process Termination Dispatched',
+                message: `Termination directive queued for ${isPid ? 'PID ' + target : 'process ' + target} on host ${dev.hostname}.`
+            });
+            fetchAudit();
+        } else {
+            await showArgusAlert({ type: 'danger', title: 'Command Error', message: data.detail || 'Failed to queue process termination.' });
+        }
+    } catch (err) {
+        console.error('Process kill error:', err);
+        await showArgusAlert({ type: 'danger', title: 'Network Error', message: err.message });
+    }
+}
+
+async function triggerForensicTriage() {
+    if (!activeDeviceData || !activeDeviceData.device) return;
+    const dev = activeDeviceData.device;
+    try {
+        const res = await fetch(`/api/v1/devices/${encodeURIComponent(dev.id)}/command`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                command_type: 'CAPTURE_FORENSIC_TRIAGE',
+                parameters: {}
+            })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+            await showArgusAlert({
+                type: 'success',
+                title: 'Forensic Triage Requested',
+                message: `Endpoint ${dev.hostname} will immediately catalog running tasks, network sockets, and system drivers.`
+            });
+            fetchAudit();
+        }
+    } catch (err) {
+        console.error('Triage error:', err);
+    }
+}
+
+async function triggerWorkstationSnapshot() {
+    if (!activeDeviceData || !activeDeviceData.device) return;
+    const dev = activeDeviceData.device;
+    try {
+        const res = await fetch(`/api/v1/devices/${encodeURIComponent(dev.id)}/command`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                command_type: 'CAPTURE_CAMERA_SNAPSHOT',
+                parameters: { reason: 'Manual Analyst Identity Verification' }
+            })
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+            await showArgusAlert({
+                type: 'success',
+                title: 'Webcam Directive Dispatched',
+                message: `Hardware webcam capture initiated on ${dev.hostname}. Snapshot will be logged into the audit timeline.`
+            });
+            fetchAudit();
+        }
+    } catch (err) {
+        console.error('Camera snap error:', err);
+    }
+}
+
+// =========================================================================
+// Threat Hunting & Telemetry Search Engine
+// =========================================================================
+let currentHuntTimeRange = '24h';
+
+function openThreatHuntingModal() {
+    const modal = document.getElementById('threatHuntingModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        executeHunt();
+    }
+}
+
+function closeThreatHuntingModal() {
+    const modal = document.getElementById('threatHuntingModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function setHuntTimeRange(range, btn) {
+    currentHuntTimeRange = range;
+    const container = document.getElementById('huntTimeButtons');
+    if (container) {
+        container.querySelectorAll('.hunt-time-btn').forEach(b => {
+            b.className = 'hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white';
+        });
+    }
+    if (btn) {
+        btn.className = 'hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold';
+    }
+    executeHunt();
+}
+
+async function executeHunt() {
+    const qInput = document.getElementById('huntQueryInput');
+    const evTypeSelect = document.getElementById('huntEventTypeSelect');
+    const sevSelect = document.getElementById('huntSeveritySelect');
+    const tbody = document.getElementById('huntResultsTableBody');
+    const countSpan = document.getElementById('huntResultsCount');
+    const scopeSpan = document.getElementById('huntTimeScope');
+
+    const q = qInput ? qInput.value.trim() : '';
+    const event_type = evTypeSelect ? evTypeSelect.value : '';
+    const severity = sevSelect ? sevSelect.value : '';
+
+    if (scopeSpan) {
+        const labels = { '1h': 'Last 1 Hour', '6h': 'Last 6 Hours', '24h': 'Last 24 Hours', '7d': 'Last 7 Days', 'all': 'Complete History' };
+        scopeSpan.innerText = `Window: ${labels[currentHuntTimeRange] || currentHuntTimeRange}`;
+    }
+
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="py-12 text-center text-slate-400">
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5 text-slate-900 dark:text-white animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                        <span>Scanning database telemetry records...</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    try {
+        const params = new URLSearchParams({
+            time_range: currentHuntTimeRange,
+            limit: '100'
+        });
+        if (q) params.append('q', q);
+        if (event_type) params.append('event_type', event_type);
+        if (severity) params.append('severity', severity);
+
+        const res = await fetch(`/api/v1/telemetry/search?${params.toString()}`);
+        const data = await res.json();
+
+        if (countSpan) countSpan.innerText = `Showing ${data.events.length} of ${data.total} matching events`;
+
+        if (!tbody) return;
+        if (!data.events || data.events.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-slate-400">No telemetry events matched the specified search criteria.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        data.events.forEach((ev, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50 dark:hover:bg-cyber-800/50 transition font-mono text-xs';
+
+            const summary = summarizeEventPayload(ev.event_type, ev.payload);
+            const sevBadge = ev.severity_hint === 'CRITICAL'
+                ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900 text-white dark:bg-white dark:text-black">CRIT</span>'
+                : (ev.severity_hint === 'HIGH' ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-200 dark:bg-cyber-700 text-slate-900 dark:text-white border border-slate-300 dark:border-cyber-600">HIGH</span>' : '<span class="text-slate-400 text-[10px]">INFO</span>');
+
+            tr.innerHTML = `
+                <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${new Date(ev.timestamp).toLocaleString()}</td>
+                <td class="py-2.5 px-3 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">${ev.event_type}</td>
+                <td class="py-2.5 px-3 text-slate-600 dark:text-slate-300 whitespace-nowrap">${ev.username || 'unknown'} <span class="text-slate-400 text-[10px]">(${ev.device_id.slice(0, 10)})</span></td>
+                <td class="py-2.5 px-3">${sevBadge}</td>
+                <td class="py-2.5 px-3 text-slate-700 dark:text-slate-300 truncate max-w-md" title="${escapeHtml(summary)}">${escapeHtml(summary)}</td>
+                <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                    <button onclick="toggleHuntPayload('hunt-payload-${idx}')" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-[10px] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-cyber-600 transition">JSON</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Collapsible JSON Row
+            const detailTr = document.createElement('tr');
+            detailTr.id = `hunt-payload-${idx}`;
+            detailTr.className = 'hidden bg-slate-100 dark:bg-cyber-950 font-mono text-[11px]';
+            detailTr.innerHTML = `
+                <td colspan="6" class="p-3">
+                    <div class="p-3 bg-white dark:bg-cyber-900 rounded-lg border border-slate-200 dark:border-cyber-700 overflow-x-auto custom-scrollbar text-slate-800 dark:text-slate-200">
+                        <pre>${escapeHtml(JSON.stringify(ev.payload, null, 2))}</pre>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(detailTr);
+        });
+
+    } catch (err) {
+        console.error('Threat hunt query error:', err);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">Search error: ${err.message}</td></tr>`;
+    }
+}
+
+function summarizeEventPayload(eventType, payload) {
+    if (!payload) return '-';
+    if (eventType === 'PROCESS_START') {
+        return `${payload.name || 'proc'} (PID: ${payload.pid || '?'}) ${payload.cmdline ? '— ' + payload.cmdline.slice(0, 100) : ''}`;
+    } else if (eventType === 'BROWSER_VISIT') {
+        return `${payload.browser || 'Web'}: ${payload.url || payload.title || '-'}`;
+    } else if (eventType === 'CLIPBOARD_CHANGE') {
+        return `Copied [${payload.length_chars || 0} chars]: "${(payload.preview || '').slice(0, 60)}"`;
+    } else if (eventType === 'PRINT_JOB') {
+        return `Spooled document: ${payload.document_name || '-'} on ${payload.printer_name || '-'} (${payload.pages || 1} pgs)`;
+    } else if (eventType === 'CAMERA_ALERT') {
+        return `Webcam capture trigger: ${payload.reason || '-'}`;
+    } else if (eventType === 'FORENSIC_TRIAGE') {
+        return `Triage: ${payload.process_count || 0} procs, ${payload.open_sockets || 0} sockets cataloged`;
+    }
+    return JSON.stringify(payload).slice(0, 80);
+}
+
+function toggleHuntPayload(id) {
+    const row = document.getElementById(id);
+    if (row) row.classList.toggle('hidden');
+}
+
+function exportHunt(format) {
+    const qInput = document.getElementById('huntQueryInput');
+    const evTypeSelect = document.getElementById('huntEventTypeSelect');
+    const sevSelect = document.getElementById('huntSeveritySelect');
+
+    const q = qInput ? qInput.value.trim() : '';
+    const event_type = evTypeSelect ? evTypeSelect.value : '';
+    const severity = sevSelect ? sevSelect.value : '';
+
+    const params = new URLSearchParams({
+        format: format,
+        time_range: currentHuntTimeRange,
+        limit: '2000'
+    });
+    if (q) params.append('q', q);
+    if (event_type) params.append('event_type', event_type);
+    if (severity) params.append('severity', severity);
+
+    const downloadUrl = `/api/v1/telemetry/export?${params.toString()}`;
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = `artis_hunt_${format}_export`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// =========================================================================
+// MITRE ATT&CK Visual Incident Timeline & Attack Chain
+// =========================================================================
+async function openAttackChain(alertId) {
+    const modal = document.getElementById('attackChainModal');
+    const titleEl = document.getElementById('chainAlertTitle');
+    const subEl = document.getElementById('chainAlertSub');
+    const sevEl = document.getElementById('chainAlertSeverity');
+    const stagesGrid = document.getElementById('chainStagesGrid');
+    const timelineList = document.getElementById('chainTimelineList');
+    const countSpan = document.getElementById('chainTimelineCount');
+
+    if (modal) modal.classList.remove('hidden');
+    if (stagesGrid) stagesGrid.innerHTML = '<div class="col-span-full py-6 text-center text-slate-400">Reconstructing MITRE ATT&amp;CK kill chain...</div>';
+    if (timelineList) timelineList.innerHTML = '';
+
+    try {
+        const res = await fetch(`/api/v1/alerts/${encodeURIComponent(alertId)}/attack-chain`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const chain = await res.json();
+
+        if (titleEl) titleEl.innerText = chain.alert.title;
+        if (sevEl) {
+            sevEl.innerText = chain.alert.severity;
+            sevEl.className = chain.alert.severity === 'CRITICAL'
+                ? 'px-2 py-0.5 rounded font-mono font-bold text-[9px] uppercase bg-slate-900 text-white dark:bg-white dark:text-black'
+                : 'px-2 py-0.5 rounded font-mono font-bold text-[9px] uppercase bg-slate-200 dark:bg-cyber-700 text-slate-900 dark:text-white border border-slate-300 dark:border-cyber-600';
+        }
+        if (subEl) {
+            subEl.innerText = `Host: ${chain.device.hostname} | Risk Score: ${chain.device.risk_score}/100 | Status: ${chain.device.status} | Tactic: ${chain.alert.mitre_tactic || 'Generic'}`;
+        }
+        if (countSpan) countSpan.innerText = `${chain.timeline.length} Events Correlated`;
+
+        // Render MITRE Progression Stages Grid
+        if (stagesGrid) {
+            stagesGrid.innerHTML = '';
+            chain.stages.forEach(st => {
+                const card = document.createElement('div');
+                if (st.observed) {
+                    card.className = 'p-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black border border-slate-800 dark:border-slate-200 flex flex-col justify-between shadow-md';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-mono font-bold uppercase tracking-wider">${st.tactic}</span>
+                            <span class="h-2 w-2 rounded-full bg-white dark:bg-slate-900 animate-pulse"></span>
+                        </div>
+                        <div class="mt-2 text-xs font-mono font-bold">${st.count} DETECTED</div>
+                        <p class="text-[9px] opacity-80 mt-0.5 line-clamp-1">${st.description}</p>
+                    `;
+                } else {
+                    card.className = 'p-3 rounded-xl bg-slate-50 dark:bg-cyber-800/40 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-cyber-700/60 flex flex-col justify-between';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-mono font-semibold uppercase tracking-wider">${st.tactic}</span>
+                        </div>
+                        <div class="mt-2 text-[10px] font-mono">UNOBSERVED</div>
+                        <p class="text-[9px] opacity-60 mt-0.5 line-clamp-1">${st.description}</p>
+                    `;
+                }
+                stagesGrid.appendChild(card);
+            });
+        }
+
+        // Render Chronological Timeline
+        if (timelineList) {
+            timelineList.innerHTML = '';
+            if (chain.timeline.length === 0) {
+                timelineList.innerHTML = '<div class="py-8 text-center text-slate-400">No correlated events within this attack timeframe.</div>';
+                return;
+            }
+
+            chain.timeline.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                const isTarget = item.is_target;
+                itemDiv.className = isTarget
+                    ? 'p-4 rounded-xl bg-white dark:bg-cyber-card border-2 border-slate-900 dark:border-white shadow-lg space-y-2'
+                    : 'p-3.5 rounded-xl bg-slate-50 dark:bg-cyber-800/40 border border-slate-200 dark:border-cyber-700/60 space-y-1.5';
+
+                itemDiv.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 rounded font-mono font-bold text-[9px] uppercase ${isTarget ? 'bg-slate-900 text-white dark:bg-white dark:text-black' : 'bg-slate-200 dark:bg-cyber-700 text-slate-900 dark:text-white'}">${item.severity}</span>
+                            <span class="font-bold text-slate-900 dark:text-white text-xs">${item.title}</span>
+                            ${isTarget ? '<span class="px-1.5 py-0.2 rounded font-mono text-[9px] font-bold bg-slate-100 dark:bg-cyber-800 border border-current text-slate-900 dark:text-white uppercase">ANCHOR INCIDENT</span>' : ''}
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400">${item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 text-[11px] font-mono text-slate-600 dark:text-slate-300">
+                        <span>Tactic: <b>${item.tactic}</b></span>
+                        <span>Technique: <b>${item.technique_id || 'TXXXX'}</b> (${item.technique_name || 'Generic'})</span>
+                        <span>Status: <b>${item.status}</b></span>
+                    </div>
+                    ${item.suggested_remediation ? `<div class="p-2 bg-slate-100 dark:bg-cyber-900 rounded-lg text-[11px] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-cyber-700 font-mono"><b>Remediation:</b> ${item.suggested_remediation}</div>` : ''}
+                `;
+                timelineList.appendChild(itemDiv);
+            });
+        }
+
+    } catch (err) {
+        console.error('Attack chain error:', err);
+        if (stagesGrid) stagesGrid.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400">Failed to load attack chain: ${err.message}</div>`;
+    }
+}
+
+function closeAttackChainModal() {
+    const modal = document.getElementById('attackChainModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// =========================================================================
+// Enterprise Alert Forwarding & Webhook Dispatch
+// =========================================================================
+function openWebhooksModal() {
+    const modal = document.getElementById('webhooksModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        fetchWebhooks();
+    }
+}
+
+function closeWebhooksModal() {
+    const modal = document.getElementById('webhooksModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function fetchWebhooks() {
+    const container = document.getElementById('webhooksListContainer');
+    if (!container) return;
+    container.innerHTML = '<div class="py-6 text-center text-slate-400 font-mono text-xs">Loading alert forwarding channels...</div>';
+
+    try {
+        const res = await fetch('/api/v1/alerts/webhooks');
+        const webhooks = await res.json();
+
+        if (!webhooks || webhooks.length === 0) {
+            container.innerHTML = '<div class="p-6 text-center text-slate-400 bg-slate-50 dark:bg-cyber-800/40 rounded-xl border border-slate-200 dark:border-cyber-700/60">No external forwarding channels configured yet. Add a Discord, Slack, or SIEM webhook above.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        webhooks.forEach(wh => {
+            const card = document.createElement('div');
+            card.className = 'p-3 bg-white dark:bg-cyber-900 rounded-xl border border-slate-200 dark:border-cyber-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
+            
+            // Mask URL for security
+            const maskedUrl = wh.url.length > 35 ? `${wh.url.slice(0, 25)}...${wh.url.slice(-8)}` : wh.url;
+
+            card.innerHTML = `
+                <div class="min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-slate-900 dark:text-white text-xs">${wh.name}</span>
+                        <span class="px-1.5 py-0.2 rounded font-mono font-bold text-[9px] uppercase bg-slate-200 dark:bg-cyber-700 text-slate-800 dark:text-slate-200">${wh.webhook_type}</span>
+                        <span class="px-1.5 py-0.2 rounded font-mono text-[9px] bg-slate-100 dark:bg-cyber-800 text-slate-500">Min: ${wh.min_severity}</span>
+                    </div>
+                    <div class="font-mono text-[10px] text-slate-400 mt-1 truncate" title="${escapeHtml(wh.url)}">${escapeHtml(maskedUrl)}</div>
+                </div>
+                <div class="flex items-center space-x-2 flex-shrink-0">
+                    <button onclick="testWebhook('${wh.id}', this)" class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-medium text-[11px] border border-slate-200 dark:border-cyber-600 transition">Test Ping</button>
+                    <button onclick="deleteWebhook('${wh.id}')" class="px-2 py-1 rounded-md bg-slate-100 dark:bg-cyber-700 hover:bg-red-500 hover:text-white dark:hover:bg-red-500 text-slate-500 text-[11px] transition">Delete</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error('Fetch webhooks error:', err);
+        container.innerHTML = `<div class="py-4 text-center text-slate-400">Failed to load webhooks: ${err.message}</div>`;
+    }
+}
+
+async function registerWebhook() {
+    const nameInput = document.getElementById('whNameInput');
+    const urlInput = document.getElementById('whUrlInput');
+    const typeSelect = document.getElementById('whTypeSelect');
+    const sevSelect = document.getElementById('whSeveritySelect');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const url = urlInput ? urlInput.value.trim() : '';
+    const webhook_type = typeSelect ? typeSelect.value : 'GENERIC_JSON';
+    const min_severity = sevSelect ? sevSelect.value : 'HIGH';
+
+    if (!name || !url) {
+        await showArgusAlert({ type: 'warning', title: 'Input Required', message: 'Please enter both a destination name and a valid webhook URL.' });
+        return;
+    }
+
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        await showArgusAlert({ type: 'warning', title: 'Invalid URL', message: 'Webhook URL must start with http:// or https://' });
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/v1/alerts/webhooks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                url,
+                webhook_type,
+                min_severity,
+                is_enabled: true
+            })
+        });
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.detail || `HTTP ${res.status}`);
+        }
+
+        if (nameInput) nameInput.value = '';
+        if (urlInput) urlInput.value = '';
+
+        await showArgusAlert({
+            type: 'success',
+            title: 'Webhook Registered',
+            message: `Alert forwarding channel '${name}' successfully configured for ${min_severity} detections.`
+        });
+        fetchWebhooks();
+
+    } catch (err) {
+        console.error('Register webhook error:', err);
+        await showArgusAlert({ type: 'danger', title: 'Registration Failed', message: err.message });
+    }
+}
+
+async function testWebhook(webhookId, btn) {
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Testing...';
+    }
+    try {
+        const res = await fetch(`/api/v1/alerts/webhooks/${encodeURIComponent(webhookId)}/test`, {
+            method: 'POST'
+        });
+        const data = await res.json();
+        if (data.success) {
+            await showArgusAlert({
+                type: 'success',
+                title: 'Webhook Verified',
+                message: `Test dispatch acknowledged by endpoint (HTTP ${data.status_code}). Integration verified.`
+            });
+        } else {
+            await showArgusAlert({
+                type: 'danger',
+                title: 'Verification Failed',
+                message: `Destination rejected test dispatch: ${data.message}`
+            });
+        }
+    } catch (err) {
+        console.error('Test webhook error:', err);
+        await showArgusAlert({ type: 'danger', title: 'Test Error', message: err.message });
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = 'Test Ping';
+        }
+    }
+}
+
+async function deleteWebhook(webhookId) {
+    const confirmed = await showArgusConfirm({
+        title: 'Delete Webhook Channel',
+        message: 'Are you sure you want to remove this alert forwarding destination? It will no longer receive security dispatches.',
+        confirmText: 'Delete Destination',
+        type: 'danger'
+    });
+    if (!confirmed) return;
+
+    try {
+        const res = await fetch(`/api/v1/alerts/webhooks/${encodeURIComponent(webhookId)}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            fetchWebhooks();
+        }
+    } catch (err) {
+        console.error('Delete webhook error:', err);
+    }
+}
+

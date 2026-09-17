@@ -58,6 +58,7 @@ class Device(Base):
 
     events = relationship("TelemetryEvent", back_populates="device", cascade="all, delete-orphan")
     alerts = relationship("Alert", back_populates="device", cascade="all, delete-orphan")
+    commands = relationship("DeviceCommand", back_populates="device", cascade="all, delete-orphan")
 
 
 class TelemetryEvent(Base):
@@ -122,3 +123,32 @@ class IncidentReport(Base):
     mitre_summary = Column(JSON, default=dict)
     alert_ids = Column(JSON, default=list)
     generated_at = Column(DateTime(timezone=True), default=utc_now)
+
+
+class DeviceCommand(Base):
+    __tablename__ = "device_commands"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    device_id = Column(String(64), ForeignKey("devices.id"), index=True, nullable=False)
+    command_type = Column(String(64), index=True, nullable=False)  # ISOLATE_NETWORK, RESTORE_NETWORK, TERMINATE_PROCESS, CAPTURE_FORENSIC_TRIAGE
+    parameters = Column(JSON, default=dict)
+    status = Column(String(32), default="PENDING", index=True)  # PENDING, DISPATCHED, COMPLETED, FAILED
+    issued_by = Column(String(64), default="analyst")
+    result_summary = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utc_now, index=True)
+    executed_at = Column(DateTime(timezone=True), nullable=True)
+
+    device = relationship("Device", back_populates="commands")
+
+
+class WebhookConfig(Base):
+    __tablename__ = "webhook_configs"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = Column(String(128), nullable=False)
+    url = Column(String(512), nullable=False)
+    webhook_type = Column(String(32), default="GENERIC_JSON")  # DISCORD, SLACK, GENERIC_JSON, SYSLOG
+    min_severity = Column(String(32), default="HIGH")  # HIGH, CRITICAL, ALL
+    is_enabled = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), default=utc_now)
+

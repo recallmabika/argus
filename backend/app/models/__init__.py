@@ -1,4 +1,14 @@
-from app.models.models import Organization, User, Device, TelemetryEvent, Alert, AuditLog, IncidentReport
+from app.models.models import (
+    Organization,
+    User,
+    Device,
+    TelemetryEvent,
+    Alert,
+    AuditLog,
+    IncidentReport,
+    DeviceCommand,
+    WebhookConfig
+)
 
 __all__ = [
     "Organization",
@@ -7,5 +17,7 @@ __all__ = [
     "TelemetryEvent",
     "Alert",
     "AuditLog",
-    "IncidentReport"
+    "IncidentReport",
+    "DeviceCommand",
+    "WebhookConfig"
 ]

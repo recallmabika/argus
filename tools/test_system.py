@@ -177,9 +177,94 @@ async def run_verification():
         for o in orgs:
             print(f"          - Org #{o['org_index']:02d} [{o['code']}]: {o['name']} ({o['user_counter']} users)")
 
+        # 7. Test Remediation Directives & Command Pipeline
+        print("\n[7/10] Testing Threat Remediation & Command Queue Pipeline...")
+        cmd_req = {
+            "command_type": "ISOLATE_NETWORK",
+            "parameters": {"reason": "Containment verification"},
+            "issued_by": "analyst"
+        }
+        cmd_res = await client.post(f"/api/v1/devices/{dev_id}/command", json=cmd_req)
+        assert cmd_res.status_code == 200, f"Command queue failed: {cmd_res.text}"
+        cmd_data = cmd_res.json()
+        print(f"      [OK] Dispatched command: {cmd_data['command_type']} (ID: {cmd_data['id']})")
+
+        dev_check = await client.get(f"/api/v1/devices/{dev_id}")
+        assert dev_check.status_code == 200
+        assert dev_check.json()['device']['status'] == "QUARANTINED"
+        print(f"      [OK] Endpoint status transitioned to: QUARANTINED")
+
+        # Test agent ACK
+        ack_res = await client.post(f"/api/v1/devices/{dev_id}/command-ack", json={
+            "command_id": cmd_data['id'],
+            "status": "COMPLETED",
+            "result_summary": "Firewall rules applied; SOC channel preserved."
+        })
+        assert ack_res.status_code == 200, f"ACK failed: {ack_res.text}"
+        print("      [OK] Command ACK recorded successfully.")
+
+        # Test restore command
+        restore_res = await client.post(f"/api/v1/devices/{dev_id}/command", json={
+            "command_type": "RESTORE_NETWORK",
+            "parameters": {}
+        })
+        assert restore_res.status_code == 200
+        dev_check2 = await client.get(f"/api/v1/devices/{dev_id}")
+        assert dev_check2.json()['device']['status'] == "ONLINE"
+        print("      [OK] Endpoint network restored to ONLINE status.")
+
+        # 8. Test Threat Hunting Search Engine & CSV/JSON Streaming
+        print("\n[8/10] Testing Threat Hunting Search & Streaming Export...")
+        search_res = await client.get("/api/v1/telemetry/search?q=powershell&time_range=24h")
+        assert search_res.status_code == 200
+        search_data = search_res.json()
+        print(f"      [OK] Search returned {search_data['total']} matches for 'powershell'.")
+
+        csv_res = await client.get("/api/v1/telemetry/export?format=csv&time_range=24h")
+        assert csv_res.status_code == 200
+        assert "text/csv" in csv_res.headers.get("content-type", "")
+        print("      [OK] CSV streaming export verified.")
+
+        json_res = await client.get("/api/v1/telemetry/export?format=json&time_range=24h")
+        assert json_res.status_code == 200
+        assert "application/json" in json_res.headers.get("content-type", "")
+        print("      [OK] JSON streaming export verified.")
+
+        # 9. Test MITRE ATT&CK Attack Chain Reconstruction
+        print("\n[9/10] Testing MITRE ATT&CK Attack Chain & Kill-Chain API...")
+        if alerts:
+            chain_res = await client.get(f"/api/v1/alerts/{alerts[0]['id']}/attack-chain")
+            assert chain_res.status_code == 200, f"Attack chain failed: {chain_res.text}"
+            chain_data = chain_res.json()
+            print(f"      [OK] Kill chain mapped across {len(chain_data['stages'])} standard MITRE tactics.")
+            print(f"      [OK] Correlated timeline events: {len(chain_data['timeline'])}")
+
+        # 10. Test Enterprise Webhook Alert Forwarding
+        print("\n[10/10] Testing Webhook Alert Forwarding Management...")
+        wh_create_res = await client.post("/api/v1/alerts/webhooks", json={
+            "name": "SOC Verification Discord",
+            "url": "https://discord.com/api/webhooks/12345/test",
+            "webhook_type": "DISCORD",
+            "min_severity": "HIGH",
+            "is_enabled": True
+        })
+        assert wh_create_res.status_code == 200, f"Webhook create failed: {wh_create_res.text}"
+        wh_data = wh_create_res.json()
+        print(f"      [OK] Registered webhook: {wh_data['name']} (ID: {wh_data['id']})")
+
+        wh_list_res = await client.get("/api/v1/alerts/webhooks")
+        assert wh_list_res.status_code == 200
+        assert any(w['id'] == wh_data['id'] for w in wh_list_res.json())
+        print("      [OK] Webhook verified in active configuration list.")
+
+        wh_del_res = await client.delete(f"/api/v1/alerts/webhooks/{wh_data['id']}")
+        assert wh_del_res.status_code == 200
+        print("      [OK] Webhook deleted successfully.")
+
         # Cleanup verification test records so live SOC dashboard remains clean
-        from app.models.models import Alert, TelemetryEvent, Device
+        from app.models.models import Alert, TelemetryEvent, Device, DeviceCommand, WebhookConfig
         async with AsyncSessionLocal() as db:
+            await db.execute(delete(DeviceCommand).where(DeviceCommand.device_id == dev_id))
             await db.execute(delete(Alert).where(Alert.device_id == dev_id))
             await db.execute(delete(TelemetryEvent).where(TelemetryEvent.device_id == dev_id))
             await db.execute(delete(Device).where(Device.id == dev_id))

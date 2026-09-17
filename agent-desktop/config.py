@@ -12,6 +12,7 @@ class AgentConfig:
         self.SERVER_URL = os.getenv("ARGUS_SERVER_URL", "http://127.0.0.1:8000")
         self.INGEST_ENDPOINT = f"{self.SERVER_URL}/api/v1/telemetry/batch"
         self.SNAPSHOT_ENDPOINT = f"{self.SERVER_URL}/api/v1/telemetry/snapshot"
+        self.COMMAND_ACK_ENDPOINT = f"{self.SERVER_URL}/api/v1/devices/{self.DEVICE_ID}/command-ack"
 
         # Unique hardware device ID (persisted locally)
         self.CONFIG_DIR = Path(os.getenv("APPDATA", str(Path.home()))) / "ArgusAgent"

@@ -33,5 +33,7 @@ class ConnectionManager:
             if dead in self.active_connections:
                 self.active_connections.remove(dead)
 
+    broadcast = broadcast_json
+
 
 ws_manager = ConnectionManager()

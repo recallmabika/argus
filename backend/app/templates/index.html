@@ -239,6 +239,49 @@
                         <span class="text-[10px] text-slate-400 font-normal">Tamper-Evident Security Log</span>
                     </div>
                 </button>
+
+                <!-- Item 9: Threat Hunting Engine -->
+                <button onclick="openThreatHuntingModal()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Threat Hunting Engine">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Threat Hunting</span>
+                            <span class="sidebar-text-compact hidden">Hunting</span>
+                        </span>
+                    </div>
+                    <span class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 font-semibold">HUNT</span>
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Threat Hunting</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">Live Query</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Telemetry &amp; Payload Search Engine</span>
+                    </div>
+                </button>
+
+                <!-- Item 10: Webhook & SIEM Forwarding -->
+                <button onclick="openWebhooksModal()" class="sidebar-link relative w-full text-left flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-cyber-700/50 hover:text-slate-900 dark:hover:text-white transition group" title="Alert Forwarding & Webhooks">
+                    <div class="sidebar-link-content flex items-center space-x-2.5">
+                        <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span class="sidebar-text">
+                            <span class="sidebar-text-full">Alert Webhooks</span>
+                            <span class="sidebar-text-compact hidden">Webhooks</span>
+                        </span>
+                    </div>
+                    <span class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300 font-semibold">SIEM</span>
+                    <div class="sidebar-tooltip">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-white">Alert Webhooks</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-700 text-slate-300 font-semibold">Discord/Slack</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">Automated Real-Time Threat Dispatch</span>
+                    </div>
+                </button>
             </div>
         </div>
 
@@ -795,6 +838,32 @@
                 <button onclick="closeDeviceModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
+            </div>
+
+            <!-- Active SOC Remediation Directives Strip -->
+            <div id="modalRemediationStrip" class="px-5 py-2.5 bg-slate-50 dark:bg-cyber-800/60 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center space-x-2">
+                    <span class="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">SOC Directives:</span>
+                    <span id="modalDeviceStatusPill" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">ONLINE</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button id="btnQuarantineAction" onclick="handleQuarantineToggle()" class="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-[11px] transition shadow-xs flex items-center space-x-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                        <span id="btnQuarantineText">Quarantine Host</span>
+                    </button>
+                    <button onclick="promptKillProcess()" class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[11px] transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <span>Kill Process</span>
+                    </button>
+                    <button onclick="triggerForensicTriage()" class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[11px] transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        <span>Forensic Triage</span>
+                    </button>
+                    <button onclick="triggerWorkstationSnapshot()" class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[11px] transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke-width="2"/></svg>
+                        <span>Snap Webcam</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Telemetry Tabs -->
@@ -1358,7 +1427,270 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 </div>
             </div>
         </div>
-    <!-- Global Artis Cyber MessageBox System -->
+    </div>
+
+    <!-- Threat Hunting & Telemetry Search Modal -->
+    <div id="threatHuntingModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-xs">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Threat Hunting &amp; Telemetry Search</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Deep search across live processes, clipboard, URLs, print jobs, and host telemetry payloads</p>
+                    </div>
+                </div>
+                <button onclick="closeThreatHuntingModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Search Bar & Hunting Filters -->
+            <div class="p-5 bg-slate-50 dark:bg-cyber-800/50 border-b border-slate-200 dark:border-cyber-700/60 space-y-3">
+                <!-- Search Input Bar -->
+                <div class="flex items-center space-x-2">
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+                        </span>
+                        <input id="huntQueryInput" type="text" placeholder="Search keyword across command-lines, processes, payloads, users, domains (e.g. powershell, mimikatz, cmd.exe)..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" onkeydown="if(event.key==='Enter') executeHunt()" />
+                    </div>
+                    <button onclick="executeHunt()" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center space-x-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Execute Hunt</span>
+                    </button>
+                </div>
+
+                <!-- Faceted Scope & Export Row -->
+                <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <!-- Left: Selects -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Event:</span>
+                            <select id="huntEventTypeSelect" onchange="executeHunt()" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-md px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="">ALL EVENTS</option>
+                                <option value="PROCESS_START">PROCESS_START</option>
+                                <option value="BROWSER_VISIT">BROWSER_VISIT</option>
+                                <option value="CLIPBOARD_CHANGE">CLIPBOARD_CHANGE</option>
+                                <option value="PRINT_JOB">PRINT_JOB</option>
+                                <option value="AUTH_FAILURE">AUTH_FAILURE</option>
+                                <option value="CAMERA_ALERT">CAMERA_ALERT</option>
+                                <option value="FORENSIC_TRIAGE">FORENSIC_TRIAGE</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Severity:</span>
+                            <select id="huntSeveritySelect" onchange="executeHunt()" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-md px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="">ALL SEVERITIES</option>
+                                <option value="CRITICAL">CRITICAL</option>
+                                <option value="HIGH">HIGH</option>
+                                <option value="MEDIUM">MEDIUM</option>
+                                <option value="LOW">LOW</option>
+                            </select>
+                        </div>
+
+                        <!-- Time Window Buttons -->
+                        <div class="flex items-center space-x-1 bg-white dark:bg-cyber-900 p-0.5 rounded-md border border-slate-300 dark:border-cyber-700" id="huntTimeButtons">
+                            <button type="button" onclick="setHuntTimeRange('1h', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">1h</button>
+                            <button type="button" onclick="setHuntTimeRange('6h', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">6h</button>
+                            <button type="button" onclick="setHuntTimeRange('24h', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold">24h</button>
+                            <button type="button" onclick="setHuntTimeRange('7d', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">7d</button>
+                            <button type="button" onclick="setHuntTimeRange('all', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">ALL</button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Direct CSV / JSON Streaming Export -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[11px] text-slate-400">Export Stream:</span>
+                        <button onclick="exportHunt('csv')" class="px-2.5 py-1 rounded-md bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <span>CSV</span>
+                        </button>
+                        <button onclick="exportHunt('json')" class="px-2.5 py-1 rounded-md bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                            <span>JSON</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hunting Results Body -->
+            <div class="flex-1 flex flex-col overflow-hidden p-5">
+                <div class="flex items-center justify-between pb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    <span id="huntResultsCount">Showing 0 matching events</span>
+                    <span id="huntTimeScope">Window: Last 24 Hours</span>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-200 dark:border-cyber-700/60 rounded-xl bg-white dark:bg-cyber-900">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
+                            <tr>
+                                <th class="py-2.5 px-3">Timestamp</th>
+                                <th class="py-2.5 px-3">Event Type</th>
+                                <th class="py-2.5 px-3">Host / User</th>
+                                <th class="py-2.5 px-3">Severity</th>
+                                <th class="py-2.5 px-3">Payload Summary</th>
+                                <th class="py-2.5 px-3 text-right">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="huntResultsTableBody" class="divide-y divide-slate-100 dark:divide-cyber-800">
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-slate-400">Enter a query term or select filters to hunt across raw telemetry events.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MITRE ATT&CK Visual Incident Timeline & Attack Chain Modal -->
+    <div id="attackChainModal" class="fixed inset-0 z-[85] bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden text-xs">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 id="chainAlertTitle" class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">MITRE ATT&amp;CK Incident Attack Chain</h3>
+                            <span id="chainAlertSeverity" class="px-2 py-0.5 rounded font-mono font-bold text-[9px] uppercase bg-slate-900 dark:bg-white text-white dark:text-black">CRITICAL</span>
+                        </div>
+                        <p id="chainAlertSub" class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">Target Host: - | Correlating cross-stage kill chain</p>
+                    </div>
+                </div>
+                <button onclick="closeAttackChainModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Attack Chain Visualizer Content -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+                <!-- Visual Matrix Stages Bar -->
+                <div>
+                    <div class="flex items-center justify-between pb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Enterprise MITRE ATT&amp;CK Progression</span>
+                        <span class="text-[10px] font-mono text-slate-400">Kill-Chain Sequence (Left to Right)</span>
+                    </div>
+                    <div id="chainStagesGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Chronological Intrusion Timeline -->
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/60">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chronological Correlated Incident Timeline (&plusmn;24 Hours)</span>
+                        <span id="chainTimelineCount" class="text-[10px] font-mono text-slate-400">0 Events Correlated</span>
+                    </div>
+                    <div id="chainTimelineList" class="pt-4 space-y-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhook & SIEM Forwarding Modal -->
+    <div id="webhooksModal" class="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden text-xs">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Enterprise Alert Forwarding &amp; Webhooks</h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">Stream high-severity incidents to Discord, Slack, and generic SIEM endpoints</p>
+                    </div>
+                </div>
+                <button onclick="closeWebhooksModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+                <!-- Add New Webhook Form -->
+                <div class="p-4 bg-slate-50 dark:bg-cyber-800/60 rounded-xl border border-slate-200 dark:border-cyber-700/60 space-y-3">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Register Alert Forwarding Channel</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Destination Name</label>
+                            <input id="whNameInput" type="text" placeholder="e.g. SOC Discord Operations" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Webhook Type</label>
+                            <select id="whTypeSelect" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                                <option value="DISCORD">Discord Channel (Embeds)</option>
+                                <option value="SLACK">Slack Workspace (Blocks)</option>
+                                <option value="GENERIC_JSON">Generic JSON / SIEM HEC</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Webhook URL</label>
+                        <input id="whUrlInput" type="url" placeholder="https://discord.com/api/webhooks/... or https://hooks.slack.com/services/..." class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <div class="flex items-center space-x-2">
+                            <label class="text-[11px] font-medium text-slate-600 dark:text-slate-300">Min Severity:</label>
+                            <select id="whSeveritySelect" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                                <option value="HIGH">HIGH &amp; CRITICAL</option>
+                                <option value="CRITICAL">CRITICAL ONLY</option>
+                                <option value="ALL">ALL DETECTIONS</option>
+                            </select>
+                        </div>
+                        <button onclick="registerWebhook()" class="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition shadow-sm">
+                            Add Webhook
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Existing Webhooks List -->
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Active Alert Forwarding Channels</span>
+                    <div id="webhooksListContainer" class="space-y-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kill Process Prompt Modal -->
+    <div id="killProcessModal" class="fixed inset-0 z-[95] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-sm p-5 shadow-2xl space-y-4 text-xs">
+            <div class="flex items-center space-x-2.5">
+                <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Terminate Host Process</h3>
+                    <p class="text-[10px] text-slate-400">Dispatches an audited kill directive to the endpoint</p>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300">Target Process PID or Executable Name</label>
+                <input id="killProcessInput" type="text" placeholder="e.g. 4812 or powershell.exe" class="w-full bg-slate-50 dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                <p class="text-[10px] text-slate-400">If a number is provided, process is killed by PID. If a name is provided, all instances will be killed.</p>
+            </div>
+
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button onclick="closeKillProcessModal()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300">Cancel</button>
+                <button onclick="submitKillProcess()" class="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">Terminate Process</button>
+            </div>
+        </div>
+    </div>
     <div id="argusMessageBoxModal" class="fixed inset-0 z-[90] bg-black/75 backdrop-blur-md hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="argusMsgTitle">
         <div id="argusMsgCard" class="relative bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/80 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 transform scale-95 transition-all duration-200">
             <!-- Glow Accent bar based on status type -->
