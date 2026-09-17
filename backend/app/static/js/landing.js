@@ -609,33 +609,33 @@ function initHeroAlternatingLogo() {
 
     function step() {
         if (heroAlternatingStep === 0) {
-            // Display Logo on Left (pushes content to right) for 5 seconds
+            // Display Logo on Left (pushes content to right) for 11 seconds
             applyState('left');
             heroAlternatingTimer = setTimeout(() => {
                 heroAlternatingStep = 1;
                 step();
-            }, 5000);
+            }, 11000);
         } else if (heroAlternatingStep === 1) {
-            // Disappear from left
+            // Disappear from left (smooth 1.6s pause for majestic transition)
             applyState('neutral');
             heroAlternatingTimer = setTimeout(() => {
                 heroAlternatingStep = 2;
                 step();
-            }, 750);
+            }, 1600);
         } else if (heroAlternatingStep === 2) {
-            // Display Logo on Right (pushes content to left) for 5 seconds
+            // Display Logo on Right (pushes content to left) for 11 seconds
             applyState('right');
             heroAlternatingTimer = setTimeout(() => {
                 heroAlternatingStep = 3;
                 step();
-            }, 5000);
+            }, 11000);
         } else if (heroAlternatingStep === 3) {
-            // Disappear from right
+            // Disappear from right (smooth 1.6s pause for majestic transition)
             applyState('neutral');
             heroAlternatingTimer = setTimeout(() => {
                 heroAlternatingStep = 0;
                 step();
-            }, 750);
+            }, 1600);
         }
     }
 
