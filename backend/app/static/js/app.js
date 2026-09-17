@@ -718,15 +718,18 @@ function initWebSocket() {
     ws.onopen = () => {
         const dot = document.getElementById('wsStatusDot');
         const txt = document.getElementById('wsStatusText');
-        if (dot) dot.className = 'h-2 w-2 rounded-full bg-green-500 animate-pulse';
-        if (txt) txt.innerText = 'LIVE FEED';
+        if (dot) dot.className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-500';
+        if (txt) {
+            txt.innerText = 'LIVE FEED';
+            txt.className = 'font-mono font-bold text-emerald-600 dark:text-emerald-400';
+        }
 
         const cDot = document.getElementById('wsStatusDotCollapsed');
         const cTxt = document.getElementById('wsStatusTextCollapsed');
-        if (cDot) cDot.className = 'h-2 w-2 rounded-full bg-slate-900 dark:bg-white animate-pulse';
+        if (cDot) cDot.className = 'relative inline-flex rounded-full h-2 w-2 bg-emerald-500';
         if (cTxt) {
             cTxt.innerText = 'LIVE';
-            cTxt.className = 'text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-slate-900 dark:text-white';
+            cTxt.className = 'text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-emerald-600 dark:text-emerald-400';
         }
     };
 
@@ -974,14 +977,14 @@ function appendAlertElement(container, alert) {
 function createAlertElement(alert) {
     const div = document.createElement('div');
     const sevColors = {
-        'CRITICAL': 'bg-red-500/10 border-red-500/40 text-red-500 dark:text-red-400',
-        'HIGH': 'bg-slate-200 dark:bg-white/15 border-slate-400 dark:border-white/30 text-slate-900 dark:text-white font-bold',
-        'MEDIUM': 'bg-slate-900/10 dark:bg-white/10 border-slate-900 dark:border-white/40 text-slate-800 dark:text-slate-200 font-semibold',
-        'LOW': 'bg-slate-200/50 dark:bg-slate-700/30 border-slate-300 dark:border-slate-600/40 text-slate-700 dark:text-slate-300'
+        'CRITICAL': 'bg-rose-500/10 border-rose-500/40 text-rose-600 dark:text-rose-400',
+        'HIGH': 'bg-orange-500/10 border-orange-500/40 text-orange-600 dark:text-orange-400 font-bold',
+        'MEDIUM': 'bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400 font-semibold',
+        'LOW': 'bg-slate-500/10 border-slate-400/30 text-slate-600 dark:text-slate-300 font-medium'
     };
     const borderBadge = sevColors[alert.severity] || sevColors['LOW'];
 
-    div.className = `p-3 rounded-lg border ${borderBadge} flex flex-col space-y-1.5 transition`;
+    div.className = `p-3 rounded-sm border ${borderBadge} flex flex-col space-y-1.5 transition`;
     div.innerHTML = `
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
@@ -1094,10 +1097,13 @@ async function openDeviceDetail(deviceId) {
         const qBtnText = document.getElementById('btnQuarantineText');
         const isQuarantined = activeDeviceData.device.status === 'QUARANTINED';
         if (statusPill) {
-            statusPill.innerText = activeDeviceData.device.status || 'ONLINE';
+            const currentStatus = activeDeviceData.device.status || 'ONLINE';
+            statusPill.innerHTML = isQuarantined
+                ? `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>${currentStatus}</span>`
+                : `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>${currentStatus}</span>`;
             statusPill.className = isQuarantined
-                ? 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 text-white dark:bg-white dark:text-black border border-current'
-                : 'px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
+                ? 'px-2.5 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 inline-flex items-center space-x-1.5'
+                : 'px-2.5 py-0.5 rounded-sm text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 inline-flex items-center space-x-1.5';
         }
         if (qBtnText) {
             qBtnText.innerText = isQuarantined ? 'Restore Network' : 'Quarantine Host';
@@ -1432,12 +1438,12 @@ async function fetchForensicDevices() {
             const isWireless = dev.connection && (dev.connection.toLowerCase().includes('wireless') || dev.connection.toLowerCase().includes('wi-fi'));
 
             let typeBadgeClass = isWireless 
-                ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'
+                ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30'
                 : (isStorage
-                    ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'
+                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
                     : (isHost
-                        ? 'bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border-slate-900 dark:border-white/20 font-bold'
-                        : 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border-slate-300 dark:border-white/20'));
+                        ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30 font-bold'
+                        : 'bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-white/20'));
 
             let typeLabel = isWireless ? 'WI-FI ADB' : (isStorage ? 'MASS STORAGE' : (isHost ? 'LOCAL HOST' : 'USB CABLE'));
 
@@ -1453,23 +1459,31 @@ async function fetchForensicDevices() {
                 : (typeof dev.battery === 'string' && dev.battery !== 'N/A' ? dev.battery : (isHost ? 'AC Power' : 'Bus Power'));
             const capacityText = dev.details && dev.details.capacity ? dev.details.capacity : (dev.total_space ? formatBytes(dev.total_space) : null);
 
+            const isOnline = (dev.status || '').toUpperCase() === 'ONLINE' || (dev.status || '').toUpperCase() === 'CONNECTED';
+            const isQuarantined = (dev.status || '').toUpperCase() === 'QUARANTINED';
+            const statusHtml = isOnline
+                ? `<span class="inline-flex items-center space-x-1.5 text-emerald-600 dark:text-emerald-400 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>ONLINE</span></span>`
+                : (isQuarantined
+                    ? `<span class="inline-flex items-center space-x-1.5 text-rose-600 dark:text-rose-400 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>QUARANTINED</span></span>`
+                    : `<span class="text-slate-900 dark:text-white font-semibold uppercase">${dev.status}</span>`);
+
             card.innerHTML = `
                 <div class="space-y-3">
                     <div class="flex items-start justify-between gap-2">
                         <div class="flex items-center space-x-2.5 min-w-0">
-                            <div class="w-7 h-7 rounded-md bg-slate-200/50 dark:bg-cyber-700/40 flex items-center justify-center flex-shrink-0">
+                            <div class="w-7 h-7 rounded-sm bg-slate-200/50 dark:bg-cyber-700/40 flex items-center justify-center flex-shrink-0">
                                 ${iconSvg}
                             </div>
                             <div class="min-w-0">
                                 <h4 class="font-bold text-slate-900 dark:text-white text-xs truncate" title="${dev.model || dev.name}">${dev.model || dev.name}</h4>
-                                <div class="font-mono text-[10px] text-slate-500 dark:text-slate-400 truncate" title="ID: ${dev.id}">ID: ${dev.id}</div>
+                                <div class="font-mono text-[10px] text-slate-500 dark:text-slate-400 truncate">ID: ${dev.id}</div>
                             </div>
                         </div>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono border font-semibold flex-shrink-0 whitespace-nowrap ${typeBadgeClass}">${typeLabel}</span>
+                        <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono border font-semibold flex-shrink-0 whitespace-nowrap ${typeBadgeClass}">${typeLabel}</span>
                     </div>
 
                     <div class="pt-2 border-t border-slate-200/60 dark:border-cyber-700/40 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-600 dark:text-slate-400">
-                        <div>Status: <span class="text-slate-900 dark:text-white font-semibold uppercase">${dev.status}</span></div>
+                        <div>Status: ${statusHtml}</div>
                         <div class="truncate" title="${platformName}">Platform: <span class="text-slate-700 dark:text-slate-300 font-semibold">${platformName}</span></div>
                         <div>Power: <span class="text-slate-700 dark:text-slate-300 font-semibold">${batteryText}</span></div>
                         ${capacityText ? `<div class="truncate">Storage: <span class="text-slate-700 dark:text-slate-300 font-semibold">${capacityText}</span></div>` : ''}
@@ -1478,19 +1492,19 @@ async function fetchForensicDevices() {
 
                 <div class="pt-3 flex items-center space-x-2">
                     ${!isStorage ? `
-                        <button onclick="openForensicStudio('${dev.id}')" class="flex-1 py-1.5 px-3 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-sm whitespace-nowrap">
+                        <button onclick="openForensicStudio('${dev.id}')" class="flex-1 py-2 px-3 rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center justify-center space-x-1.5 shadow-sm whitespace-nowrap">
                             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             <span>Open Studio & Control</span>
                         </button>
                     ` : `
-                        <button onclick="openForensicStorage('${dev.id}')" class="flex-1 py-1.5 px-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5 whitespace-nowrap">
+                        <button onclick="openForensicStorage('${dev.id}')" class="flex-1 py-2 px-3 rounded-sm bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition flex items-center justify-center space-x-1.5 whitespace-nowrap">
                             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                             <span>Acquire Storage Files</span>
                         </button>
                     `}
 
                     ${isWireless ? `
-                        <button onclick="disconnectForensicDevice('${dev.id}')" title="Disconnect Wireless Target" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition flex-shrink-0">
+                        <button onclick="disconnectForensicDevice('${dev.id}')" title="Disconnect Wireless Target" class="p-2 rounded-sm bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 transition flex-shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     ` : ''}
