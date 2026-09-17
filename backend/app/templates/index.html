@@ -81,7 +81,7 @@
 
                 <a href="#devices" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>
                         <span class="sidebar-text">Org Devices</span>
                     </div>
                     <span id="sideEndpoints" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-300">0</span>
@@ -120,7 +120,7 @@
                 
                 <a href="#forensics" class="sidebar-link relative flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-cyber-700/50 transition group">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
-                        <svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        <svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>
                         <span class="sidebar-text">Device Forensics Bridge</span>
                     </div>
                     <span id="sideForensicsCount" class="sidebar-badge px-1.5 py-0.2 rounded font-mono text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold border border-cyan-500/20">1</span>
@@ -405,8 +405,8 @@
                 <div class="relative overflow-hidden bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 small-caps tracking-wider truncate">Monitored Endpoints</span>
-                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                            <rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/>
                         </svg>
                     </div>
                     <div class="mt-2 flex items-baseline justify-between">
@@ -588,20 +588,15 @@
             <!-- Section: Digital Forensics & Hardware Bridge Workstation (Full-Width Responsive Container) -->
             <div id="forensics" class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-xl p-4 sm:p-5 shadow-sm dark:shadow-none space-y-4">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50 gap-3">
-                    <div class="flex items-start sm:items-center space-x-3">
-                        <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex-shrink-0 mt-0.5 sm:mt-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 small-caps whitespace-nowrap">Digital Forensics Device Bridge</h2>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold flex items-center space-x-1 whitespace-nowrap">
+                                <span class="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                                <span>LIVE BUS &amp; WIRELESS LISTENER</span>
+                            </span>
                         </div>
-                        <div class="min-w-0">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 small-caps whitespace-nowrap">Digital Forensics Device Bridge</h2>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold flex items-center space-x-1 whitespace-nowrap">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
-                                    <span>LIVE BUS &amp; WIRELESS LISTENER</span>
-                                </span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Plug in a device via USB cable or pair wirelessly (Wi-Fi ADB) to control the screen, navigate apps, and acquire evidence</p>
-                        </div>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Plug in a device via USB cable or pair wirelessly (Wi-Fi ADB) to control the screen, navigate apps, and acquire evidence</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
                         <button onclick="openWirelessConnectModal()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-medium text-slate-700 dark:text-slate-200 transition flex items-center space-x-1.5 border border-slate-200 dark:border-cyber-600 shadow-xs whitespace-nowrap">
@@ -852,8 +847,8 @@
             <!-- Studio Header -->
             <div class="px-5 py-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
                 <div class="flex items-center space-x-3">
-                    <div id="studioDeviceIcon" class="p-2 rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <div id="studioDeviceIcon" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-cyber-700/60 flex items-center justify-center flex-shrink-0 text-cyan-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>
                     </div>
                     <div>
                         <div class="flex items-center space-x-2">
@@ -872,7 +867,7 @@
                 <!-- Studio Tab Bar -->
                 <div class="flex items-center space-x-1 bg-slate-200/70 dark:bg-cyber-900/80 p-1 rounded-xl border border-slate-300/60 dark:border-cyber-700/50">
                     <button id="tabBtnScreen" onclick="switchForensicTab('screen')" class="px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition bg-white dark:bg-cyber-700 text-blue-600 dark:text-white shadow-xs">
-                        <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>
                         <span>Visual Screen & Remote Control</span>
                     </button>
                     <button id="tabBtnFiles" onclick="switchForensicTab('files')" class="px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
@@ -2159,10 +2154,10 @@ Connected to target subsystem. Type a shell command below or click a preset.
                     let typeLabel = isWireless ? 'WI-FI ADB' : (isStorage ? 'MASS STORAGE' : (isHost ? 'LOCAL HOST' : 'USB CABLE'));
 
                     let iconSvg = isStorage 
-                        ? `<svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16m-5 5h.01m-4 0h.01m-4 0h.01"/></svg>`
+                        ? `<svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 2v4m4-4v4M7 6h10a1 1 0 011 1v13a2 2 0 01-2 2H8a2 2 0 01-2-2V7a1 1 0 011-1z"/></svg>`
                         : (isHost
-                            ? `<svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`
-                            : `<svg class="w-5 h-5 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`);
+                            ? `<svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>`
+                            : `<svg class="w-4 h-4 text-cyan-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>`);
 
                     const platformName = dev.platform || (dev.details && (dev.details.os || dev.details.fstype)) || (isHost ? 'Windows Host' : (isStorage ? 'USB Storage' : 'Android'));
                     const batteryText = typeof dev.battery === 'object' && dev.battery && dev.battery.level !== undefined 
@@ -2174,7 +2169,7 @@ Connected to target subsystem. Type a shell command below or click a preset.
                         <div class="space-y-3">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex items-center space-x-2.5 min-w-0">
-                                    <div class="p-2 rounded-lg bg-slate-200/70 dark:bg-cyber-700/60 border border-slate-300/60 dark:border-cyber-600/50 flex-shrink-0">
+                                    <div class="w-7 h-7 rounded-md bg-slate-200/50 dark:bg-cyber-700/40 flex items-center justify-center flex-shrink-0">
                                         ${iconSvg}
                                     </div>
                                     <div class="min-w-0">
@@ -2350,7 +2345,7 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 if (deckAndroid) deckAndroid.classList.add('hidden');
                 if (windowSelectGroup) windowSelectGroup.classList.remove('hidden');
                 if (iconContainer) {
-                    iconContainer.innerHTML = `<svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`;
+                    iconContainer.innerHTML = `<svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21" stroke-linecap="round"/><line x1="12" x2="12" y1="17" y2="21" stroke-linecap="round"/></svg>`;
                 }
                 currentForensicWindowId = 'desktop';
                 fetchForensicWindows();
@@ -2359,7 +2354,7 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 if (deckAndroid) deckAndroid.classList.remove('hidden');
                 if (windowSelectGroup) windowSelectGroup.classList.add('hidden');
                 if (iconContainer) {
-                    iconContainer.innerHTML = `<svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`;
+                    iconContainer.innerHTML = `<svg class="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>`;
                 }
             }
 
