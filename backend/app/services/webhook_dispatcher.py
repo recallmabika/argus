@@ -42,7 +42,7 @@ class WebhookDispatcher:
                 "username": "ARTIS EDR Defender",
                 "embeds": [
                     {
-                        "title": f"🚨 [{alert.severity}] {alert.title}",
+                        "title": f"[{alert.severity}] {alert.title}",
                         "description": alert.description or "Automated behavioral intrusion detection triggered.",
                         "color": color_int,
                         "fields": [
@@ -61,7 +61,7 @@ class WebhookDispatcher:
 
         elif webhook_type.upper() == "SLACK":
             return {
-                "text": f"🚨 *[{alert.severity}] {alert.title}* on `{hostname}`",
+                "text": f"*[{alert.severity}] {alert.title}* on `{hostname}`",
                 "attachments": [
                     {
                         "color": "#e01e5a" if alert.severity == "CRITICAL" else "#ecb22e",
@@ -70,7 +70,7 @@ class WebhookDispatcher:
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": f"*{alert.title}*\n{alert.description}\n\n*MITRE Technique:* `{alert.mitre_technique}` ({alert.mitre_tactic})\n*Host:* `{hostname}` | *Status:* `{alert.status}`"
+                                    "text": f"*Host:* `{hostname}` ({os_type})\n*MITRE:* `{alert.mitre_tactic}` ({alert.mitre_technique})\n*Details:* {alert.description}"
                                 }
                             }
                         ]
@@ -78,8 +78,26 @@ class WebhookDispatcher:
                 ]
             }
 
+        elif webhook_type.upper() == "TEAMS":
+            return {
+                "@type": "MessageCard",
+                "@context": "http://schema.org/extensions",
+                "themeColor": "E81123" if alert.severity == "CRITICAL" else "FF8C00",
+                "summary": f"[{alert.severity}] {alert.title}",
+                "sections": [{
+                    "activityTitle": f"[{alert.severity}] {alert.title}",
+                    "activitySubtitle": f"Host: {hostname} | Status: {alert.status}",
+                    "facts": [
+                        {"name": "MITRE Technique", "value": f"{alert.mitre_tactic} ({alert.mitre_technique})"},
+                        {"name": "Device ID", "value": device_id},
+                        {"name": "Detected At", "value": alert.detected_at.isoformat() if alert.detected_at else datetime.now(timezone.utc).isoformat()},
+                    ],
+                    "markdown": True
+                }]
+            }
+
         else:
-            # GENERIC_JSON / SIEM webhook
+            # Generic JSON payload
             return {
                 "source": "ARTIS_EDR",
                 "alert_id": alert.id,
@@ -150,7 +168,7 @@ class WebhookDispatcher:
                 "username": "ARTIS EDR Defender",
                 "embeds": [
                     {
-                        "title": "✅ ARTIS Webhook Integration Test",
+                        "title": "[VERIFIED] ARTIS Webhook Integration Test",
                         "description": f"Webhook `{webhook.name}` successfully verified and connected to ARTIS SOC.",
                         "color": 0xFFFFFF,
                         "fields": [
@@ -164,7 +182,7 @@ class WebhookDispatcher:
             }
         elif webhook.webhook_type.upper() == "SLACK":
             body = {
-                "text": f"✅ *ARTIS Webhook Integration Test*: Channel `{webhook.name}` verified successfully."
+                "text": f"*ARTIS Webhook Integration Test*: Channel `{webhook.name}` verified successfully."
             }
         else:
             body = test_payload

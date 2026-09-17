@@ -33,3 +33,19 @@
     animation: pulseBorder 1.5s infinite;
   }
 }
+
+/* Ensure Leaflet map stays strictly within its card container and never bleeds over modals */
+.leaflet-container {
+  isolation: isolate !important;
+  z-index: 0 !important;
+}
+
+.leaflet-pane {
+  z-index: 10 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 20 !important;
+}
+

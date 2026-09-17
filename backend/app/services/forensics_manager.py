@@ -265,7 +265,9 @@ class ForensicsManager:
                                 h = rect[3] - rect[1]
                                 if w > 100 and h > 100:
                                     windows.append({
+                                        "id": str(hwnd),
                                         "hwnd": str(hwnd),
+                                        "handle": hwnd,
                                         "title": title,
                                         "width": w,
                                         "height": h,
