@@ -26,32 +26,26 @@
     <!-- Collapsible & Fixed Sidebar -->
     <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-[65] w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none transition-all duration-200">
         
-        <!-- Sidebar Header / Brand & Toggle -->
+        <!-- Sidebar Header / Brand (Toggle button is positioned exclusively on top navigation) -->
         <div class="sidebar-header p-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between transition-all duration-200">
-            <div onclick="toggleSidebar()" class="sidebar-brand-group flex items-center space-x-2.5 cursor-pointer group" title="ARTIS Incident Security">
-                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-auto h-16 rounded-md object-contain shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform" />
+            <div class="sidebar-brand-group relative flex items-center space-x-2.5 w-full cursor-pointer group" onclick="toggleSidebar()" title="ARTIS Incident Security">
+                <img src="/static/img/logo.jpg" alt="ARTIS Logo" class="sidebar-logo w-12 h-12 rounded-lg object-contain shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform" />
                 <div class="sidebar-text">
                     <h1 class="text-xl font-black tracking-widest text-slate-900 dark:text-white leading-none">
                         ARTIS
                     </h1>
                     <p class="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">Incident Security</p>
                 </div>
+
+                <!-- Floating Tooltip when Sidebar is Collapsed -->
+                <div class="sidebar-tooltip">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-xs text-white">ARTIS</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">SOC</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-normal">Incident Security Platform</span>
+                </div>
             </div>
-            <!-- Collapse / Expand Sidebar button (fold in expanded, hamburger in collapsed) -->
-            <button onclick="toggleSidebar()" class="sidebar-collapse-btn p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Toggle Sidebar (Ctrl+B)">
-                <!-- Fold icon (expanded view: panel with left triangle) -->
-                <svg class="sidebar-icon-fold w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="3" stroke-width="2"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 3v18"/>
-                    <path d="M12 9l-4 3 4 3V9z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
-                </svg>
-                <!-- Hamburger icon (collapsed view: 3 horizontal lines) -->
-                <svg class="sidebar-icon-hamburger hidden w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <line x1="4" y1="6.5" x2="20" y2="6.5"/>
-                    <line x1="4" y1="12" x2="20" y2="12"/>
-                    <line x1="4" y1="17.5" x2="20" y2="17.5"/>
-                </svg>
-            </button>
         </div>
 
         <!-- Navigation Links -->
