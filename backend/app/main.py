@@ -87,8 +87,8 @@ def _render_spa_or_template(request: Request, template_name: str):
 @app.get("/", response_class=HTMLResponse)
 @app.get("/landing", response_class=HTMLResponse)
 async def get_landing_page(request: Request):
-    """Renders the ARTIS landing page (React SPA or Jinja fallback)."""
-    return _render_spa_or_template(request, "landing.html")
+    """Renders the original executive ARTIS landing page with full cinematic radar & geospatial matrix."""
+    return templates.TemplateResponse(request=request, name="landing.html")
 
 
 @app.get("/console", response_class=HTMLResponse)

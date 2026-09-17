@@ -1,11 +1,19 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Pause, Play, Radio, Filter } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Search, Pause, Play, GripVertical, Maximize2 } from 'lucide-react';
 import { Alert, SeverityLevel } from '../../types';
 import { api } from '../../services/api';
 import { useArgusWebSocket } from '../../services/websocket';
 import { AlertCard } from './AlertCard';
 
-export const ThreatStreamFeed: React.FC = () => {
+interface ThreatStreamFeedProps {
+  isMainStage?: boolean;
+  onPullToMain?: () => void;
+}
+
+export const ThreatStreamFeed: React.FC<ThreatStreamFeedProps> = ({
+  isMainStage = false,
+  onPullToMain
+}) => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [sevFilter, setSevFilter] = useState<'ALL' | SeverityLevel>('ALL');
@@ -45,10 +53,13 @@ export const ThreatStreamFeed: React.FC = () => {
   }, [alerts, sevFilter, searchQuery]);
 
   return (
-    <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-5 shadow-xs space-y-4">
+    <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-4 sm:p-5 shadow-xs space-y-4 h-full" id="threats">
       {/* Stream Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyber-700/50 flex-wrap gap-2">
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2">
+          <span className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Drag to reorder panel">
+            <GripVertical className="w-4 h-4" />
+          </span>
           <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -57,10 +68,22 @@ export const ThreatStreamFeed: React.FC = () => {
             Live Telemetry Incident &amp; Threat Ingestion Feed
           </h2>
         </div>
-        <div className="flex items-center space-x-2 text-[11px] font-mono text-slate-400">
-          <span>WebSocket Event Bus</span>
-          <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-cyber-600"></span>
-          <span>MITRE ATT&amp;CK Correlated</span>
+        <div className="flex items-center space-x-3 text-[11px] font-mono text-slate-400">
+          <span className="hidden sm:inline">WebSocket Event Bus &bull; MITRE ATT&amp;CK</span>
+          {onPullToMain && (
+            <button
+              onClick={onPullToMain}
+              className={`px-2 py-0.5 rounded-sm text-[10px] font-mono border transition flex items-center space-x-1 ${
+                isMainStage
+                  ? 'bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-cyber-600 font-semibold'
+                  : 'border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title={isMainStage ? 'Currently on Primary Stage' : 'Pull into Main Stage'}
+            >
+              <Maximize2 className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+              <span>{isMainStage ? 'Primary Stage' : 'Pull to Main'}</span>
+            </button>
+          )}
         </div>
       </div>
 

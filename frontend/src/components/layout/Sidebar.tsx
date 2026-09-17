@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -82,92 +82,144 @@ export const Sidebar: React.FC<SidebarProps> = ({
         } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         {/* Header & Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200 dark:border-cyber-700/60 flex-shrink-0">
-          <Link to="/dashboard" className="flex items-center space-x-3 overflow-hidden group">
-            <div className="w-8 h-8 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center font-bold font-mono text-sm flex-shrink-0 shadow-sm">
-              A
-            </div>
-            {!isCollapsed && (
-              <div className="flex flex-col min-w-0">
-                <span className="font-extrabold text-sm tracking-wider text-slate-900 dark:text-white uppercase">
-                  ARTIS
-                </span>
-                <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 uppercase tracking-widest truncate">
-                  CyberSecOps
-                </span>
-              </div>
-            )}
-          </Link>
-
-          {/* Collapse toggle on desktop */}
-          <button
-            onClick={onToggleCollapse}
-            className="hidden lg:flex p-1 rounded-sm text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/50 transition focus:outline-none"
-            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
+        <div
+          className={`h-16 flex items-center border-b border-slate-200 dark:border-cyber-700/60 flex-shrink-0 transition-all ${
+            isCollapsed ? 'justify-center px-1.5' : 'justify-between px-3.5'
+          }`}
+        >
+          {isCollapsed ? (
+            <button
+              onClick={onToggleCollapse}
+              className="flex items-center justify-center p-1.5 rounded-sm hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition group cursor-pointer"
+              title="Expand Sidebar (Ctrl+B)"
+            >
+              <img
+                src="/img/logo.jpg"
+                alt="ARTIS Logo"
+                className="h-10 w-10 object-contain rounded-sm shadow-xs group-hover:scale-105 transition-transform"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.src = '/static/img/logo.jpg';
+                }}
+              />
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/dashboard"
+                className="flex items-center space-x-2.5 overflow-hidden group"
+                title="ARTIS Incident Security"
+              >
+                <img
+                  src="/img/logo.jpg"
+                  alt="ARTIS Logo"
+                  className="h-10 w-auto rounded-sm object-contain flex-shrink-0 shadow-xs group-hover:scale-105 transition-transform"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.src = '/static/img/logo.jpg';
+                  }}
+                />
+                <div className="flex flex-col min-w-0">
+                  <span className="font-black text-base tracking-widest text-slate-900 dark:text-white uppercase leading-none">
+                    ARTIS
+                  </span>
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 tracking-wider truncate">
+                    Incident Security
+                  </span>
+                </div>
+              </Link>
+              <button
+                onClick={onToggleCollapse}
+                className="hidden lg:flex p-1.5 rounded-sm text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/50 transition focus:outline-none"
+                title="Collapse Sidebar (Ctrl+B)"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </div>
 
         {/* Scrollable Navigation Items */}
-        <nav className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-6">
-          {/* Main Section */}
-          <div className="space-y-1">
-            {!isCollapsed && (
+        <nav className={`flex-1 overflow-y-auto custom-scrollbar space-y-5 ${isCollapsed ? 'p-1.5' : 'p-3'}`}>
+          {/* Operations Section */}
+          <div className="space-y-1.5">
+            {!isCollapsed ? (
               <div className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Operations
               </div>
+            ) : (
+              <div className="border-t border-slate-200 dark:border-cyber-700/60 my-1 mx-2"></div>
             )}
 
             {/* SOC Overview */}
             <Link
               to="/dashboard"
-              className={`flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium transition ${
+              className={`rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
                 isActive('/dashboard')
-                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-slate-900 dark:text-white font-semibold'
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-slate-900 dark:text-white font-bold shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="SOC Operations Command"
             >
-              <div className="flex items-center space-x-3">
-                <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span>SOC Overview</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <LayoutDashboard className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'Overview' : 'SOC Overview'}
+                </span>
               </div>
             </Link>
 
             {/* Threat Stream (Dedicated Route) */}
             <Link
               to="/threats"
-              className={`flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium transition ${
+              className={`rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
                 isActive('/threats')
-                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-slate-900 dark:text-white font-semibold'
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-slate-900 dark:text-white font-bold shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="Real-Time Threat Stream"
             >
-              <div className="flex items-center space-x-3 min-w-0">
-                <Radio className="w-4 h-4 flex-shrink-0 text-rose-500" />
-                {!isCollapsed && <span className="truncate">Threat Stream</span>}
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Radio className="w-5 h-5 flex-shrink-0 text-rose-500" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'Threats' : 'Threat Stream'}
+                </span>
               </div>
-              {!isCollapsed && (
-                <span className="px-1.5 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-700 dark:text-slate-300 font-bold">
+              {!isCollapsed ? (
+                <span className="px-2 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-700 dark:text-slate-300 font-bold">
                   {activeThreatCount}
                 </span>
-              )}
+              ) : activeThreatCount > 0 ? (
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-rose-500"></span>
+              ) : null}
             </Link>
 
             {/* Org Devices */}
             <Link
               to="/dashboard#devices"
-              className="flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="Monitored Endpoint Fleet"
             >
-              <div className="flex items-center space-x-3 min-w-0">
-                <Laptop className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span className="truncate">Org Devices</span>}
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Laptop className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'Devices' : 'Org Devices'}
+                </span>
               </div>
               {!isCollapsed && (
-                <span className="px-1.5 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400">
+                <span className="px-2 py-0.5 rounded-sm font-mono text-[10px] bg-slate-200 dark:bg-cyber-700 text-slate-600 dark:text-slate-400">
                   {endpointCount}
                 </span>
               )}
@@ -176,34 +228,50 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Geolocation Map */}
             <Link
               to="/dashboard#branches"
-              className="flex items-center space-x-3 px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="Branch Geolocation"
             >
-              <MapPin className="w-4 h-4 flex-shrink-0" />
-              {!isCollapsed && <span>Geolocation Map</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <MapPin className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'GeoMap' : 'Geolocation Map'}
+                </span>
+              </div>
             </Link>
           </div>
 
           {/* Forensics & Directives Section */}
-          <div className="space-y-1">
-            {!isCollapsed && (
+          <div className="space-y-1.5">
+            {!isCollapsed ? (
               <div className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Forensics &amp; Response
               </div>
+            ) : (
+              <div className="border-t border-slate-200 dark:border-cyber-700/60 my-1 mx-2"></div>
             )}
 
             {/* Threat Hunting */}
             <button
               onClick={openHunting}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`w-full rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="Threat Hunting Engine"
             >
-              <div className="flex items-center space-x-3">
-                <Search className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span>Threat Hunting</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Search className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'Hunt' : 'Threat Hunting'}
+                </span>
               </div>
               {!isCollapsed && (
-                <span className="px-1.5 py-0.5 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 font-semibold">
+                <span className="px-2 py-0.5 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 font-semibold">
                   HUNT
                 </span>
               )}
@@ -212,32 +280,54 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Export Incident PDF */}
             <button
               onClick={openReport}
-              className="w-full flex items-center space-x-3 px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`w-full rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="Export Incident Report"
             >
-              <FileText className="w-4 h-4 flex-shrink-0" />
-              {!isCollapsed && <span>Export Signed PDF</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <FileText className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'Export' : 'Export Signed PDF'}
+                </span>
+              </div>
             </button>
 
             {/* Verify PDF Signature */}
             <button
               onClick={openVerify}
-              className="w-full flex items-center space-x-3 px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`w-full rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="Verify Ed25519 Report Signature"
             >
-              <ShieldCheck className="w-4 h-4 flex-shrink-0" />
-              {!isCollapsed && <span>Verify Signature</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <ShieldCheck className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'Verify' : 'Verify Signature'}
+                </span>
+              </div>
             </button>
 
             {/* Audit Trail */}
             <button
               onClick={toggleAudit}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`w-full rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="Access Audit Log"
             >
-              <div className="flex items-center space-x-3">
-                <ClipboardList className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span>Audit Trail</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <ClipboardList className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'Audit' : 'Audit Trail'}
+                </span>
               </div>
               {!isCollapsed && (
                 <span className="font-mono text-[10px] text-slate-400">
@@ -249,15 +339,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Alert Webhooks */}
             <button
               onClick={openWebhooks}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-sm text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white transition"
+              className={`w-full rounded-sm transition group ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-slate-900 dark:hover:text-white`}
               title="SIEM & Webhooks Forwarding"
             >
-              <div className="flex items-center space-x-3">
-                <Bell className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span>Alert Webhooks</span>}
+              <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Bell className="w-5 h-5 flex-shrink-0" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs'}>
+                  {isCollapsed ? 'Webhooks' : 'Alert Webhooks'}
+                </span>
               </div>
               {!isCollapsed && (
-                <span className="px-1.5 py-0.5 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 font-semibold">
+                <span className="px-2 py-0.5 rounded-sm font-mono text-[9px] bg-slate-200 dark:bg-cyber-700 font-semibold">
                   SIEM
                 </span>
               )}
@@ -266,7 +362,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Sidebar Footer & Theme Toggles */}
-        <div className="p-3 border-t border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-900/40 flex-shrink-0">
+        <div className="p-2.5 border-t border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-900/40 flex-shrink-0">
           {!isCollapsed ? (
             <div className="space-y-2">
               <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1">
@@ -275,7 +371,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div className="grid grid-cols-3 gap-1 bg-slate-200 dark:bg-cyber-700/60 p-1 rounded-sm text-[11px] font-medium text-slate-600 dark:text-slate-300">
                 <button
                   onClick={() => setTheme('light')}
-                  className={`py-1 rounded-sm flex items-center justify-center space-x-1 transition ${
+                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition ${
                     theme === 'light'
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
                       : 'hover:text-slate-900 dark:hover:text-white'
@@ -286,7 +382,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
                 <button
                   onClick={() => setTheme('dark')}
-                  className={`py-1 rounded-sm flex items-center justify-center space-x-1 transition ${
+                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition ${
                     theme === 'dark'
                       ? 'bg-cyber-600 text-white shadow-xs font-bold'
                       : 'hover:text-slate-900 dark:hover:text-white'
@@ -297,7 +393,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </button>
                 <button
                   onClick={() => setTheme('system')}
-                  className={`py-1 rounded-sm flex items-center justify-center space-x-1 transition ${
+                  className={`py-1.5 rounded-sm flex items-center justify-center space-x-1 transition ${
                     theme === 'system'
                       ? 'bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow-xs font-bold'
                       : 'hover:text-slate-900 dark:hover:text-white'
@@ -309,13 +405,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="w-full py-2 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition"
-              title="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
+            <div className="flex flex-col items-center space-y-1.5 py-1">
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="w-full py-2 px-1 flex flex-col items-center justify-center rounded-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700/60 transition group cursor-pointer"
+                title="Toggle Theme"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-500" />
+                ) : (
+                  <Moon className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+                )}
+                <span className="text-[7.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 leading-none mt-1">
+                  THEME
+                </span>
+              </button>
+
+              <div
+                className="w-full flex flex-col items-center justify-center py-1 rounded-sm bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-default"
+                title="Real-Time SOC Event Bus Connected"
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-emerald-600 dark:text-emerald-400">
+                  LIVE
+                </span>
+              </div>
+            </div>
           )}
         </div>
       </aside>
