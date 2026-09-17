@@ -52,14 +52,14 @@
     margin-left: 0;
   }
   #sidebar.sidebar-collapsed {
-    width: 5rem !important;
+    width: 4.25rem !important;
     overflow: visible !important;
   }
 }
 
 /* Collapsed Sidebar Rules */
 #sidebar.sidebar-collapsed .sidebar-header {
-  padding: 0.875rem 0.5rem !important;
+  padding: 0.65rem 0.25rem !important;
   justify-content: center !important;
 }
 
@@ -77,22 +77,26 @@
 }
 
 #sidebar.sidebar-collapsed .sidebar-logo {
-  height: 2.75rem !important;
-  width: 2.75rem !important;
+  height: 2.25rem !important;
+  width: 2.25rem !important;
   object-fit: contain;
 }
 
 #sidebar.sidebar-collapsed .sidebar-nav {
   overflow: visible !important;
-  padding-left: 0.5rem !important;
-  padding-right: 0.5rem !important;
+  padding-left: 0.25rem !important;
+  padding-right: 0.25rem !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-link {
+  display: flex !important;
+  align-items: center !important;
   justify-content: center !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  width: 100% !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  margin: 0.2rem auto !important;
+  padding: 0 !important;
+  border-radius: 0.5rem !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-link-content {
@@ -110,10 +114,16 @@
 
 #sidebar.sidebar-collapsed .sidebar-section-divider {
   display: block !important;
+  margin: 0.5rem auto !important;
+  width: 1.75rem !important;
+}
+
+#sidebar.sidebar-collapsed .sidebar-section:first-child .sidebar-section-divider {
+  display: none !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-footer {
-  padding: 0.75rem 0.5rem !important;
+  padding: 0.5rem 0.25rem !important;
 }
 
 #sidebar.sidebar-collapsed .sidebar-footer-full {
@@ -122,6 +132,17 @@
 
 #sidebar.sidebar-collapsed .sidebar-footer-compact {
   display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+}
+
+#sidebar.sidebar-collapsed .sidebar-footer-compact .sidebar-link {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 0.2rem 0 !important;
 }
 
 /* Sidebar Floating Cyber Tooltip */

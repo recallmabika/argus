@@ -44,7 +44,6 @@
             <!-- Section: Monitoring -->
             <div class="sidebar-section space-y-1">
                 <div class="sidebar-section-title px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monitoring &amp; SOC</div>
-                <div class="sidebar-section-divider hidden border-t border-slate-200 dark:border-cyber-700/60 my-2 mx-1"></div>
                 
                 <a href="#dashboard" class="sidebar-link relative flex items-center justify-between px-3 py-2.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold transition group">
                     <div class="sidebar-link-content flex items-center space-x-2.5">
@@ -222,27 +221,38 @@
             </div>
 
             <!-- Compact Collapsed Footer -->
-            <div class="sidebar-footer-compact hidden flex-col items-center space-y-2 py-1">
-                <button onclick="cycleTheme()" class="sidebar-link relative p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700/60 transition group" title="Toggle Theme">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            <div class="sidebar-footer-compact hidden flex-col items-center space-y-1.5 py-1">
+                <!-- Collapsed Theme Button with Micro-Word -->
+                <button onclick="cycleTheme()" class="sidebar-link relative flex flex-col items-center justify-center p-1 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700/60 transition group cursor-pointer" title="Toggle Theme">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-4 h-4 hidden dark:block text-slate-300 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        <svg class="w-4 h-4 block dark:hidden text-amber-500 group-hover:text-amber-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </span>
+                    <span class="text-[7.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 leading-none mt-1">THEME</span>
+                    
+                    <!-- Floating Cyber Tooltip -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-xs text-white">Theme Mode</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">Switch</span>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 border border-blue-500/30 font-semibold">Toggle</span>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-normal">Toggle Dark / Light Theme</span>
+                        <span class="text-[10px] text-slate-400 font-normal">Switch Dark / Light Theme</span>
                     </div>
                 </button>
 
-                <div class="sidebar-link relative flex items-center justify-center p-2 cursor-default group">
-                    <span class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                <!-- Collapsed Live Status with Micro-Word -->
+                <div class="sidebar-link relative flex flex-col items-center justify-center p-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 cursor-default group" title="Real-Time SOC Event Bus Connected">
+                    <span id="wsStatusDotCollapsed" class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="wsStatusTextCollapsed" class="text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-emerald-600 dark:text-emerald-400">LIVE</span>
+                    
+                    <!-- Floating Cyber Tooltip -->
                     <div class="sidebar-tooltip">
                         <div class="flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span class="font-bold text-xs text-white">Live Stream</span>
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-green-500/20 text-green-400 border border-green-500/30 font-semibold">WS://</span>
+                            <span id="wsTooltipDot" class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="font-bold text-xs text-white">SOC Telemetry</span>
+                            <span id="wsTooltipBadge" class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">WS://</span>
                         </div>
-                        <span class="text-[10px] text-slate-400 font-normal">Real-Time SOC Event Bus Connected</span>
+                        <span id="wsTooltipSub" class="text-[10px] text-slate-400 font-normal">Real-Time Event Stream Connected</span>
                     </div>
                 </div>
             </div>
@@ -1631,8 +1641,18 @@ Connected to target subsystem. Type a shell command below or click a preset.
             ws = new WebSocket(wsUrl);
 
             ws.onopen = () => {
-                document.getElementById('wsStatusDot').className = 'h-2 w-2 rounded-full bg-green-500 animate-pulse';
-                document.getElementById('wsStatusText').innerText = 'LIVE FEED';
+                const dot = document.getElementById('wsStatusDot');
+                const txt = document.getElementById('wsStatusText');
+                if (dot) dot.className = 'h-2 w-2 rounded-full bg-green-500 animate-pulse';
+                if (txt) txt.innerText = 'LIVE FEED';
+                
+                const cDot = document.getElementById('wsStatusDotCollapsed');
+                const cTxt = document.getElementById('wsStatusTextCollapsed');
+                if (cDot) cDot.className = 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse';
+                if (cTxt) {
+                    cTxt.innerText = 'LIVE';
+                    cTxt.className = 'text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-emerald-600 dark:text-emerald-400';
+                }
             };
 
             ws.onmessage = (event) => {
@@ -1646,8 +1666,18 @@ Connected to target subsystem. Type a shell command below or click a preset.
             };
 
             ws.onclose = () => {
-                document.getElementById('wsStatusDot').className = 'h-2 w-2 rounded-full bg-red-500';
-                document.getElementById('wsStatusText').innerText = 'DISCONNECTED';
+                const dot = document.getElementById('wsStatusDot');
+                const txt = document.getElementById('wsStatusText');
+                if (dot) dot.className = 'h-2 w-2 rounded-full bg-red-500';
+                if (txt) txt.innerText = 'DISCONNECTED';
+                
+                const cDot = document.getElementById('wsStatusDotCollapsed');
+                const cTxt = document.getElementById('wsStatusTextCollapsed');
+                if (cDot) cDot.className = 'h-2 w-2 rounded-full bg-red-500';
+                if (cTxt) {
+                    cTxt.innerText = 'OFF';
+                    cTxt.className = 'text-[7.5px] font-mono font-bold uppercase tracking-wider leading-none mt-1 text-red-500';
+                }
                 setTimeout(initWebSocket, 3000);
             };
         }
