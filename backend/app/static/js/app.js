@@ -673,6 +673,8 @@ function restoreSidebarState() {
 }
 
 function initMap() {
+    const mapEl = document.getElementById('map');
+    if (!mapEl || typeof L === 'undefined') return;
     map = L.map('map').setView([40.7128, -74.0060], 4);
     const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
@@ -683,8 +685,10 @@ function initMap() {
 }
 
 function initChart() {
+    const chartEl = document.getElementById('mitreChart');
+    if (!chartEl || typeof Chart === 'undefined') return;
     const isDark = document.documentElement.classList.contains('dark');
-    const ctx = document.getElementById('mitreChart').getContext('2d');
+    const ctx = chartEl.getContext('2d');
     mitreChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -908,11 +912,18 @@ async function fetchStats() {
     try {
         const res = await fetch('/api/v1/alerts/stats/summary');
         const stats = await res.json();
-        document.getElementById('statActiveThreats').innerText = stats.open || 0;
-        document.getElementById('sideActiveThreats').innerText = stats.open || 0;
+        const statActive = document.getElementById('statActiveThreats');
+        if (statActive) statActive.innerText = stats.open || 0;
+        const statActivePage = document.getElementById('statActiveThreatsPage');
+        if (statActivePage) statActivePage.innerText = stats.open || 0;
+        const sideActive = document.getElementById('sideActiveThreats');
+        if (sideActive) sideActive.innerText = stats.open || 0;
         const sideThreatsTip = document.getElementById('sideActiveThreatsTooltip');
         if (sideThreatsTip) sideThreatsTip.innerText = `${stats.open || 0} Live`;
-        document.getElementById('statCriticalHigh').innerText = `${stats.critical} / ${stats.high}`;
+        const statCrit = document.getElementById('statCriticalHigh');
+        if (statCrit) statCrit.innerText = `${stats.critical} / ${stats.high}`;
+        const statCritPage = document.getElementById('statCriticalHighPage');
+        if (statCritPage) statCritPage.innerText = `${stats.critical} / ${stats.high}`;
     } catch (e) {
         console.error(e);
     }
@@ -1146,8 +1157,10 @@ async function fetchDevices() {
     try {
         const res = await fetch('/api/v1/devices');
         const devices = await res.json();
-        document.getElementById('statEndpoints').innerText = devices.length;
-        document.getElementById('sideEndpoints').innerText = devices.length;
+        const statEnds = document.getElementById('statEndpoints');
+        if (statEnds) statEnds.innerText = devices.length;
+        const sideEnds = document.getElementById('sideEndpoints');
+        if (sideEnds) sideEnds.innerText = devices.length;
         const sideEndpointsTip = document.getElementById('sideEndpointsTooltip');
         if (sideEndpointsTip) sideEndpointsTip.innerText = `${devices.length} Fleet`;
 
@@ -1444,8 +1457,10 @@ async function fetchAudit() {
     try {
         const res = await fetch('/api/v1/audit?limit=20');
         const logs = await res.json();
-        document.getElementById('statAuditCount').innerText = logs.length;
-        document.getElementById('sideAuditCount').innerText = logs.length;
+        const statAudit = document.getElementById('statAuditCount');
+        if (statAudit) statAudit.innerText = logs.length;
+        const sideAudit = document.getElementById('sideAuditCount');
+        if (sideAudit) sideAudit.innerText = logs.length;
         const sideAuditTip = document.getElementById('sideAuditTooltip');
         if (sideAuditTip) sideAuditTip.innerText = `${logs.length} Logs`;
         const list = document.getElementById('auditList');
