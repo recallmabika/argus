@@ -6,6 +6,39 @@ let mitreChart;
 let activeDeviceData = null;
 let currentThemeSetting = localStorage.getItem('argus-theme') || 'dark';
 
+// ==========================================
+// Custom Option Fields (TomSelect Integration)
+// ==========================================
+function initGlobalTomSelects(root) {
+    if (typeof TomSelect === 'undefined') return;
+    const container = root || document;
+    const selects = container.querySelectorAll('select:not([data-no-tomselect]):not(.no-tomselect)');
+    selects.forEach(select => {
+        if (select.closest('.no-tomselect-container')) return;
+        if (select.tomselect) {
+            select.tomselect.sync();
+            return;
+        }
+        if (select.classList.contains('tomselected')) return;
+        try {
+            const ts = new TomSelect(select, {
+                create: false,
+                maxItems: 1,
+                allowEmptyOption: true,
+                dropdownParent: 'body',
+                controlInput: null
+            });
+            ts.on('change', () => {
+                if (typeof select.onchange === 'function') {
+                    select.onchange();
+                }
+            });
+        } catch (e) {
+            console.debug('TomSelect init skipped:', e);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     restoreSidebarState();
@@ -13,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initChart();
     restoreLayoutState();
     initWebSocket();
+    initGlobalTomSelects();
     fetchUserProfile();
     fetchInitialData();
     fetchForensicDevices();
@@ -171,11 +205,11 @@ function updatePullButtonLabels() {
         if (!btn) return;
         const labelSpan = btn.querySelector('.label');
         if (id === mainCardId) {
-            btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-900 dark:border-white/30 transition flex items-center space-x-1 font-bold cursor-default';
+            btn.className = 'pull-btn px-3.5 py-1 rounded-sm text-[11px] font-mono bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-900 dark:border-white/30 transition flex items-center justify-center space-x-1 font-bold min-w-[110px] cursor-default';
             btn.title = 'Currently pinned on Primary Stage';
             if (labelSpan) labelSpan.innerText = 'Primary Stage';
         } else {
-            btn.className = 'pull-btn px-2 py-0.5 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300';
+            btn.className = 'pull-btn px-3.5 py-1 rounded-sm text-[11px] font-mono border border-slate-200 dark:border-cyber-700/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center justify-center space-x-1 text-slate-600 dark:text-slate-300 min-w-[110px]';
             btn.title = 'Pull into Main Big Stage';
             if (labelSpan) labelSpan.innerText = 'Pull to Main';
         }
@@ -409,31 +443,31 @@ function openArgusMessageBox({
 
         accent.className = 'absolute top-0 left-6 right-6 h-1 rounded-full shadow-sm';
         iconWrapper.className = 'flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border';
-        confirmBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-semibold text-white shadow-md transition';
+        confirmBtn.className = 'px-5 py-2 rounded-sm min-w-[110px] text-xs font-semibold text-white shadow-md transition flex items-center justify-center';
 
         if (type === 'success') {
             accent.classList.add('bg-slate-900', 'dark:bg-white');
             iconWrapper.classList.add('bg-slate-200', 'dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-300', 'dark:border-white/20');
             confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>';
         } else if (type === 'danger') {
             accent.classList.add('bg-slate-900', 'dark:bg-white');
             iconWrapper.classList.add('bg-slate-200', 'dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-300', 'dark:border-white/20');
             confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>';
         } else if (type === 'warning') {
             accent.classList.add('bg-slate-900', 'dark:bg-white');
             iconWrapper.classList.add('bg-slate-200', 'dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-300', 'dark:border-white/20');
             confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
         } else {
             accent.classList.add('bg-slate-900', 'dark:bg-white');
             iconWrapper.classList.add('bg-slate-900/10 dark:bg-white/10', 'text-slate-900', 'dark:text-white', 'border-slate-900 dark:border-white/20');
             confirmBtn.classList.add('bg-slate-900', 'hover:bg-black', 'dark:bg-white', 'dark:hover:bg-slate-200', 'text-white', 'dark:text-black');
-            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-900 dark:border-white/20';
+            badgeEl.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider bg-slate-900/10 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-900 dark:border-white/20';
             icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
         }
 
@@ -516,14 +550,14 @@ function setTheme(mode, save = true) {
         const btn = document.getElementById(`themeBtn-${m}`);
         if (btn) {
             btn.className = (m === mode)
-                ? 'py-1 rounded bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
-                : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition';
+                ? 'py-1 rounded-sm bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
+                : 'py-1 rounded-sm flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition';
         }
         const menuBtn = document.getElementById(`menuThemeBtn-${m}`);
         if (menuBtn) {
             menuBtn.className = (m === mode)
-                ? 'py-1 rounded bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
-                : 'py-1 rounded flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition';
+                ? 'py-1 rounded-sm bg-white dark:bg-cyber-600 text-slate-900 dark:text-white shadow font-semibold flex items-center justify-center space-x-1'
+                : 'py-1 rounded-sm flex items-center justify-center space-x-1 hover:text-slate-900 dark:hover:text-white transition';
         }
     });
 
@@ -1178,7 +1212,9 @@ function switchTab(tabName) {
 
 function openReportModal() {
     document.getElementById('reportResultBlock').classList.add('hidden');
-    document.getElementById('reportModal').classList.remove('hidden');
+    const modal = document.getElementById('reportModal');
+    modal.classList.remove('hidden');
+    initGlobalTomSelects(modal);
 }
 
 function closeReportModal() {
@@ -2591,6 +2627,7 @@ function openThreatHuntingModal() {
     const modal = document.getElementById('threatHuntingModal');
     if (modal) {
         modal.classList.remove('hidden');
+        initGlobalTomSelects(modal);
         executeHunt();
     }
 }
@@ -2605,11 +2642,11 @@ function setHuntTimeRange(range, btn) {
     const container = document.getElementById('huntTimeButtons');
     if (container) {
         container.querySelectorAll('.hunt-time-btn').forEach(b => {
-            b.className = 'hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white';
+            b.className = 'hunt-time-btn px-3 py-1 rounded-sm text-xs font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white transition';
         });
     }
     if (btn) {
-        btn.className = 'hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold';
+        btn.className = 'hunt-time-btn px-3 py-1 rounded-sm text-xs font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold transition';
     }
     executeHunt();
 }
@@ -2871,6 +2908,7 @@ function openWebhooksModal() {
     const modal = document.getElementById('webhooksModal');
     if (modal) {
         modal.classList.remove('hidden');
+        initGlobalTomSelects(modal);
         fetchWebhooks();
     }
 }

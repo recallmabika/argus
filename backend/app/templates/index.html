@@ -15,6 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- Compiled Production Tailwind CSS (No inline CSS) -->
     <link rel="stylesheet" href="/static/css/output.css" />
+    <!-- Custom Option Fields (TomSelect) -->
+    <link rel="stylesheet" href="/static/css/tom-select.css" />
+    <script src="/static/js/tom-select.complete.min.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Leaflet CSS & JS -->
@@ -396,17 +399,17 @@
 
             <!-- Action Buttons & User Profile in Header -->
             <div class="flex items-center space-x-2.5">
-                <button onclick="openReportModal()" class="px-3 py-1.5 rounded-lg bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-medium text-white dark:text-slate-900 transition flex items-center space-x-1.5">
+                <button onclick="openReportModal()" class="px-4 py-1.5 min-w-[115px] justify-center rounded-sm bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-xs font-semibold text-white dark:text-slate-900 transition flex items-center space-x-1.5 shadow-xs">
                     <svg class="w-3.5 h-3.5 text-slate-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Export PDF</span>
                 </button>
 
-                <button onclick="openVerifyModal()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 border border-slate-200 dark:border-cyber-600 text-xs font-medium text-slate-700 dark:text-slate-200 transition flex items-center space-x-1.5">
+                <button onclick="openVerifyModal()" class="px-4 py-1.5 min-w-[100px] justify-center rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 border border-slate-200 dark:border-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-200 transition flex items-center space-x-1.5">
                     <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>Verify</span>
                 </button>
 
-                <button onclick="toggleAuditDrawer()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 border border-slate-200 dark:border-cyber-600 text-xs font-medium text-slate-700 dark:text-slate-300 transition">
+                <button onclick="toggleAuditDrawer()" class="px-4 py-1.5 min-w-[85px] justify-center rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 border border-slate-200 dark:border-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300 transition">
                     Audit
                 </button>
 
@@ -598,7 +601,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500 hidden sm:inline">Auto-correlated MITRE</span>
-                                <button onclick="pullToMain('card-threats')" id="btn-pull-card-threats" class="pull-btn px-2.5 py-1 rounded text-[10px] font-mono bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-cyber-600 hover:bg-slate-200 dark:hover:bg-cyber-600 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1 font-medium" title="Currently on Main Stage">
+                                <button onclick="pullToMain('card-threats')" id="btn-pull-card-threats" class="pull-btn px-3.5 py-1 rounded-sm text-[11px] min-w-[110px] justify-center font-mono bg-slate-100 dark:bg-cyber-700/60 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-cyber-600 hover:bg-slate-200 dark:hover:bg-cyber-600 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5 font-medium" title="Currently on Main Stage">
                                     <svg class="w-3 h-3 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                     <span class="label">Primary Stage</span>
                                 </button>
@@ -653,7 +656,7 @@
                                 <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">Threat Tactics Matrix</h2>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <button onclick="pullToMain('card-matrix')" id="btn-pull-card-matrix" class="pull-btn px-2.5 py-1 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pull into Main Big Stage">
+                                <button onclick="pullToMain('card-matrix')" id="btn-pull-card-matrix" class="pull-btn px-3.5 py-1 rounded-sm text-[11px] min-w-[110px] justify-center font-mono border border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pull into Main Big Stage">
                                     <svg class="w-3 h-3 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                     <span class="label">Pull to Main</span>
                                 </button>
@@ -683,7 +686,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <button onclick="pullToMain('card-devices')" id="btn-pull-card-devices" class="pull-btn px-2.5 py-1 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pull into Main Big Stage">
+                                <button onclick="pullToMain('card-devices')" id="btn-pull-card-devices" class="pull-btn px-3.5 py-1 rounded-sm text-[11px] min-w-[110px] justify-center font-mono border border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pull into Main Big Stage">
                                     <svg class="w-3 h-3 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                     <span class="label">Pull to Main</span>
                                 </button>
@@ -751,7 +754,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 font-mono hidden sm:inline">Footprint</span>
-                                <button onclick="pullToMain('card-map')" id="btn-pull-card-map" class="pull-btn px-2.5 py-1 rounded text-[10px] font-mono border border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pull into Main Big Stage">
+                                <button onclick="pullToMain('card-map')" id="btn-pull-card-map" class="pull-btn px-3.5 py-1 rounded-sm text-[11px] min-w-[110px] justify-center font-mono border border-slate-200 dark:border-cyber-700/60 bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 transition flex items-center space-x-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white" title="Pull into Main Big Stage">
                                     <svg class="w-3 h-3 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                                     <span class="label">Pull to Main</span>
                                 </button>
@@ -847,19 +850,19 @@
                     <span id="modalDeviceStatusPill" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20">ONLINE</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-1.5">
-                    <button id="btnQuarantineAction" onclick="handleQuarantineToggle()" class="px-2.5 py-1 rounded-md bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-[11px] transition shadow-xs flex items-center space-x-1">
+                    <button id="btnQuarantineAction" onclick="handleQuarantineToggle()" class="px-3.5 py-1.5 rounded-sm min-w-[130px] justify-center bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition shadow-xs flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                         <span id="btnQuarantineText">Quarantine Host</span>
                     </button>
-                    <button onclick="promptKillProcess()" class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[11px] transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1">
+                    <button onclick="promptKillProcess()" class="px-3.5 py-1.5 rounded-sm min-w-[115px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-xs transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         <span>Kill Process</span>
                     </button>
-                    <button onclick="triggerForensicTriage()" class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[11px] transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1">
+                    <button onclick="triggerForensicTriage()" class="px-3.5 py-1.5 rounded-sm min-w-[125px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-xs transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                         <span>Forensic Triage</span>
                     </button>
-                    <button onclick="triggerWorkstationSnapshot()" class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-[11px] transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1">
+                    <button onclick="triggerWorkstationSnapshot()" class="px-3.5 py-1.5 rounded-sm min-w-[120px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-800 dark:text-slate-200 font-semibold text-xs transition border border-slate-300/60 dark:border-cyber-600 flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3" stroke-width="2"/></svg>
                         <span>Snap Webcam</span>
                     </button>
@@ -890,19 +893,19 @@
             <div class="space-y-3">
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Report Title</label>
-                    <input id="reportTitleInput" type="text" class="w-full bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" value="Security Incident & Endpoint Monitoring Assessment">
+                    <input id="reportTitleInput" type="text" class="w-full bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" value="Security Incident & Endpoint Monitoring Assessment">
                 </div>
 
                 <div>
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Audience Template</label>
-                    <select id="reportTypeSelect" class="w-full bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                    <select id="reportTypeSelect" class="w-full bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
                         <option value="ANALYST">Technical Analyst Report (Full MITRE IOCs & Remediation)</option>
                         <option value="EXECUTIVE">Executive Summary (Business Risk & Asset Impact)</option>
                     </select>
                 </div>
             </div>
 
-            <div id="reportResultBlock" class="hidden p-3 bg-slate-100 dark:bg-cyber-800/80 border border-slate-300 dark:border-white/20 rounded-lg space-y-2 text-xs">
+            <div id="reportResultBlock" class="hidden p-3 bg-slate-100 dark:bg-cyber-800/80 border border-slate-300 dark:border-white/20 rounded-sm space-y-2 text-xs">
                 <div class="flex items-center space-x-2 text-slate-900 dark:text-white font-semibold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     <span>Report Signed & Generated</span>
@@ -910,14 +913,14 @@
                 <div class="text-[10px] font-mono text-slate-500 dark:text-slate-400 break-all">
                     <b>SHA-256:</b> <span id="reportShaSpan"></span>
                 </div>
-                <a id="reportDownloadBtn" href="#" target="_blank" class="block text-center w-full py-1.5 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-medium rounded-md transition mt-2">
+                <a id="reportDownloadBtn" href="#" target="_blank" class="block text-center w-full py-2 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold rounded-sm transition mt-2">
                     Download Signed PDF
                 </a>
             </div>
 
             <div class="flex justify-end space-x-2 pt-2">
-                <button onclick="closeReportModal()" class="px-3 py-1.5 bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-xs rounded-lg text-slate-700 dark:text-slate-300">Close</button>
-                <button id="btnSubmitGenerate" onclick="submitGenerateReport()" class="px-4 py-1.5 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold rounded-lg text-white dark:text-black">Generate & Sign</button>
+                <button onclick="closeReportModal()" class="px-4 py-2 min-w-[90px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-xs rounded-sm text-slate-700 dark:text-slate-300 font-medium">Close</button>
+                <button id="btnSubmitGenerate" onclick="submitGenerateReport()" class="px-5 py-2 min-w-[140px] justify-center bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold rounded-sm text-white dark:text-black shadow-xs">Generate & Sign</button>
             </div>
         </div>
     </div>
@@ -928,15 +931,15 @@
             <h3 class="text-base font-bold text-slate-900 dark:text-white">Verify PDF Chain of Custody</h3>
             <p class="text-xs text-slate-500 dark:text-slate-400">Upload a report to verify its SHA-256 checksum and cryptographic Ed25519 signature.</p>
 
-            <input type="file" id="verifyFileInput" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-900 dark:file:bg-white file:text-white dark:file:text-black hover:file:bg-black dark:hover:file:bg-slate-200 cursor-pointer">
+            <input type="file" id="verifyFileInput" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-sm file:border-0 file:text-xs file:font-semibold file:bg-slate-900 dark:file:bg-white file:text-white dark:file:text-black hover:file:bg-black dark:hover:file:bg-slate-200 cursor-pointer">
 
-            <div id="verifyResultBox" class="hidden p-3 rounded-lg text-xs space-y-1.5">
+            <div id="verifyResultBox" class="hidden p-3 rounded-sm text-xs space-y-1.5">
                 <!-- Result populated dynamically -->
             </div>
 
             <div class="flex justify-end space-x-2 pt-2">
-                <button onclick="closeVerifyModal()" class="px-3 py-1.5 bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-xs rounded-lg text-slate-700 dark:text-slate-300">Close</button>
-                <button onclick="submitVerifyReport()" class="px-4 py-1.5 bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold rounded-lg text-white dark:text-black">Verify Signature</button>
+                <button onclick="closeVerifyModal()" class="px-4 py-2 min-w-[90px] justify-center bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-xs rounded-sm text-slate-700 dark:text-slate-300 font-medium">Close</button>
+                <button onclick="submitVerifyReport()" class="px-5 py-2 min-w-[140px] justify-center bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold rounded-sm text-white dark:text-black shadow-xs">Verify Signature</button>
             </div>
         </div>
     </div>
@@ -1153,7 +1156,7 @@
                             <div class="flex items-center space-x-1.5" id="windowSelectGroup">
                                 <span class="text-slate-600">•</span>
                                 <label for="forensicWindowSelect" class="text-[10px] text-slate-400 font-medium hidden sm:inline">Target Window:</label>
-                                <select id="forensicWindowSelect" onchange="onForensicWindowChange()" class="bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 rounded px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:border-slate-900 dark:focus:border-white max-w-[280px] sm:max-w-[340px] truncate">
+                                <select id="forensicWindowSelect" onchange="onForensicWindowChange()" data-no-tomselect class="bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 rounded-sm px-3 py-1 text-[11px] font-mono focus:outline-none focus:border-slate-900 dark:focus:border-white min-w-[220px] max-w-[340px] truncate">
                                     <option value="desktop">🖥️ Full Desktop (Display 1)</option>
                                     <option value="active">🪟 Active / Foreground Window</option>
                                 </select>
@@ -1456,9 +1459,9 @@ Connected to target subsystem. Type a shell command below or click a preset.
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
                         </span>
-                        <input id="huntQueryInput" type="text" placeholder="Search keyword across command-lines, processes, payloads, users, domains (e.g. powershell, mimikatz, cmd.exe)..." class="w-full pl-9 pr-4 py-2 bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" onkeydown="if(event.key==='Enter') executeHunt()" />
+                        <input id="huntQueryInput" type="text" placeholder="Search keyword across command-lines, processes, payloads, users, domains (e.g. powershell, mimikatz, cmd.exe)..." class="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white" onkeydown="if(event.key==='Enter') executeHunt()" />
                     </div>
-                    <button onclick="executeHunt()" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center space-x-1.5 shadow-sm">
+                    <button onclick="executeHunt()" class="px-5 py-2.5 min-w-[140px] justify-center rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition flex items-center space-x-1.5 shadow-sm">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <span>Execute Hunt</span>
                     </button>
@@ -1467,10 +1470,10 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 <!-- Faceted Scope & Export Row -->
                 <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
                     <!-- Left: Selects -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="flex items-center space-x-1">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center space-x-1.5">
                             <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Event:</span>
-                            <select id="huntEventTypeSelect" onchange="executeHunt()" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-md px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                            <select id="huntEventTypeSelect" onchange="executeHunt()" class="w-48 min-w-[180px] bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none">
                                 <option value="">ALL EVENTS</option>
                                 <option value="PROCESS_START">PROCESS_START</option>
                                 <option value="BROWSER_VISIT">BROWSER_VISIT</option>
@@ -1482,9 +1485,9 @@ Connected to target subsystem. Type a shell command below or click a preset.
                             </select>
                         </div>
 
-                        <div class="flex items-center space-x-1">
+                        <div class="flex items-center space-x-1.5">
                             <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Severity:</span>
-                            <select id="huntSeveritySelect" onchange="executeHunt()" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-md px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                            <select id="huntSeveritySelect" onchange="executeHunt()" class="w-40 min-w-[150px] bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none">
                                 <option value="">ALL SEVERITIES</option>
                                 <option value="CRITICAL">CRITICAL</option>
                                 <option value="HIGH">HIGH</option>
@@ -1494,23 +1497,23 @@ Connected to target subsystem. Type a shell command below or click a preset.
                         </div>
 
                         <!-- Time Window Buttons -->
-                        <div class="flex items-center space-x-1 bg-white dark:bg-cyber-900 p-0.5 rounded-md border border-slate-300 dark:border-cyber-700" id="huntTimeButtons">
-                            <button type="button" onclick="setHuntTimeRange('1h', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">1h</button>
-                            <button type="button" onclick="setHuntTimeRange('6h', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">6h</button>
-                            <button type="button" onclick="setHuntTimeRange('24h', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold">24h</button>
-                            <button type="button" onclick="setHuntTimeRange('7d', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">7d</button>
-                            <button type="button" onclick="setHuntTimeRange('all', this)" class="hunt-time-btn px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">ALL</button>
+                        <div class="flex items-center space-x-1 bg-white dark:bg-cyber-900 p-0.5 rounded-sm border border-slate-300 dark:border-cyber-700" id="huntTimeButtons">
+                            <button type="button" onclick="setHuntTimeRange('1h', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">1h</button>
+                            <button type="button" onclick="setHuntTimeRange('6h', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">6h</button>
+                            <button type="button" onclick="setHuntTimeRange('24h', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono bg-slate-900 dark:bg-white text-white dark:text-black font-bold">24h</button>
+                            <button type="button" onclick="setHuntTimeRange('7d', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">7d</button>
+                            <button type="button" onclick="setHuntTimeRange('all', this)" class="hunt-time-btn px-3 py-1 rounded-sm text-[11px] font-mono text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white">ALL</button>
                         </div>
                     </div>
 
                     <!-- Right: Direct CSV / JSON Streaming Export -->
                     <div class="flex items-center space-x-2">
                         <span class="text-[11px] text-slate-400">Export Stream:</span>
-                        <button onclick="exportHunt('csv')" class="px-2.5 py-1 rounded-md bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
+                        <button onclick="exportHunt('csv')" class="px-3.5 py-1.5 min-w-[80px] justify-center rounded-sm bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             <span>CSV</span>
                         </button>
-                        <button onclick="exportHunt('json')" class="px-2.5 py-1 rounded-md bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
+                        <button onclick="exportHunt('json')" class="px-3.5 py-1.5 min-w-[80px] justify-center rounded-sm bg-white dark:bg-cyber-900 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-800 dark:text-slate-200 font-mono font-medium text-[11px] border border-slate-300 dark:border-cyber-700 flex items-center space-x-1 transition">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                             <span>JSON</span>
                         </button>
@@ -1623,11 +1626,11 @@ Connected to target subsystem. Type a shell command below or click a preset.
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Destination Name</label>
-                            <input id="whNameInput" type="text" placeholder="e.g. SOC Discord Operations" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                            <input id="whNameInput" type="text" placeholder="e.g. SOC Discord Operations" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
                         </div>
                         <div>
                             <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Webhook Type</label>
-                            <select id="whTypeSelect" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                            <select id="whTypeSelect" class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
                                 <option value="DISCORD">Discord Channel (Embeds)</option>
                                 <option value="SLACK">Slack Workspace (Blocks)</option>
                                 <option value="GENERIC_JSON">Generic JSON / SIEM HEC</option>
@@ -1637,19 +1640,19 @@ Connected to target subsystem. Type a shell command below or click a preset.
 
                     <div>
                         <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Webhook URL</label>
-                        <input id="whUrlInput" type="url" placeholder="https://discord.com/api/webhooks/... or https://hooks.slack.com/services/..." class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                        <input id="whUrlInput" type="url" placeholder="https://discord.com/api/webhooks/... or https://hooks.slack.com/services/..." class="w-full bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
                     </div>
 
                     <div class="flex items-center justify-between pt-1">
                         <div class="flex items-center space-x-2">
                             <label class="text-[11px] font-medium text-slate-600 dark:text-slate-300">Min Severity:</label>
-                            <select id="whSeveritySelect" class="bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none">
+                            <select id="whSeveritySelect" class="w-44 min-w-[170px] bg-white dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none">
                                 <option value="HIGH">HIGH &amp; CRITICAL</option>
                                 <option value="CRITICAL">CRITICAL ONLY</option>
                                 <option value="ALL">ALL DETECTIONS</option>
                             </select>
                         </div>
-                        <button onclick="registerWebhook()" class="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition shadow-sm">
+                        <button onclick="registerWebhook()" class="px-5 py-2 min-w-[130px] justify-center rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition shadow-sm">
                             Add Webhook
                         </button>
                     </div>
@@ -1666,11 +1669,288 @@ Connected to target subsystem. Type a shell command below or click a preset.
         </div>
     </div>
 
-    <!-- Kill Process Prompt Modal -->
-    <div id="killProcessModal" class="fixed inset-0 z-[95] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-sm p-5 shadow-2xl space-y-4 text-xs">
+    <!-- Wireless ADB / TCP Connection Modal -->
+    <div id="wirelessConnectModal" class="fixed inset-0 z-[85] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl text-xs flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Wireless ADB Connection</h3>
+                        <p class="text-[10px] text-slate-400">Connect to remote Android endpoint over TCP/IP</p>
+                    </div>
+                </div>
+                <button onclick="closeWirelessConnectModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
+                <div class="p-3 bg-slate-50 dark:bg-cyber-800/60 border border-slate-200 dark:border-cyber-700/60 rounded-sm space-y-1 text-slate-600 dark:text-slate-300">
+                    <p class="font-semibold text-slate-900 dark:text-white flex items-center space-x-1.5">
+                        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Requirement Checklist:</span>
+                    </p>
+                    <ul class="list-disc list-inside space-y-0.5 text-[10px] pl-1">
+                        <li>Device must be on the same local network or reachable subnet.</li>
+                        <li><b>Developer Options</b> &rarr; <b>Wireless Debugging</b> or USB debugging with port 5555 opened (`adb tcpip 5555`).</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300">Device IP Address</label>
+                    <input type="text" id="wirelessIp" placeholder="e.g. 192.168.1.150" class="w-full px-3.5 py-2 rounded-sm bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-slate-900 dark:focus:border-white text-slate-900 dark:text-white font-mono text-xs" />
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300">TCP Port (Default: 5555)</label>
+                    <input type="number" id="wirelessPort" value="5555" class="w-full px-3.5 py-2 rounded-sm bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-slate-900 dark:focus:border-white text-slate-900 dark:text-white font-mono text-xs" />
+                </div>
+
+                <div id="wirelessStatusMsg" class="hidden p-2.5 rounded-sm text-xs font-medium"></div>
+            </div>
+            <div class="p-4 bg-slate-50 dark:bg-cyber-800/40 border-t border-slate-200 dark:border-cyber-700/60 flex justify-end space-x-2">
+                <button onclick="closeWirelessConnectModal()" class="px-4 py-2 rounded-sm min-w-[90px] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-cyber-700 font-medium transition">Cancel</button>
+                <button id="btnSubmitWireless" onclick="submitWirelessConnect()" class="px-5 py-2 rounded-sm min-w-[140px] bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold flex items-center justify-center space-x-1.5 transition shadow-sm">
+                    <span>Connect Target</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Digital Forensic Studio & Visual Screen Control Modal -->
+    <div id="forensicStudioModal" class="fixed inset-0 z-[80] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl w-full max-w-6xl h-[92vh] shadow-2xl flex flex-col overflow-hidden text-xs">
+            <!-- Studio Header -->
+            <div class="px-5 py-3.5 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
+                <div class="flex items-center space-x-3">
+                    <div id="studioDeviceIcon" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-cyber-700/60 flex items-center justify-center flex-shrink-0 text-slate-700 dark:text-slate-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18" stroke-linecap="round"/></svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 id="studioDeviceName" class="text-sm font-bold text-slate-900 dark:text-white">Target Device</h3>
+                        </div>
+                        <p id="studioDeviceSub" class="text-[10px] text-slate-400 font-mono mt-0.5">Initializing forensic telemetry channel...</p>
+                    </div>
+                </div>
+
+                <!-- Right: Tool selector, Capture & Actions -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="captureStudioScreenshot()" class="px-3 py-1.5 rounded-sm min-w-[125px] bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 font-mono text-[11px] text-slate-700 dark:text-slate-200 flex items-center justify-center space-x-1.5 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Capture Frame</span>
+                    </button>
+                    <button onclick="refreshStudioProcessList()" class="px-3 py-1.5 rounded-sm min-w-[110px] bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 font-mono text-[11px] text-slate-700 dark:text-slate-200 flex items-center justify-center space-x-1.5 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Refresh Triage</span>
+                    </button>
+                    <button onclick="closeForensicStudioModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-sm hover:bg-slate-100 dark:hover:bg-cyber-700 transition" title="Close Studio">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Studio Body: Split View (Left: Screen Mirror & Input, Right: Forensic Tool Tabs) -->
+            <div class="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
+                <!-- Left: Live Interactive Screen Mirroring (1/3 or responsive width) -->
+                <div class="w-full lg:w-[380px] flex-shrink-0 bg-slate-900 border-b lg:border-b-0 lg:border-r border-slate-800 flex flex-col items-center justify-between p-3 relative select-none">
+                    <!-- Screen toolbar -->
+                    <div class="w-full flex items-center justify-between text-[11px] font-mono text-slate-400 pb-2 border-b border-slate-800">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span id="screenStatusLabel">LIVE MIRROR</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center space-x-1 cursor-pointer hover:text-slate-200">
+                                <input type="checkbox" id="chkAutoStream" checked onchange="toggleAutoStream(this.checked)" class="rounded-sm border-slate-700 bg-slate-900 text-slate-900 dark:text-white focus:ring-slate-900 dark:focus:ring-white h-3.5 w-3.5">
+                                <span>Stream (1 FPS)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Canvas Container -->
+                    <div class="flex-1 w-full flex items-center justify-center p-2 relative min-h-[360px] overflow-hidden" id="canvasContainer">
+                        <div id="screenLoadingSpinner" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-10">
+                            <div class="w-7 h-7 border-2 border-white/20 border-t-white rounded-full animate-spin mb-2"></div>
+                            <span class="text-[11px] font-mono text-slate-300">Streaming viewport...</span>
+                        </div>
+                        <!-- Canvas element where Android viewport is rendered -->
+                        <canvas id="deviceScreenCanvas" class="max-h-[460px] max-w-full rounded-sm border border-slate-700 shadow-2xl cursor-crosshair object-contain bg-black" title="Click or tap to interact directly with target endpoint"></canvas>
+                    </div>
+
+                    <!-- Virtual Physical Buttons / Remote Navigation Bar -->
+                    <div class="w-full pt-2 border-t border-slate-800 space-y-2">
+                        <!-- Navigation Bar (Back, Home, Recents, Power, Volume) -->
+                        <div class="grid grid-cols-5 gap-1 text-[11px] font-mono">
+                            <button onclick="sendRemoteKey(4)" class="py-1.5 px-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center space-x-1 transition" title="Back Button (KEYCODE_BACK)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                <span>Back</span>
+                            </button>
+                            <button onclick="sendRemoteKey(3)" class="py-1.5 px-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center space-x-1 transition" title="Home Button (KEYCODE_HOME)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                <span>Home</span>
+                            </button>
+                            <button onclick="sendRemoteKey(187)" class="py-1.5 px-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center space-x-1 transition" title="App Switcher / Recents (KEYCODE_APP_SWITCH)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="8" height="8" x="8" y="8" rx="1"/></svg>
+                                <span>Apps</span>
+                            </button>
+                            <button onclick="sendRemoteKey(26)" class="py-1.5 px-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center space-x-1 transition" title="Power / Lock (KEYCODE_POWER)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728M5.636 5.636a9 9 0 000 12.728M12 2v10"/></svg>
+                                <span>Power</span>
+                            </button>
+                            <button onclick="sendRemoteKey(82)" class="py-1.5 px-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center space-x-1 transition" title="Menu / Unlock (KEYCODE_MENU)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                <span>Menu</span>
+                            </button>
+                        </div>
+                        <!-- Text injection input -->
+                        <div class="flex items-center space-x-1.5 pt-1">
+                            <input type="text" id="remoteTextInput" placeholder="Type text to inject into phone..." class="flex-1 px-3 py-1.5 rounded-sm bg-white dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-slate-900 dark:focus:border-white text-slate-900 dark:text-white text-xs font-mono" onkeydown="if(event.key==='Enter') sendRemoteText()" />
+                            <button onclick="sendRemoteText()" class="px-3.5 py-1.5 rounded-sm min-w-[75px] bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-semibold text-xs transition">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Forensic Investigation Tabs (File Explorer, Process Table, Shell, Packages) -->
+                <div class="flex-1 flex flex-col overflow-hidden min-h-0 bg-white dark:bg-cyber-900/60">
+                    <!-- Tab Headers -->
+                    <div class="px-4 pt-3 border-b border-slate-200 dark:border-cyber-700/60 flex items-center space-x-4 text-xs font-mono">
+                        <button id="tabBtnFiles" onclick="switchStudioTab('files')" class="pb-2.5 border-b-2 border-slate-900 dark:border-white font-bold text-slate-900 dark:text-white transition flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            <span>Storage Triage</span>
+                        </button>
+                        <button id="tabBtnProcesses" onclick="switchStudioTab('processes')" class="pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-medium transition flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+                            <span>Active Processes</span>
+                        </button>
+                        <button id="tabBtnPackages" onclick="switchStudioTab('packages')" class="pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-medium transition flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <span>Installed Apps</span>
+                        </button>
+                        <button id="tabBtnShell" onclick="switchStudioTab('shell')" class="pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-medium transition flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Forensic Shell</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab 1: File Storage Triage -->
+                    <div id="studioTabFiles" class="flex-1 flex flex-col overflow-hidden min-h-0 p-4 space-y-3">
+                        <!-- Path breadcrumb bar & Action buttons -->
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex-1 flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 dark:bg-cyber-800 rounded-sm border border-slate-200 dark:border-cyber-700/60 text-xs">
+                                <button onclick="navigateForensicFolderUp()" class="p-1 hover:bg-slate-200 dark:hover:bg-cyber-700 rounded-sm text-slate-500 hover:text-slate-900 dark:hover:text-white" title="Up one folder">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                                </button>
+                                <span class="text-slate-400">Path:</span>
+                                <input type="text" id="forensicCurrentPath" value="/sdcard" class="flex-1 bg-transparent focus:outline-none font-mono text-xs" onkeydown="if(event.key==='Enter') loadForensicFiles(this.value)" />
+                            </div>
+                            <button onclick="loadForensicFiles()" class="px-3.5 py-1.5 rounded-sm min-w-[95px] bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 font-mono text-xs text-slate-700 dark:text-slate-200 flex items-center justify-center space-x-1 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Go</span>
+                            </button>
+                        </div>
+
+                        <!-- Files Table Container -->
+                        <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-200 dark:border-cyber-700/60 rounded-sm bg-white dark:bg-cyber-800/30">
+                            <table class="w-full text-left font-mono text-xs">
+                                <thead class="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase text-slate-400 tracking-wider">
+                                    <tr>
+                                        <th class="px-3 py-2">Name</th>
+                                        <th class="px-3 py-2">Type</th>
+                                        <th class="px-3 py-2">Size</th>
+                                        <th class="px-3 py-2">Permissions</th>
+                                        <th class="px-3 py-2 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="forensicFilesTbody" class="divide-y divide-slate-100 dark:divide-cyber-700/40">
+                                    <tr>
+                                        <td colspan="5" class="px-3 py-8 text-center text-slate-400">Loading directory contents...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Active Host Processes -->
+                    <div id="studioTabProcesses" class="hidden flex-1 flex flex-col overflow-hidden min-h-0 p-4 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <input type="text" id="procSearchFilter" placeholder="Filter processes by name, PID or user..." onkeyup="filterStudioProcesses(this.value)" class="flex-1 max-w-sm px-3.5 py-1.5 rounded-sm bg-slate-50 dark:bg-cyber-800 border border-slate-200 dark:border-cyber-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none" />
+                            <div class="text-[11px] font-mono text-slate-400" id="procCountBadge">0 processes</div>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-200 dark:border-cyber-700/60 rounded-sm bg-white dark:bg-cyber-800/30">
+                            <table class="w-full text-left font-mono text-xs">
+                                <thead class="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase text-slate-400 tracking-wider">
+                                    <tr>
+                                        <th class="px-3 py-2">PID</th>
+                                        <th class="px-3 py-2">User</th>
+                                        <th class="px-3 py-2">Command / Package</th>
+                                        <th class="px-3 py-2 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="forensicProcessesTbody" class="divide-y divide-slate-100 dark:divide-cyber-700/40">
+                                    <tr>
+                                        <td colspan="4" class="px-3 py-8 text-center text-slate-400">Loading process snapshot...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Installed Packages / APKs -->
+                    <div id="studioTabPackages" class="hidden flex-1 flex flex-col overflow-hidden min-h-0 p-4 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <input type="text" id="pkgSearchFilter" placeholder="Search package name (e.g. com.whatsapp, com.bank)..." onkeyup="filterStudioPackages(this.value)" class="flex-1 max-w-sm px-3.5 py-1.5 rounded-sm bg-slate-50 dark:bg-cyber-800 border border-slate-200 dark:border-cyber-700 text-xs font-mono text-slate-900 dark:text-white focus:outline-none" />
+                            <div class="text-[11px] font-mono text-slate-400" id="pkgCountBadge">0 packages</div>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-200 dark:border-cyber-700/60 rounded-sm bg-white dark:bg-cyber-800/30">
+                            <table class="w-full text-left font-mono text-xs">
+                                <thead class="sticky top-0 bg-slate-50 dark:bg-cyber-800 border-b border-slate-200 dark:border-cyber-700/60 text-[10px] uppercase text-slate-400 tracking-wider">
+                                    <tr>
+                                        <th class="px-3 py-2">Package Name</th>
+                                        <th class="px-3 py-2">Type</th>
+                                        <th class="px-3 py-2 text-right">Remediation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="forensicPackagesTbody" class="divide-y divide-slate-100 dark:divide-cyber-700/40">
+                                    <tr>
+                                        <td colspan="3" class="px-3 py-8 text-center text-slate-400">Loading installed application packages...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Interactive Forensic Shell -->
+                    <div id="studioTabShell" class="hidden flex-1 flex flex-col overflow-hidden min-h-0 p-4 space-y-3">
+                        <div class="text-[11px] font-mono text-slate-400 flex items-center justify-between">
+                            <span>Target: <span id="shellTargetId" class="text-slate-200 font-bold">unknown</span></span>
+                            <button onclick="clearForensicShell()" class="hover:text-white underline">Clear Output</button>
+                        </div>
+
+                        <div id="forensicShellOutput" class="flex-1 overflow-y-auto custom-scrollbar bg-slate-950 border border-slate-800 rounded-sm p-3 font-mono text-xs text-slate-200 space-y-1 select-text">
+                            <div class="text-slate-500"># ARTIS Forensic Subshell Ready. Type commands below...</div>
+                        </div>
+
+                        <div class="flex items-center space-x-2 bg-slate-900 border border-slate-800 rounded-sm px-3 py-2">
+                            <span class="font-mono text-slate-400 text-xs">$</span>
+                            <input type="text" id="forensicShellInput" placeholder="Enter shell command (e.g. ps -A, ls -la, df -h)..." class="flex-1 bg-transparent text-white focus:outline-none font-mono text-xs" onkeydown="if(event.key==='Enter') runForensicShell()" />
+                            <button onclick="runForensicShell()" class="px-3.5 py-1 rounded-sm min-w-[75px] bg-slate-800 hover:bg-slate-700 text-white font-mono text-xs transition">Execute</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kill Process Modal -->
+    <div id="killProcessModal" class="fixed inset-0 z-[70] bg-black/70 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
             <div class="flex items-center space-x-2.5">
-                <div class="p-2 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black">
+                <div class="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </div>
                 <div>
@@ -1681,13 +1961,13 @@ Connected to target subsystem. Type a shell command below or click a preset.
 
             <div class="space-y-2">
                 <label class="block text-[11px] font-medium text-slate-700 dark:text-slate-300">Target Process PID or Executable Name</label>
-                <input id="killProcessInput" type="text" placeholder="e.g. 4812 or powershell.exe" class="w-full bg-slate-50 dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
+                <input id="killProcessInput" type="text" placeholder="e.g. 4812 or powershell.exe" class="w-full bg-slate-50 dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3.5 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white">
                 <p class="text-[10px] text-slate-400">If a number is provided, process is killed by PID. If a name is provided, all instances will be killed.</p>
             </div>
 
             <div class="flex items-center justify-end space-x-2 pt-2">
-                <button onclick="closeKillProcessModal()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300">Cancel</button>
-                <button onclick="submitKillProcess()" class="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">Terminate Process</button>
+                <button onclick="closeKillProcessModal()" class="px-4 py-2 rounded-sm min-w-[90px] bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300">Cancel</button>
+                <button onclick="submitKillProcess()" class="px-5 py-2 rounded-sm min-w-[140px] bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">Terminate Process</button>
             </div>
         </div>
     </div>
@@ -1705,17 +1985,17 @@ Connected to target subsystem. Type a shell command below or click a preset.
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center space-x-2">
                         <h3 id="argusMsgTitle" class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider truncate">Notification</h3>
-                        <span id="argusMsgBadge" class="hidden text-[9px] font-mono font-bold px-2 py-0.5 rounded uppercase tracking-wider border">STATUS</span>
+                        <span id="argusMsgBadge" class="hidden text-[9px] font-mono font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider border">STATUS</span>
                     </div>
                     <p id="argusMsgDescription" class="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed break-words"></p>
                 </div>
             </div>
 
             <!-- Cryptographic Digest Box with Copy Action -->
-            <div id="argusMsgDigestBox" class="hidden p-3 bg-slate-100 dark:bg-cyber-800/90 border border-slate-200 dark:border-cyber-700 rounded-lg space-y-1.5">
+            <div id="argusMsgDigestBox" class="hidden p-3 bg-slate-100 dark:bg-cyber-800/90 border border-slate-200 dark:border-cyber-700 rounded-sm space-y-1.5">
                 <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
                     <span id="argusMsgDigestLabel">SHA-256 Digest</span>
-                    <button type="button" id="argusMsgCopyBtn" onclick="copyArgusDigest()" class="hover:text-slate-700 dark:text-slate-300 dark:hover:text-white flex items-center space-x-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-cyber-700 transition">
+                    <button type="button" id="argusMsgCopyBtn" onclick="copyArgusDigest()" class="hover:text-slate-700 dark:text-slate-300 dark:hover:text-white flex items-center space-x-1 text-[10px] px-2 py-1 rounded-sm min-w-[65px] bg-slate-200 dark:bg-cyber-700 transition">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         <span id="argusMsgCopyText">Copy</span>
                     </button>
@@ -1724,14 +2004,14 @@ Connected to target subsystem. Type a shell command below or click a preset.
             </div>
 
             <!-- Error trace or technical details -->
-            <div id="argusMsgDetailsBox" class="hidden p-2.5 bg-slate-200/80 dark:bg-white/10 border border-slate-300 dark:border-white/20 rounded-lg text-[11px] font-mono text-slate-900 dark:text-white break-all max-h-32 overflow-y-auto custom-scrollbar"></div>
+            <div id="argusMsgDetailsBox" class="hidden p-2.5 bg-slate-200/80 dark:bg-white/10 border border-slate-300 dark:border-white/20 rounded-sm text-[11px] font-mono text-slate-900 dark:text-white break-all max-h-32 overflow-y-auto custom-scrollbar"></div>
 
             <!-- Action Buttons -->
             <div class="flex items-center justify-end space-x-2 pt-2">
-                <button type="button" id="argusMsgCancelBtn" onclick="resolveArgusMessageBox(false)" class="hidden px-3.5 py-1.5 rounded-lg bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-cyber-600 transition">
+                <button type="button" id="argusMsgCancelBtn" onclick="resolveArgusMessageBox(false)" class="hidden px-4 py-2 rounded-sm min-w-[90px] bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-cyber-600 transition">
                     Cancel
                 </button>
-                <button type="button" id="argusMsgConfirmBtn" onclick="resolveArgusMessageBox(true)" class="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">
+                <button type="button" id="argusMsgConfirmBtn" onclick="resolveArgusMessageBox(true)" class="px-5 py-2 rounded-sm min-w-[100px] bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-xs font-semibold text-white dark:text-black shadow-md transition">
                     OK
                 </button>
             </div>

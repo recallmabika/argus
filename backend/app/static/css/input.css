@@ -600,3 +600,226 @@
     margin-right: auto;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════ */
+/* GLOBAL SM (2px) BORDER RADIUS ENFORCEMENT FOR BUTTONS & FIELDS        */
+/* ══════════════════════════════════════════════════════════════════════ */
+button:not(.rounded-full):not([class*="rounded-full"]),
+input:not(.rounded-full):not([class*="rounded-full"]),
+select:not(.rounded-full):not([class*="rounded-full"]),
+textarea:not(.rounded-full):not([class*="rounded-full"]),
+.btn:not(.rounded-full):not([class*="rounded-full"]),
+.pull-btn,
+.ts-wrapper,
+.ts-dropdown {
+  border-radius: 0.125rem !important; /* rounded-sm (2px) */
+}
+
+/* ══════════════════════════════════════════════════════════════════════ */
+/* CUSTOM OPTION FIELDS (TOMSELECT MONOCHROME BLACK & WHITE THEME)       */
+/* ══════════════════════════════════════════════════════════════════════ */
+.ts-wrapper {
+  position: relative !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 0.125rem !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.dark .ts-wrapper {
+  background-color: #09090B !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.ts-wrapper.focus,
+.ts-wrapper.dropdown-active {
+  border-color: #0F172A !important;
+  box-shadow: 0 0 0 1px #0F172A !important;
+}
+
+.dark .ts-wrapper.focus,
+.dark .ts-wrapper.dropdown-active {
+  border-color: #FFFFFF !important;
+  box-shadow: 0 0 0 1px #FFFFFF !important;
+}
+
+.ts-control,
+.ts-wrapper .ts-control {
+  background: transparent !important;
+  border: none !important;
+  color: #0F172A !important;
+  padding: 0 2rem 0 0.85rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  line-height: 36px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+.dark .ts-control,
+.dark .ts-wrapper .ts-control {
+  color: #F8FAFC !important;
+}
+
+.ts-wrapper.single .ts-control .item {
+  color: #0F172A !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  display: inline-block !important;
+}
+
+.dark .ts-wrapper.single .ts-control .item {
+  color: #FFFFFF !important;
+}
+
+.ts-wrapper.single .ts-control input {
+  color: #0F172A !important;
+  font-size: 0.75rem !important;
+  font-family: inherit !important;
+  cursor: text !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.dark .ts-wrapper.single .ts-control input {
+  color: #FFFFFF !important;
+}
+
+/* Hide clear button */
+.clear-button, .clear_button, .ts-wrapper .clear-button {
+  display: none !important;
+}
+
+/* Dropdown Caret Arrow */
+.ts-wrapper.single .ts-control::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  right: 0.85rem !important;
+  top: 50% !important;
+  margin-top: -3px !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid !important;
+  border-width: 5px 4px 0 4px !important;
+  border-color: #64748B transparent transparent transparent !important;
+  transition: transform 0.2s ease !important;
+}
+
+.dark .ts-wrapper.single .ts-control::after {
+  border-color: #94A3B8 transparent transparent transparent !important;
+}
+
+.ts-wrapper.single.dropdown-active .ts-control::after {
+  border-color: transparent transparent #0F172A transparent !important;
+  margin-top: -6px !important;
+}
+
+.dark .ts-wrapper.single.dropdown-active .ts-control::after {
+  border-color: transparent transparent #FFFFFF transparent !important;
+}
+
+/* Floating Dropdown Menu */
+.ts-dropdown {
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #0F172A !important;
+  border-radius: 0.125rem !important;
+  margin-top: 4px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  z-index: 99999 !important;
+  padding: 4px 0 !important;
+  overflow: hidden !important;
+}
+
+.dark .ts-dropdown {
+  background: #121215 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #F8FAFC !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.05) !important;
+}
+
+.ts-dropdown .ts-dropdown-content {
+  max-height: 240px !important;
+  overflow-y: auto !important;
+  padding: 2px 0 !important;
+  scrollbar-width: thin !important;
+}
+
+.ts-dropdown .option {
+  padding: 0.6rem 0.9rem !important;
+  color: #1E293B !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  transition: background 0.12s ease, color 0.12s ease !important;
+  cursor: pointer !important;
+}
+
+.dark .ts-dropdown .option {
+  color: #E2E8F0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.ts-dropdown .option:last-child {
+  border-bottom: none !important;
+}
+
+.ts-dropdown .option.active,
+.ts-dropdown .option:hover {
+  background: #F1F5F9 !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.dark .ts-dropdown .option.active,
+.dark .ts-dropdown .option:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+}
+
+.ts-dropdown .option.selected {
+  background: #E2E8F0 !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.dark .ts-dropdown .option.selected {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+/* Fallback styling for any native select dropdown options */
+select option {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  padding: 6px 10px;
+}
+
+.dark select option {
+  background-color: #121215;
+  color: #F8FAFC;
+}
+
