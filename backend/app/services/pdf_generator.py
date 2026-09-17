@@ -96,7 +96,7 @@ class PDFReportGenerator:
             header_table = Table([[
                 logo_img,
                 [
-                    Paragraph(f"ARGUS // CYBERSECOPS INCIDENT REPORT", header_style),
+                    Paragraph(f"ARTIS // INCIDENT SECURITY REPORT", header_style),
                     Paragraph(f"Document Classification: RESTRICTED // Report Type: {report_type.upper()}", sub_style)
                 ]
             ]], colWidths=[52, 478])

@@ -28,6 +28,33 @@
   }
 }
 
+/* Responsive Collapsible Sidebar */
+#sidebar {
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 1023px) {
+  #sidebar {
+    transform: translateX(-100%);
+    margin-left: -16rem;
+  }
+  #sidebar.sidebar-open {
+    transform: translateX(0);
+    margin-left: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  #sidebar {
+    transform: translateX(0);
+    margin-left: 0;
+  }
+  #sidebar.sidebar-collapsed {
+    transform: translateX(-100%);
+    margin-left: -16rem;
+  }
+}
+
 @keyframes pulse-border {
   0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
   70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }

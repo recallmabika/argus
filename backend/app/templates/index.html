@@ -20,7 +20,7 @@
     <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden lg:hidden"></div>
 
     <!-- Collapsible & Fixed Sidebar -->
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl lg:shadow-none">
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 h-full flex-shrink-0 bg-white dark:bg-cyber-800 border-r border-slate-200 dark:border-cyber-700/60 flex flex-col shadow-xl lg:shadow-none">
         
         <!-- Sidebar Header / Brand -->
         <div class="p-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between">
@@ -33,9 +33,9 @@
                     <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">Incident Security</p>
                 </div>
             </div>
-            <!-- Close button for mobile screen -->
-            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <!-- Collapse / Hide Sidebar button -->
+            <button onclick="toggleSidebar()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition" title="Hide Sidebar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
             </button>
         </div>
 
@@ -138,7 +138,7 @@
         <!-- Pinned Top App Bar -->
         <header class="flex-shrink-0 bg-white/90 dark:bg-cyber-800/90 backdrop-blur border-b border-slate-200 dark:border-cyber-700/60 z-30 px-4 py-2.5 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-cyber-700">
+                <button onclick="toggleSidebar()" id="sidebarToggleBtn" class="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-cyber-700 hover:text-slate-700 dark:hover:text-slate-200 transition focus:outline-none" title="Toggle Sidebar (Ctrl+B)">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <div>
@@ -643,6 +643,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            restoreSidebarState();
             initMap();
             initChart();
             restoreLayoutState();
@@ -656,6 +657,30 @@
                 const wrapper = document.getElementById('profileDropdownWrapper');
                 if (wrapper && !wrapper.contains(e.target)) {
                     closeProfileDropdown();
+                }
+            });
+
+            // Keyboard shortcut Ctrl+B or Cmd+B to toggle sidebar
+            window.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                    e.preventDefault();
+                    toggleSidebar();
+                }
+            });
+
+            // Sync layout on viewport resize
+            window.addEventListener('resize', () => {
+                const sidebar = document.getElementById('sidebar');
+                const backdrop = document.getElementById('mobileBackdrop');
+                if (!sidebar) return;
+                if (window.innerWidth >= 1024) {
+                    if (backdrop) backdrop.classList.add('hidden');
+                    sidebar.classList.remove('sidebar-open');
+                    const saved = localStorage.getItem('artis-sidebar-collapsed');
+                    if (saved === 'true') sidebar.classList.add('sidebar-collapsed');
+                    else sidebar.classList.remove('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('sidebar-collapsed');
                 }
             });
         });
@@ -970,8 +995,50 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('mobileBackdrop');
-            sidebar.classList.toggle('-translate-x-full');
-            backdrop.classList.toggle('hidden');
+            if (!sidebar) return;
+
+            const isMobile = window.innerWidth < 1024;
+            if (isMobile) {
+                sidebar.classList.toggle('sidebar-open');
+                const isOpen = sidebar.classList.contains('sidebar-open');
+                if (backdrop) {
+                    if (isOpen) backdrop.classList.remove('hidden');
+                    else backdrop.classList.add('hidden');
+                }
+            } else {
+                sidebar.classList.toggle('sidebar-collapsed');
+                const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                localStorage.setItem('artis-sidebar-collapsed', isCollapsed ? 'true' : 'false');
+            }
+
+            // Invalidate Leaflet map & Chart resize to immediately fill full viewport width
+            setTimeout(() => {
+                if (map) map.invalidateSize();
+                if (mitreChart) mitreChart.resize();
+            }, 150);
+            setTimeout(() => {
+                if (map) map.invalidateSize();
+                if (mitreChart) mitreChart.resize();
+            }, 350);
+        }
+
+        function restoreSidebarState() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobileBackdrop');
+            if (!sidebar) return;
+
+            if (window.innerWidth >= 1024) {
+                const saved = localStorage.getItem('artis-sidebar-collapsed');
+                if (saved === 'true') {
+                    sidebar.classList.add('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('sidebar-collapsed');
+                }
+                if (backdrop) backdrop.classList.add('hidden');
+            } else {
+                sidebar.classList.remove('sidebar-open');
+                if (backdrop) backdrop.classList.add('hidden');
+            }
         }
 
         function initMap() {
