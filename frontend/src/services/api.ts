@@ -13,7 +13,8 @@ import {
   ForensicDevice,
   ForensicWindow,
   ForensicFile,
-  ForensicTriage
+  ForensicTriage,
+  DeviceCommand
 } from '../types';
 
 const BASE_URL = ''; // Relative URL handled by Vite proxy or FastAPI in production
@@ -63,13 +64,18 @@ export const api = {
     return handleResponse<DeviceDetailResponse>(res);
   },
 
-  async dispatchDeviceCommand(deviceId: string, action: string, parameters: Record<string, any> = {}): Promise<any> {
-    const res = await fetch(`${BASE_URL}/api/v1/devices/${deviceId}/commands`, {
+  async dispatchDeviceCommand(deviceId: string, action: string, parameters: Record<string, any> = {}): Promise<DeviceCommand> {
+    const res = await fetch(`${BASE_URL}/api/v1/devices/${deviceId}/command`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, parameters })
+      body: JSON.stringify({ command_type: action, parameters, issued_by: 'analyst' })
     });
-    return handleResponse(res);
+    return handleResponse<DeviceCommand>(res);
+  },
+
+  async getDeviceCommands(deviceId: string, limit = 20): Promise<DeviceCommand[]> {
+    const res = await fetch(`${BASE_URL}/api/v1/devices/${deviceId}/commands?limit=${limit}`);
+    return handleResponse<DeviceCommand[]>(res);
   },
 
   // Users

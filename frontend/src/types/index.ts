@@ -57,6 +57,18 @@ export interface DeviceDetailResponse {
   }>;
 }
 
+export interface DeviceCommand {
+  id: string;
+  device_id: string;
+  command_type: string;
+  parameters: Record<string, any>;
+  status: 'PENDING' | 'SENT' | 'COMPLETED' | 'FAILED';
+  issued_by: string;
+  result_summary?: string;
+  created_at: string;
+  executed_at?: string;
+}
+
 export interface UserProfile {
   user_id: string;
   full_name: string;
