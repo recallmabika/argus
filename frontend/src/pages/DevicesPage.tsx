@@ -4,14 +4,16 @@ import {
   Search,
   RefreshCw,
   Ban,
-  ShieldCheck,
-  ShieldAlert,
   Terminal,
   Activity,
-  SlidersHorizontal,
   ChevronDown,
   User,
-  ArrowUpDown
+  ArrowUpDown,
+  Plus,
+  Cpu,
+  Trash2,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Device, DeviceStatus } from '../types';
 import { api } from '../services/api';
@@ -23,7 +25,7 @@ import { Button } from '../components/common/Button';
 type SortOption = 'risk-desc' | 'risk-asc' | 'hostname-asc' | 'last-seen';
 
 export const DevicesPage: React.FC = () => {
-  const { openDeviceDetail, openKillProcess, alert } = useModals();
+  const { openDeviceDetail, openKillProcess, openEnrollDevice, alert, confirm } = useModals();
 
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,6 +34,8 @@ export const DevicesPage: React.FC = () => {
   const [branchFilter, setBranchFilter] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<SortOption>('risk-desc');
   const [actionPendingId, setActionPendingId] = useState<string | null>(null);
+  const [isQuickEnrolling, setIsQuickEnrolling] = useState<boolean>(false);
+  const [copiedCmd, setCopiedCmd] = useState<boolean>(false);
 
   const fetchDevices = async () => {
     try {
@@ -102,6 +106,35 @@ export const DevicesPage: React.FC = () => {
       });
   }, [devices, statusFilter, branchFilter, searchQuery, sortBy]);
 
+  const handleQuickEnrollLocal = async () => {
+    setIsQuickEnrolling(true);
+    try {
+      const local = await api.detectLocalHost();
+      await api.enrollDevice({
+        hostname: local.hostname,
+        os_type: local.os_type,
+        ip_address: local.ip_address,
+        current_user: local.username,
+        branch_name: 'Headquarters',
+        status: 'ONLINE'
+      });
+      await fetchDevices();
+      alert({
+        title: 'Local Workstation Enrolled',
+        message: `Node ${local.hostname} (${local.os_type}) successfully registered into Argus fleet.`,
+        type: 'success'
+      });
+    } catch (err: any) {
+      alert({
+        title: 'Enrollment Notice',
+        message: err.message || 'Could not auto-enroll local host.',
+        type: 'warning'
+      });
+    } finally {
+      setIsQuickEnrolling(false);
+    }
+  };
+
   const handleQuarantineToggle = async (device: Device) => {
     setActionPendingId(device.id);
     const isQuarantined = device.status === 'QUARANTINED';
@@ -125,6 +158,40 @@ export const DevicesPage: React.FC = () => {
     } finally {
       setActionPendingId(null);
     }
+  };
+
+  const handleUnenrollDevice = async (device: Device) => {
+    const ok = await confirm({
+      title: 'Unenroll Endpoint',
+      message: `Are you sure you want to remove ${device.hostname} from Argus fleet monitoring? Associated telemetry directives will be archived.`,
+      confirmText: 'Unenroll Device',
+      badge: 'UNENROLL',
+      type: 'warning'
+    });
+
+    if (!ok) return;
+
+    try {
+      await api.unenrollDevice(device.id);
+      await fetchDevices();
+      alert({
+        title: 'Device Removed',
+        message: `Endpoint ${device.hostname} has been unenrolled from monitoring.`,
+        type: 'info'
+      });
+    } catch (err: any) {
+      alert({
+        title: 'Unenroll Error',
+        message: err.message || 'Failed to unenroll endpoint device.',
+        type: 'danger'
+      });
+    }
+  };
+
+  const handleCopyAgentCmd = () => {
+    navigator.clipboard.writeText('python agent/agent.py --server http://localhost:8000');
+    setCopiedCmd(true);
+    setTimeout(() => setCopiedCmd(false), 2000);
   };
 
   const getRiskColor = (score: number) => {
@@ -216,7 +283,7 @@ export const DevicesPage: React.FC = () => {
       {/* Main Devices Panel */}
       <div className="bg-white dark:bg-cyber-card rounded-sm p-5 shadow-xs space-y-4">
         {/* Controls Toolbar */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -225,19 +292,19 @@ export const DevicesPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search hostname, IP, user, branch, OS..."
-              className="w-full bg-slate-50 dark:bg-cyber-800/60 pl-9 pr-4 py-2 text-xs rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400 transition"
+              className="w-full bg-slate-50 dark:bg-cyber-800/60 pl-9 pr-4 py-2 text-xs rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-400 transition shadow-xs font-mono"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs cursor-pointer"
               >
                 Clear
               </button>
             )}
           </div>
 
-          {/* Filter & Sort Controls */}
+          {/* Filter, Sort & Action Controls */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Branch Filter Dropdown */}
             {branches.length > 0 && (
@@ -246,7 +313,7 @@ export const DevicesPage: React.FC = () => {
                   value={branchFilter}
                   onChange={(e) => setBranchFilter(e.target.value)}
                   aria-label="Filter endpoints by branch location"
-                  className="appearance-none bg-slate-50 dark:bg-cyber-800/60 text-slate-700 dark:text-slate-300 text-xs py-2 pl-3 pr-8 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono cursor-pointer transition"
+                  className="appearance-none bg-slate-50 dark:bg-cyber-800/60 text-slate-700 dark:text-slate-300 text-xs py-2 pl-3 pr-8 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono cursor-pointer transition shadow-xs"
                 >
                   <option value="ALL">All Branches ({branches.length})</option>
                   {branches.map((b) => (
@@ -263,7 +330,7 @@ export const DevicesPage: React.FC = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
                 aria-label="Sort endpoints by attribute"
-                className="appearance-none bg-slate-50 dark:bg-cyber-800/60 text-slate-700 dark:text-slate-300 text-xs py-2 pl-3 pr-8 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono cursor-pointer transition"
+                className="appearance-none bg-slate-50 dark:bg-cyber-800/60 text-slate-700 dark:text-slate-300 text-xs py-2 pl-3 pr-8 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono cursor-pointer transition shadow-xs"
               >
                 <option value="risk-desc">Sort: Highest Risk</option>
                 <option value="risk-asc">Sort: Lowest Risk</option>
@@ -282,6 +349,29 @@ export const DevicesPage: React.FC = () => {
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-blue-500' : ''}`} />
             </button>
+
+            {/* Quick Auto-Detect & Enroll Local Machine */}
+            <button
+              type="button"
+              onClick={handleQuickEnrollLocal}
+              disabled={isQuickEnrolling}
+              className="px-3 py-2 rounded-sm bg-slate-50 dark:bg-cyber-800/60 hover:bg-slate-100 dark:hover:bg-cyber-700 text-slate-700 dark:text-slate-200 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer shadow-xs"
+              title="Auto-detect and enroll this local PC into fleet monitoring"
+            >
+              <Cpu className={`w-3.5 h-3.5 text-blue-500 ${isQuickEnrolling ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Enroll This Host</span>
+            </button>
+
+            {/* Enroll Device Primary Button */}
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={openEnrollDevice}
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              <span>Enroll Device</span>
+            </Button>
           </div>
         </div>
 
@@ -335,159 +425,231 @@ export const DevicesPage: React.FC = () => {
           >
             <span className="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
             <span>Offline</span>
-            <span className="text-[10px] font-mono opacity-75">({totalFleet - onlineCount - quarantinedCount})</span>
+            <span className="text-[10px] font-mono opacity-75">({Math.max(0, totalFleet - onlineCount - quarantinedCount)})</span>
           </button>
         </div>
 
-        {/* Devices Table */}
-        <div className="overflow-x-auto custom-scrollbar pt-2">
-          <table className="w-full text-left font-mono text-xs">
-            <thead className="bg-slate-50/80 dark:bg-cyber-800/40 text-[10px] uppercase text-slate-400 tracking-wider rounded-sm">
-              <tr>
-                <th className="py-3 px-3.5 rounded-l-sm">Endpoint Node</th>
-                <th className="py-3 px-3.5">Assigned User</th>
-                <th className="py-3 px-3.5">Branch Location</th>
-                <th className="py-3 px-3.5">Threat Risk</th>
-                <th className="py-3 px-3.5">Status</th>
-                <th className="py-3 px-3.5">Last Seen</th>
-                <th className="py-3 px-3.5 text-right rounded-r-sm">Remediation Directives</th>
-              </tr>
-            </thead>
-            <tbody className="font-mono text-xs divide-y-0">
-              {loading ? (
-                [1, 2, 3, 4].map((i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td colSpan={7} className="py-3.5 px-3.5">
-                      <div className="h-5 bg-slate-200 dark:bg-cyber-700/50 rounded-sm"></div>
-                    </td>
-                  </tr>
-                ))
-              ) : filteredDevices.length === 0 ? (
+        {/* Devices Table or Onboarding Empty State */}
+        {devices.length === 0 && !loading ? (
+          <div className="py-12 px-6 flex flex-col items-center justify-center text-center max-w-xl mx-auto space-y-4">
+            <div className="p-4 rounded-sm bg-slate-100 dark:bg-cyber-800/60 text-slate-700 dark:text-slate-200 shadow-xs">
+              <Monitor className="w-8 h-8" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                No Monitored Endpoints Enrolled
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md">
+                Enroll a workstation or server node to begin ingesting real-time process execution, web navigation, and behavioral telemetry into the Argus SOC engine.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={openEnrollDevice}
+              >
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                <span>Enroll Endpoint Node</span>
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleQuickEnrollLocal}
+                isLoading={isQuickEnrolling}
+              >
+                <Cpu className="w-3.5 h-3.5 mr-1.5 text-blue-500" />
+                <span>Auto-Detect &amp; Enroll This PC</span>
+              </Button>
+            </div>
+
+            {/* Quick Terminal Command */}
+            <div className="w-full bg-slate-50 dark:bg-cyber-800/40 p-3 rounded-sm shadow-xs text-left mt-4 space-y-1">
+              <div className="flex items-center justify-between text-[10.5px] font-mono text-slate-400 font-bold">
+                <span className="flex items-center space-x-1.5">
+                  <Terminal className="w-3 h-3 text-blue-500" />
+                  <span>Terminal Agent Launch</span>
+                </span>
+                <button
+                  onClick={handleCopyAgentCmd}
+                  className="hover:text-slate-900 dark:hover:text-white flex items-center space-x-1 transition cursor-pointer"
+                >
+                  {copiedCmd ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-500" />
+                      <span className="text-emerald-500">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <pre className="text-[11px] font-mono text-slate-700 dark:text-slate-300 select-all overflow-x-auto whitespace-pre-wrap py-1">
+                python agent/agent.py --server http://localhost:8000
+              </pre>
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto custom-scrollbar pt-2">
+            <table className="w-full text-left font-mono text-xs">
+              <thead className="bg-slate-50/80 dark:bg-cyber-800/40 text-[10px] uppercase text-slate-400 tracking-wider rounded-sm">
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400 font-sans">
-                    {searchQuery || statusFilter !== 'ALL' || branchFilter !== 'ALL'
-                      ? 'No endpoint devices match the specified query filters.'
-                      : 'No endpoint devices enrolled yet. Launch agent-desktop to connect.'}
-                  </td>
+                  <th className="py-3 px-3.5 rounded-l-sm">Endpoint Node</th>
+                  <th className="py-3 px-3.5">Assigned User</th>
+                  <th className="py-3 px-3.5">Branch Location</th>
+                  <th className="py-3 px-3.5">Threat Risk</th>
+                  <th className="py-3 px-3.5">Status</th>
+                  <th className="py-3 px-3.5">Last Seen</th>
+                  <th className="py-3 px-3.5 text-right rounded-r-sm">Directives</th>
                 </tr>
-              ) : (
-                filteredDevices.map((d) => {
-                  const isQuarantined = d.status === 'QUARANTINED';
-                  const isPending = actionPendingId === d.id;
-
-                  return (
-                    <tr
-                      key={d.id}
-                      className="hover:bg-slate-50/70 dark:hover:bg-cyber-800/40 transition group"
-                    >
-                      {/* Hostname & OS */}
-                      <td className="py-3 px-3.5 rounded-l-sm">
-                        <div className="flex items-center space-x-2.5">
-                          <div className="p-1.5 rounded-sm bg-slate-100 dark:bg-cyber-800 text-slate-700 dark:text-slate-300 shadow-xs">
-                            <Monitor className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
-                              <span>{d.hostname}</span>
-                              <span className="text-[10px] font-normal px-1.5 py-0.2 rounded-sm bg-slate-100 dark:bg-cyber-800 text-slate-500 uppercase">
-                                {d.os_type}
-                              </span>
-                            </div>
-                            <div className="text-[10px] text-slate-400 font-mono">
-                              IP: {d.ip_address || '127.0.0.1'}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Current User */}
-                      <td className="py-3 px-3.5 text-slate-700 dark:text-slate-300">
-                        <div className="flex items-center space-x-1.5">
-                          <User className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{d.current_user || 'system'}</span>
-                        </div>
-                      </td>
-
-                      {/* Branch Name */}
-                      <td className="py-3 px-3.5 text-slate-500 dark:text-slate-400">
-                        <span className="px-2 py-0.5 rounded-sm bg-slate-100/80 dark:bg-cyber-800/60 text-slate-600 dark:text-slate-300 text-[11px]">
-                          {d.branch_name}
-                        </span>
-                      </td>
-
-                      {/* Risk Score */}
-                      <td className="py-3 px-3.5">
-                        <div className="space-y-1 w-24">
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className={`font-bold ${getRiskColor(d.risk_score)}`}>
-                              {d.risk_score}
-                            </span>
-                            <span className="text-[10px] text-slate-400">/ 100</span>
-                          </div>
-                          <div className="h-1.5 w-full bg-slate-100 dark:bg-cyber-800 rounded-sm overflow-hidden">
-                            <div
-                              className={`h-full ${getRiskBarColor(d.risk_score)} transition-all duration-300`}
-                              style={{ width: `${Math.min(100, d.risk_score)}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-3 px-3.5">
-                        <StatusBadge status={d.status} />
-                      </td>
-
-                      {/* Last Seen */}
-                      <td className="py-3 px-3.5 text-slate-400 text-[11px]">
-                        {new Date(d.last_seen).toLocaleTimeString()}
-                      </td>
-
-                      {/* Actions Strip */}
-                      <td className="py-3 px-3.5 text-right rounded-r-sm">
-                        <div className="flex items-center justify-end space-x-1.5">
-                          {/* Instant Quarantine / Restore Toggle */}
-                          <button
-                            onClick={() => handleQuarantineToggle(d)}
-                            disabled={isPending}
-                            className={`px-2.5 py-1 rounded-sm text-[11px] font-medium transition cursor-pointer flex items-center space-x-1 shadow-xs ${
-                              isQuarantined
-                                ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                                : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400'
-                            }`}
-                            title={isQuarantined ? 'Restore Network Connectivity' : 'Isolate Node from Corporate Network'}
-                          >
-                            <Ban className={`w-3 h-3 ${isPending ? 'animate-spin' : ''}`} />
-                            <span>{isQuarantined ? 'Restore' : 'Quarantine'}</span>
-                          </button>
-
-                          {/* Kill Process Trigger */}
-                          <button
-                            onClick={() => openKillProcess(d.id)}
-                            className="px-2.5 py-1 rounded-sm bg-slate-100 dark:bg-cyber-800 hover:bg-slate-200 dark:hover:bg-cyber-700 text-slate-700 dark:text-slate-300 font-medium text-[11px] transition cursor-pointer shadow-xs"
-                            title="Terminate Hostile Process"
-                          >
-                            <Terminal className="w-3 h-3 text-rose-500 inline mr-1" />
-                            <span>Kill</span>
-                          </button>
-
-                          {/* Inspect Modal Trigger */}
-                          <button
-                            onClick={() => openDeviceDetail(d.id)}
-                            className="px-2.5 py-1 rounded-sm bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-black font-semibold text-[11px] transition cursor-pointer shadow-xs"
-                            title="Open Deep Telemetry & Directives Inspector"
-                          >
-                            Inspect
-                          </button>
-                        </div>
+              </thead>
+              <tbody className="font-mono text-xs divide-y-0">
+                {loading ? (
+                  [1, 2, 3, 4].map((i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td colSpan={7} className="py-3.5 px-3.5">
+                        <div className="h-5 bg-slate-200 dark:bg-cyber-700/50 rounded-sm"></div>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                  ))
+                ) : filteredDevices.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-slate-400 font-sans">
+                      No endpoint devices match the specified query filters.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredDevices.map((d) => {
+                    const isQuarantined = d.status === 'QUARANTINED';
+                    const isPending = actionPendingId === d.id;
+
+                    return (
+                      <tr
+                        key={d.id}
+                        className="hover:bg-slate-50/70 dark:hover:bg-cyber-800/40 transition group"
+                      >
+                        {/* Hostname & OS */}
+                        <td className="py-3 px-3.5 rounded-l-sm">
+                          <div className="flex items-center space-x-2.5">
+                            <div className="p-1.5 rounded-sm bg-slate-100 dark:bg-cyber-800 text-slate-700 dark:text-slate-300 shadow-xs">
+                              <Monitor className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
+                                <span>{d.hostname}</span>
+                                <span className="text-[10px] font-normal px-1.5 py-0.2 rounded-sm bg-slate-100 dark:bg-cyber-800 text-slate-500 uppercase">
+                                  {d.os_type}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-400 font-mono">
+                                IP: {d.ip_address || '127.0.0.1'}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Current User */}
+                        <td className="py-3 px-3.5 text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center space-x-1.5">
+                            <User className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{d.current_user || 'system'}</span>
+                          </div>
+                        </td>
+
+                        {/* Branch Name */}
+                        <td className="py-3 px-3.5 text-slate-500 dark:text-slate-400">
+                          <span className="px-2 py-0.5 rounded-sm bg-slate-100/80 dark:bg-cyber-800/60 text-slate-600 dark:text-slate-300 text-[11px]">
+                            {d.branch_name}
+                          </span>
+                        </td>
+
+                        {/* Risk Score */}
+                        <td className="py-3 px-3.5">
+                          <div className="space-y-1 w-24">
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className={`font-bold ${getRiskColor(d.risk_score)}`}>
+                                {d.risk_score}
+                              </span>
+                              <span className="text-[10px] text-slate-400">/ 100</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-slate-100 dark:bg-cyber-800 rounded-sm overflow-hidden">
+                              <div
+                                className={`h-full ${getRiskBarColor(d.risk_score)} transition-all duration-300`}
+                                style={{ width: `${Math.min(100, d.risk_score)}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3 px-3.5">
+                          <StatusBadge status={d.status} />
+                        </td>
+
+                        {/* Last Seen */}
+                        <td className="py-3 px-3.5 text-slate-400 text-[11px]">
+                          {new Date(d.last_seen).toLocaleTimeString()}
+                        </td>
+
+                        {/* Actions Strip */}
+                        <td className="py-3 px-3.5 text-right rounded-r-sm">
+                          <div className="flex items-center justify-end space-x-1.5">
+                            {/* Instant Quarantine / Restore Toggle */}
+                            <button
+                              onClick={() => handleQuarantineToggle(d)}
+                              disabled={isPending}
+                              className={`px-2.5 py-1 rounded-sm text-[11px] font-medium transition cursor-pointer flex items-center space-x-1 shadow-xs ${
+                                isQuarantined
+                                  ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                                  : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400'
+                              }`}
+                              title={isQuarantined ? 'Restore Network Connectivity' : 'Isolate Node from Corporate Network'}
+                            >
+                              <Ban className={`w-3 h-3 ${isPending ? 'animate-spin' : ''}`} />
+                              <span>{isQuarantined ? 'Restore' : 'Quarantine'}</span>
+                            </button>
+
+                            {/* Kill Process Trigger */}
+                            <button
+                              onClick={() => openKillProcess(d.id)}
+                              className="px-2.5 py-1 rounded-sm bg-slate-100 dark:bg-cyber-800 hover:bg-slate-200 dark:hover:bg-cyber-700 text-slate-700 dark:text-slate-300 font-medium text-[11px] transition cursor-pointer shadow-xs"
+                              title="Terminate Hostile Process"
+                            >
+                              <Terminal className="w-3 h-3 text-rose-500 inline mr-1" />
+                              <span>Kill</span>
+                            </button>
+
+                            {/* Inspect Modal Trigger */}
+                            <button
+                              onClick={() => openDeviceDetail(d.id)}
+                              className="px-2.5 py-1 rounded-sm bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-black font-semibold text-[11px] transition cursor-pointer shadow-xs"
+                              title="Open Deep Telemetry & Directives Inspector"
+                            >
+                              Inspect
+                            </button>
+
+                            {/* Unenroll Device */}
+                            <button
+                              onClick={() => handleUnenrollDevice(d)}
+                              className="p-1 rounded-sm text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+                              title="Unenroll Endpoint Device"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -10,3 +10,4 @@ export { KillProcessModal } from './KillProcessModal';
 export { MessageBoxModal } from './MessageBoxModal';
 export { ForensicStudioModal } from './ForensicStudioModal';
 export { WirelessConnectModal } from './WirelessConnectModal';
+export { EnrollDeviceModal } from './EnrollDeviceModal';

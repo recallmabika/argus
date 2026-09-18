@@ -21,6 +21,7 @@ interface ModalContextType {
   isHuntingOpen: boolean;
   isWebhooksOpen: boolean;
   isWirelessConnectOpen: boolean;
+  isEnrollDeviceOpen: boolean;
   activeForensicDeviceId: string | null;
   activeDeviceId: string | null;
   activeAttackChainAlertId: string | null;
@@ -45,6 +46,8 @@ interface ModalContextType {
   closeHunting: () => void;
   openWebhooks: () => void;
   closeWebhooks: () => void;
+  openEnrollDevice: () => void;
+  closeEnrollDevice: () => void;
   openDeviceDetail: (deviceId: string) => void;
   closeDeviceDetail: () => void;
   openAttackChain: (alertId: string) => void;
@@ -66,6 +69,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isHuntingOpen, setIsHuntingOpen] = useState(false);
   const [isWebhooksOpen, setIsWebhooksOpen] = useState(false);
   const [isWirelessConnectOpen, setIsWirelessConnectOpen] = useState(false);
+  const [isEnrollDeviceOpen, setIsEnrollDeviceOpen] = useState(false);
   const [activeForensicDeviceId, setActiveForensicDeviceId] = useState<string | null>(null);
   const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
   const [activeAttackChainAlertId, setActiveAttackChainAlertId] = useState<string | null>(null);
@@ -96,6 +100,9 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const openWebhooks = useCallback(() => setIsWebhooksOpen(true), []);
   const closeWebhooks = useCallback(() => setIsWebhooksOpen(false), []);
+
+  const openEnrollDevice = useCallback(() => setIsEnrollDeviceOpen(true), []);
+  const closeEnrollDevice = useCallback(() => setIsEnrollDeviceOpen(false), []);
 
   const openDeviceDetail = useCallback((deviceId: string) => setActiveDeviceId(deviceId), []);
   const closeDeviceDetail = useCallback(() => setActiveDeviceId(null), []);
@@ -155,6 +162,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isHuntingOpen,
         isWebhooksOpen,
         isWirelessConnectOpen,
+        isEnrollDeviceOpen,
         activeForensicDeviceId,
         activeDeviceId,
         activeAttackChainAlertId,
@@ -177,6 +185,8 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         closeHunting,
         openWebhooks,
         closeWebhooks,
+        openEnrollDevice,
+        closeEnrollDevice,
         openDeviceDetail,
         closeDeviceDetail,
         openAttackChain,
