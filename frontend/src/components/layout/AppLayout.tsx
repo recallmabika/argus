@@ -14,7 +14,8 @@ import {
   KillProcessModal,
   MessageBoxModal,
   ForensicStudioModal,
-  WirelessConnectModal
+  WirelessConnectModal,
+  EnrollDeviceModal
 } from '../modals';
 
 export const AppLayout: React.FC = () => {
@@ -92,6 +93,7 @@ export const AppLayout: React.FC = () => {
       <MessageBoxModal />
       <ForensicStudioModal />
       <WirelessConnectModal />
+      <EnrollDeviceModal />
     </div>
   );
 };

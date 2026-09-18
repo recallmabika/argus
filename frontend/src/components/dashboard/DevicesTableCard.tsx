@@ -1,5 +1,5 @@
 import React from 'react';
-import { Monitor, GripVertical, Maximize2 } from 'lucide-react';
+import { Monitor, GripVertical, Maximize2, Plus } from 'lucide-react';
 import { Device } from '../../types';
 import { StatusBadge } from '../common/Badge';
 import { useModals } from '../../context/ModalContext';
@@ -17,7 +17,7 @@ export const DevicesTableCard: React.FC<DevicesTableCardProps> = ({
   isMainStage = false,
   onPullToMain
 }) => {
-  const { openDeviceDetail } = useModals();
+  const { openDeviceDetail, openEnrollDevice } = useModals();
 
   const getRiskColor = (score: number) => {
     if (score >= 80) return 'text-rose-600 dark:text-rose-400';
@@ -43,6 +43,14 @@ export const DevicesTableCard: React.FC<DevicesTableCardProps> = ({
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <button
+            onClick={openEnrollDevice}
+            className="px-2.5 py-0.5 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black hover:bg-slate-800 dark:hover:bg-slate-100 text-[11px] font-semibold transition cursor-pointer shadow-xs flex items-center space-x-1"
+            title="Enroll New Endpoint Device"
+          >
+            <Plus className="w-3 h-3" />
+            <span>Enroll</span>
+          </button>
           {onPullToMain && (
             <button
               onClick={onPullToMain}
@@ -84,8 +92,15 @@ export const DevicesTableCard: React.FC<DevicesTableCardProps> = ({
               ))
             ) : devices.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-slate-400 font-sans">
-                  No devices connected yet. Launch agent-desktop to enroll.
+                <td colSpan={7} className="py-8 text-center text-slate-400 font-sans space-y-2">
+                  <p>No endpoint devices enrolled in fleet monitoring yet.</p>
+                  <button
+                    onClick={openEnrollDevice}
+                    className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black font-semibold text-xs transition hover:bg-slate-800 dark:hover:bg-slate-100 cursor-pointer shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Enroll Endpoint Device</span>
+                  </button>
                 </td>
               </tr>
             ) : (
