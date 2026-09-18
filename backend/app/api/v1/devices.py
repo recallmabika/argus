@@ -72,6 +72,7 @@ async def get_device_details(
 
 
 @router.post("/{device_id}/command", response_model=DeviceCommandOut)
+@router.post("/{device_id}/commands", response_model=DeviceCommandOut)
 async def dispatch_device_command(
     device_id: str,
     payload: DeviceCommandIn,
