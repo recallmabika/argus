@@ -3,6 +3,7 @@ import { Wifi, RefreshCw, HardDrive, Monitor, Smartphone, Eye, Download, X, Micr
 import { api } from '../../services/api';
 import { ForensicDevice } from '../../types';
 import { useModals } from '../../context/ModalContext';
+import { DeviceForensicBadge } from '../common/DeviceForensicBadge';
 
 export const ForensicsBridgeWorkstation: React.FC = () => {
   const { openWirelessConnect, openForensicStudio, confirm, alert } = useModals();
@@ -64,10 +65,7 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
                 Digital Forensics Device Bridge
               </h2>
             </div>
-            <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-semibold flex items-center space-x-1.5 whitespace-nowrap">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
-              <span>LIVE BUS &amp; WIRELESS LISTENER</span>
-            </span>
+            <DeviceForensicBadge variant="listener" />
           </div>
           <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
             Plug in a device via USB cable or pair wirelessly (Wi-Fi ADB) to control the screen, navigate apps, and acquire evidence
@@ -130,15 +128,6 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
             const isStorage = dev.type === 'storage' || dev.type === 'USB_STORAGE';
             const isHost = dev.type === 'host' || dev.type === 'HOST_WORKSTATION';
             const isWireless = dev.connection && (dev.connection.toLowerCase().includes('wireless') || dev.connection.toLowerCase().includes('wi-fi'));
-
-            const typeBadgeClass = isWireless
-              ? 'text-sky-600 dark:text-sky-400 font-semibold'
-              : isStorage
-              ? 'text-amber-600 dark:text-amber-400 font-semibold'
-              : isHost
-              ? 'text-indigo-600 dark:text-indigo-400 font-bold'
-              : 'text-slate-700 dark:text-slate-300 font-semibold';
-
             const typeLabel = isWireless ? 'WI-FI ADB' : isStorage ? 'MASS STORAGE' : isHost ? 'LOCAL HOST' : 'USB CABLE';
 
             const platformName = dev.platform || (dev.details && (dev.details.os || dev.details.fstype)) || (isHost ? 'Windows Host' : isStorage ? 'USB Storage' : 'Android');
@@ -158,16 +147,15 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center space-x-2.5 min-w-0">
-                      {!isHost && (
-                        <div className="w-7 h-7 rounded-sm bg-slate-200/50 dark:bg-cyber-700/40 flex items-center justify-center flex-shrink-0">
-                          {isStorage ? (
-                            <HardDrive className="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" />
-                          ) : (
-                            <Smartphone className="w-4 h-4 text-slate-600 dark:text-slate-300 flex-shrink-0" />
-                          )}
-                        </div>
-                      )}
+                      <div className="w-7 h-7 rounded-sm bg-slate-200/50 dark:bg-cyber-700/40 flex items-center justify-center flex-shrink-0">
+                        {isHost ? (
+                          <Monitor className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                        ) : isStorage ? (
+                          <HardDrive className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                        ) : (
+                          <Smartphone className="w-4 h-4 text-sky-600 dark:text-sky-400 flex-shrink-0" />
+                        )}
+                      </div>
                       <div className="min-w-0">
                         <h4
                           className="font-bold text-slate-900 dark:text-white text-xs truncate"
@@ -180,11 +168,10 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <span
-                      className={`text-[10px] font-mono flex-shrink-0 whitespace-nowrap ${typeBadgeClass}`}
-                    >
-                      {typeLabel}
-                    </span>
+                    <DeviceForensicBadge
+                      variant={isHost ? 'host' : isWireless ? 'wireless' : isStorage ? 'storage' : 'usb'}
+                      label={typeLabel}
+                    />
                   </div>
 
                   <div className="pt-2 border-t border-slate-200/60 dark:border-cyber-700/40 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-600 dark:text-slate-400">

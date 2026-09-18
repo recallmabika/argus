@@ -20,6 +20,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
 import { useArgusWebSocket } from '../../services/websocket';
+import { DeviceForensicBadge } from '../common/DeviceForensicBadge';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -65,6 +66,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isActive = (path: string) => {
     if (path === '/dashboard' && (location.pathname === '/dashboard' || location.pathname === '/')) return true;
     return location.pathname === path;
+  };
+
+  const isHashActive = (hash: string) => {
+    return (location.pathname === '/dashboard' || location.pathname === '/') && location.hash === hash;
   };
 
   return (
@@ -230,13 +235,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Geolocation Map */}
             <Link
-              to="/dashboard#branches"
-              className={`rounded-sm transition group focus:outline-none ${
+              to="/branches"
+              className={`rounded-sm transition group focus:outline-none relative ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center space-x-3 px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
-              title="Branch Geolocation"
+              } ${
+                isActive('/branches') || isHashActive('#branches')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
+              title="Branch Geolocation Perimeter"
             >
               <div className={`flex items-center ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
                 <MapPin className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
@@ -260,24 +269,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Device Forensics Bridge */}
             <Link
               to="/dashboard#forensics"
-              className={`rounded-sm transition group focus:outline-none ${
+              className={`rounded-sm transition group focus:outline-none relative ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
+              } ${
+                isHashActive('#forensics')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-cyan-600 dark:text-cyan-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-cyan-600 dark:hover:text-cyan-400 focus:text-cyan-600 dark:focus:text-cyan-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
               title="Device Forensics Bridge"
             >
               <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
-                <Microscope className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <Microscope className="w-5 h-5 flex-shrink-0 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-focus:text-cyan-600 dark:group-focus:text-cyan-400 transition-colors" />
                 <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
                   {isCollapsed ? 'Forensics' : 'Device Forensics Bridge'}
                 </span>
               </div>
-              {!isCollapsed && (
-                <span className="font-sans text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  {forensicCount}
-                </span>
-              )}
+              {!isCollapsed ? (
+                <DeviceForensicBadge variant="count" count={forensicCount} pulse={forensicCount > 0} />
+              ) : forensicCount > 0 ? (
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-cyan-500 animate-pulse"></span>
+              ) : null}
             </Link>
 
             {/* Threat Hunting */}
