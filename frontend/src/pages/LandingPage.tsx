@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Radio, Terminal, Laptop, ArrowRight, Lock, CheckCircle2 } from 'lucide-react';
+import { Shield, Radio, Terminal, Monitor, ArrowRight, Lock, CheckCircle2 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 
 export const LandingPage: React.FC = () => {

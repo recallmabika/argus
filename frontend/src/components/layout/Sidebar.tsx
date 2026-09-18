@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Radio,
-  Laptop,
   MapPin,
   FileText,
   ShieldCheck,
@@ -204,12 +203,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Org Devices */}
             <Link
-              to="/dashboard#devices"
+              to="/devices"
               className={`rounded-sm transition group focus:outline-none ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
-              } text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40`}
+              } ${
+                isActive('/devices')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
               title="Monitored Endpoint Fleet"
             >
               <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
