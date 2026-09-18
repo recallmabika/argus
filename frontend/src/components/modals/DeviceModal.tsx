@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ShieldAlert, Ban, RefreshCw, Camera, Terminal, Laptop } from 'lucide-react';
+import { X, ShieldAlert, Ban, RefreshCw, Camera, Terminal, Monitor } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
 import { DeviceDetailResponse } from '../../types';
@@ -57,12 +57,12 @@ export const DeviceModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-sm w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden text-xs">
+      <div className="bg-white dark:bg-cyber-card rounded-sm w-full max-w-4xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden text-xs">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-cyber-700/60 flex items-center justify-between bg-slate-50/50 dark:bg-cyber-800/30">
+        <div className="px-6 py-4 flex items-center justify-between bg-slate-50/50 dark:bg-cyber-800/30">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black">
-              <Laptop className="w-5 h-5" />
+            <div className="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs">
+              <Monitor className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -75,7 +75,7 @@ export const DeviceModal: React.FC = () => {
           </div>
           <button
             onClick={closeDeviceDetail}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-sm transition"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1.5 rounded-sm hover:bg-slate-100 dark:hover:bg-cyber-700/60 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -83,7 +83,7 @@ export const DeviceModal: React.FC = () => {
 
         {/* SOC Remediation Directives Strip */}
         {device && (
-          <div className="px-6 py-2.5 bg-slate-50 dark:bg-cyber-800/50 border-b border-slate-200 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3">
+          <div className="px-6 py-2.5 bg-slate-50 dark:bg-cyber-800/50 flex flex-wrap items-center justify-between gap-3 shadow-xs">
             <div className="flex items-center space-x-2">
               <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400">Node State:</span>
               <StatusBadge status={device.status} />
@@ -111,43 +111,43 @@ export const DeviceModal: React.FC = () => {
         )}
 
         {/* Telemetry Tabs */}
-        <div className="px-6 pt-3 border-b border-slate-200 dark:border-cyber-700/60 flex space-x-4 text-xs font-semibold">
+        <div className="px-6 pt-3 flex space-x-1.5 text-xs font-semibold bg-slate-50/30 dark:bg-cyber-800/20">
           <button
             onClick={() => setActiveTab('processes')}
-            className={`pb-2 border-b-2 transition ${
+            className={`px-3 py-1.5 rounded-sm transition cursor-pointer ${
               activeTab === 'processes'
-                ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold shadow-xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/40'
             }`}
           >
             Processes
           </button>
           <button
             onClick={() => setActiveTab('browser')}
-            className={`pb-2 border-b-2 transition ${
+            className={`px-3 py-1.5 rounded-sm transition cursor-pointer ${
               activeTab === 'browser'
-                ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold shadow-xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/40'
             }`}
           >
             Web History
           </button>
           <button
             onClick={() => setActiveTab('clipboard')}
-            className={`pb-2 border-b-2 transition ${
+            className={`px-3 py-1.5 rounded-sm transition cursor-pointer ${
               activeTab === 'clipboard'
-                ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold shadow-xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/40'
             }`}
           >
             Clipboard Sync
           </button>
           <button
             onClick={() => setActiveTab('print')}
-            className={`pb-2 border-b-2 transition ${
+            className={`px-3 py-1.5 rounded-sm transition cursor-pointer ${
               activeTab === 'print'
-                ? 'border-slate-900 dark:border-white text-slate-900 dark:text-white font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold shadow-xs'
+                : 'text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-cyber-700/40'
             }`}
           >
             Print Logs
@@ -168,14 +168,14 @@ export const DeviceModal: React.FC = () => {
           ) : (
             <div className="space-y-2">
               {recentEvents.length === 0 ? (
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-slate-400 font-sans">
                   No telemetry logged for this event type yet.
                 </div>
               ) : (
                 recentEvents.map((evt) => (
                   <div
                     key={evt.id}
-                    className="p-3 bg-slate-50 dark:bg-cyber-800/50 border border-slate-200 dark:border-cyber-700/50 rounded-sm flex items-center justify-between"
+                    className="p-3 bg-slate-50 dark:bg-cyber-800/50 rounded-sm flex items-center justify-between shadow-xs"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center space-x-2">

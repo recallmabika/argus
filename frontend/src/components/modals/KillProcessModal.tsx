@@ -32,9 +32,9 @@ export const KillProcessModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700 rounded-sm max-w-sm w-full p-5 space-y-4 shadow-2xl text-xs">
+      <div className="bg-white dark:bg-cyber-card rounded-sm max-w-sm w-full p-5 space-y-4 shadow-2xl text-xs">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black">
+          <div className="p-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs">
             <Ban className="w-4 h-4" />
           </div>
           <div>
@@ -52,12 +52,12 @@ export const KillProcessModal: React.FC = () => {
             value={target}
             onChange={(e) => setTarget(e.target.value)}
             placeholder="e.g. 4812 or powershell.exe"
-            className="w-full bg-slate-50 dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-slate-900 dark:focus:border-white"
+            className="w-full bg-slate-50 dark:bg-cyber-900 rounded-sm px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-slate-900 dark:focus:ring-white shadow-xs"
           />
           <p className="text-[10px] text-slate-400">If a number is provided, process is killed by PID. If a name is provided, matching instances will be killed.</p>
         </div>
 
-        <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100 dark:border-cyber-700/60">
+        <div className="flex items-center justify-end space-x-2 pt-2">
           <Button variant="secondary" onClick={closeKillProcess}>
             Cancel
           </Button>
