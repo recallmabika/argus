@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
-  Laptop,
   Smartphone,
   HardDrive,
   RefreshCw,
@@ -16,7 +15,10 @@ import {
   ChevronRight,
   ShieldCheck,
   CheckCircle2,
-  AppWindow
+  AppWindow,
+  PanelRightClose,
+  PanelRightOpen,
+  Info
 } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
@@ -33,6 +35,7 @@ export const ForensicStudioModal: React.FC = () => {
   const [selectedWindowId, setSelectedWindowId] = useState<string>('desktop');
   const [autoStream, setAutoStream] = useState<boolean>(true);
   const [screenLoading, setScreenLoading] = useState<boolean>(false);
+  const [showDeckControls, setShowDeckControls] = useState<boolean>(true);
   const [remoteText, setRemoteText] = useState<string>('');
   const [screenResolution, setScreenResolution] = useState<string>('1920x1080');
   const [snapshotDigest, setSnapshotDigest] = useState<string | null>(null);
@@ -82,12 +85,29 @@ export const ForensicStudioModal: React.FC = () => {
 
     // Fetch windows for window selector
     api.getDeviceWindows(activeForensicDeviceId)
-      .then((res) => setWindows(res.windows || []))
+      .then((res) => {
+        const winList = res.windows || [];
+        setWindows(winList);
+        const isHostDev = activeForensicDeviceId === 'HOST-LOCAL-BRIDGE' || activeForensicDeviceId.includes('HOST');
+        if (isHostDev && winList.length > 0) {
+          const nonSelf = winList.find(w => !w.title.toLowerCase().includes('artis') && !w.title.toLowerCase().includes('localhost'));
+          if (nonSelf) {
+            setSelectedWindowId(nonSelf.id || (nonSelf as any).hwnd);
+          }
+        }
+      })
       .catch(() => setWindows([]));
 
     // Fetch screen frame initially
     fetchScreenFrame();
   }, [activeForensicDeviceId]);
+
+  // Immediately refresh frame when selected target window changes
+  useEffect(() => {
+    if (activeForensicDeviceId && activeTab === 'screen') {
+      fetchScreenFrame();
+    }
+  }, [selectedWindowId]);
 
   // Handle auto-stream interval
   useEffect(() => {
@@ -279,7 +299,7 @@ export const ForensicStudioModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white dark:bg-cyber-card rounded-sm w-full max-w-6xl h-[92vh] shadow-2xl flex flex-col overflow-hidden text-xs">
+      <div className="bg-white dark:bg-cyber-card rounded-sm w-full max-w-[97vw] h-[95vh] shadow-2xl flex flex-col overflow-hidden text-xs">
         {/* Studio Titlebar */}
         <div className="px-5 py-3.5 border-b border-slate-100 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
           <div className="flex items-center space-x-3 min-w-0">
@@ -363,15 +383,16 @@ export const ForensicStudioModal: React.FC = () => {
             <div className="h-full flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
               {/* Left Screen Canvas Container */}
               <div className="flex-1 flex flex-col bg-slate-950 rounded-sm p-3 overflow-hidden relative shadow-inner">
-                <div className="flex flex-wrap items-center justify-between px-3 py-1.5 text-[10px] text-slate-400 bg-slate-900/90 rounded-sm mb-2 z-10 select-none gap-2">
+                {/* Visual Deck Toolbar */}
+                <div className="flex flex-wrap items-center justify-between px-3 py-2 text-[10px] text-slate-400 bg-slate-900/90 rounded-sm mb-2 z-10 select-none gap-2">
                   <div className="flex items-center space-x-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span className="font-mono font-semibold text-slate-300">LIVE INTERACTIVE DECK</span>
+                    <span className="font-mono font-semibold text-slate-200">LIVE INTERACTIVE DECK</span>
                     <span className="text-slate-600">•</span>
                     <span className="font-mono text-cyan-400">{screenResolution}</span>
                   </div>
 
-                  {/* Window Selector */}
+                  {/* Target Window Selector */}
                   <div className="flex items-center space-x-1.5">
                     <span className="text-slate-600">•</span>
                     <AppWindow className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
@@ -379,34 +400,39 @@ export const ForensicStudioModal: React.FC = () => {
                     <select
                       value={selectedWindowId}
                       onChange={(e) => setSelectedWindowId(e.target.value)}
-                      className="bg-slate-800 text-slate-200 rounded-sm px-2 py-0.5 text-[10px] font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 max-w-[280px] sm:max-w-[340px] truncate"
+                      className="bg-slate-800 hover:bg-slate-750 text-slate-200 rounded-sm px-2.5 py-1 text-[11px] font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 max-w-[260px] sm:max-w-[340px] truncate cursor-pointer shadow-xs"
                     >
-                      <option value="desktop">Full Desktop (Display 1)</option>
-                      {windows.map((w: any) => {
-                        const winId = w.id || w.hwnd;
-                        return (
-                          <option key={winId} value={winId}>
-                            {w.title}
-                          </option>
-                        );
-                      })}
+                      <option value="desktop" className="bg-slate-900 text-slate-200">Full Desktop (Display 1)</option>
+                      {windows.length > 0 && (
+                        <optgroup label="Open Application Windows" className="bg-slate-900 text-slate-400 font-semibold">
+                          {windows.map((w: any) => {
+                            const winId = w.id || w.hwnd;
+                            const isConsole = w.title.toLowerCase().includes('artis') || w.title.toLowerCase().includes('localhost');
+                            return (
+                              <option key={winId} value={winId} className="bg-slate-900 text-slate-200">
+                                {w.title} {isConsole ? '(Console)' : ''}
+                              </option>
+                            );
+                          })}
+                        </optgroup>
+                      )}
                     </select>
                     <button
                       onClick={() => {
                         api.getDeviceWindows(activeForensicDeviceId).then((r) => setWindows(r.windows || []));
                       }}
                       title="Scan & Refresh Open Windows"
-                      className="p-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+                      className="p-1.5 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer shadow-xs"
                     >
                       <RefreshCw className="w-3 h-3" />
                     </button>
                   </div>
 
-                  {/* Refresh & Auto-Stream Toggles */}
-                  <div className="flex items-center space-x-3">
+                  {/* Refresh, Auto-Stream, & Expand Deck Toggles */}
+                  <div className="flex items-center space-x-2.5">
                     <button
                       onClick={fetchScreenFrame}
-                      className="px-2 py-0.5 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1 cursor-pointer"
+                      className="px-2.5 py-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1 cursor-pointer shadow-xs"
                     >
                       <RefreshCw className="w-3 h-3" />
                       <span>Refresh</span>
@@ -416,29 +442,67 @@ export const ForensicStudioModal: React.FC = () => {
                         type="checkbox"
                         checked={autoStream}
                         onChange={(e) => setAutoStream(e.target.checked)}
-                        className="rounded-sm border-slate-700 bg-slate-900 text-cyan-500 focus:ring-cyan-500 h-3.5 w-3.5"
+                        className="rounded-sm border-slate-700 bg-slate-900 text-cyan-500 focus:ring-cyan-500 h-3.5 w-3.5 cursor-pointer"
                       />
                       <span className="text-[10px] font-mono text-slate-300">Auto-Stream</span>
                     </label>
+                    <button
+                      onClick={() => setShowDeckControls(!showDeckControls)}
+                      title={showDeckControls ? "Hide Remote Deck Panel to expand screen width" : "Show Remote Deck Panel"}
+                      className="px-2.5 py-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-[10px] transition flex items-center space-x-1 cursor-pointer shadow-xs"
+                    >
+                      {showDeckControls ? <PanelRightClose className="w-3 h-3 text-cyan-400" /> : <PanelRightOpen className="w-3 h-3 text-cyan-400" />}
+                      <span className="hidden sm:inline">{showDeckControls ? 'Expand Screen' : 'Show Controls'}</span>
+                    </button>
                   </div>
                 </div>
 
+                {/* Host Desktop Notice if desktop is selected on host */}
+                {isHost && selectedWindowId === 'desktop' && (
+                  <div className="mb-2 px-3 py-1.5 rounded-sm bg-slate-900/90 text-amber-400/90 text-[10px] flex items-center justify-between gap-2 border-l-2 border-amber-500 font-mono shadow-xs">
+                    <div className="flex items-center space-x-1.5 truncate">
+                      <Info className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
+                      <span className="truncate">Full Desktop mode captures entire display. Select an application window above to view target apps without screen recursion.</span>
+                    </div>
+                    {windows.length > 0 && (
+                      <button
+                        onClick={() => {
+                          const nonSelf = windows.find(w => !w.title.toLowerCase().includes('artis') && !w.title.toLowerCase().includes('localhost'));
+                          if (nonSelf) setSelectedWindowId(nonSelf.id || (nonSelf as any).hwnd);
+                        }}
+                        className="px-2 py-0.5 rounded-sm bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[10px] whitespace-nowrap transition cursor-pointer"
+                      >
+                        Target App Window
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 {/* Canvas Center Stage */}
-                <div className="flex-1 flex items-center justify-center overflow-hidden relative">
+                <div className="flex-1 flex items-center justify-center overflow-hidden relative rounded-sm bg-slate-950/60 p-1">
+                  {screenLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
+                      <div className="flex items-center space-x-2 text-cyan-400 font-mono text-xs">
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Streaming target frame...</span>
+                      </div>
+                    </div>
+                  )}
                   <canvas
                     ref={canvasRef}
                     onClick={handleCanvasClick}
-                    className="max-h-full max-w-full rounded-sm cursor-crosshair object-contain bg-black shadow-lg"
+                    className="max-h-full max-w-full rounded-sm cursor-crosshair object-contain bg-black shadow-2xl transition-all"
                   />
                 </div>
 
-                <div className="text-center text-[10px] text-slate-400 font-mono py-1 flex items-center justify-center space-x-4">
+                <div className="text-center text-[10px] text-slate-400 font-mono py-1 flex items-center justify-center space-x-4 select-none">
                   <span>Click on screen to tap / navigate. All input events recorded into chain-of-custody audit log.</span>
                 </div>
               </div>
 
               {/* Right Remote Deck Controls */}
-              <div className="w-full md:w-80 flex flex-col space-y-3 overflow-y-auto custom-scrollbar flex-shrink-0">
+              {showDeckControls && (
+                <div className="w-full md:w-80 flex flex-col space-y-3 overflow-y-auto custom-scrollbar flex-shrink-0">
                 {/* Workstation Controls */}
                 {isHost ? (
                   <div className="p-3 bg-slate-50 dark:bg-cyber-800/40 rounded-sm space-y-2.5 shadow-xs">
@@ -581,8 +645,9 @@ export const ForensicStudioModal: React.FC = () => {
                   )}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
           {/* PANE 2: EVIDENCE FILE EXPLORER */}
           {activeTab === 'files' && (

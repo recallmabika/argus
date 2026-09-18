@@ -30,3 +30,6 @@ reportlab==5.0.1
 
 # WebSocket Support
 websockets==16.1.1
+
+# Windows Forensics & Native Window Capture
+pywin32>=308; sys_platform == 'win32'
