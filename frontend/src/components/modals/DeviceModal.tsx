@@ -19,13 +19,15 @@ import {
   Download,
   User,
   ShieldCheck,
-  Video
+  Video,
+  Microscope
 } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
 import { DeviceDetailResponse, DeviceCommand } from '../../types';
 import { Button } from '../common/Button';
 import { StatusBadge } from '../common/Badge';
+import { DeviceForensicBadge } from '../common/DeviceForensicBadge';
 
 type TabType = 'all' | 'camera' | 'processes' | 'browser' | 'clipboard' | 'print' | 'commands';
 
@@ -38,7 +40,7 @@ interface CapturedFrame {
 }
 
 export const DeviceModal: React.FC = () => {
-  const { activeDeviceId, closeDeviceDetail, openKillProcess, alert } = useModals();
+  const { activeDeviceId, closeDeviceDetail, openKillProcess, openForensicStudio, alert } = useModals();
   const [data, setData] = useState<DeviceDetailResponse | null>(null);
   const [commands, setCommands] = useState<DeviceCommand[]>([]);
   const [loading, setLoading] = useState(false);
@@ -325,6 +327,7 @@ export const DeviceModal: React.FC = () => {
                     Risk: {device.risk_score}/100
                   </span>
                 )}
+                <DeviceForensicBadge variant="ready" />
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                 {device
@@ -393,6 +396,19 @@ export const DeviceModal: React.FC = () => {
               >
                 <Terminal className="w-3.5 h-3.5 mr-1.5 text-rose-500" />
                 <span>Kill Process</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  stopCameraStream();
+                  closeDeviceDetail();
+                  openForensicStudio(device.id);
+                }}
+                title="Open Digital Forensics Studio & Visual Bridge"
+              >
+                <Microscope className="w-3.5 h-3.5 mr-1.5 text-cyan-500" />
+                <span>Forensics Bridge</span>
               </Button>
               <Button
                 size="sm"

@@ -147,6 +147,7 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center space-x-2.5 min-w-0">
                       <div className="w-7 h-7 rounded-sm bg-slate-200/50 dark:bg-cyber-700/40 flex items-center justify-center flex-shrink-0">
                         {isHost ? (
                           <Monitor className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />

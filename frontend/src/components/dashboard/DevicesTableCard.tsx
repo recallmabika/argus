@@ -1,5 +1,5 @@
 import React from 'react';
-import { Monitor, GripVertical, Maximize2, Plus } from 'lucide-react';
+import { Monitor, GripVertical, Maximize2, Plus, Microscope } from 'lucide-react';
 import { Device } from '../../types';
 import { StatusBadge } from '../common/Badge';
 import { useModals } from '../../context/ModalContext';
@@ -17,7 +17,7 @@ export const DevicesTableCard: React.FC<DevicesTableCardProps> = ({
   isMainStage = false,
   onPullToMain
 }) => {
-  const { openDeviceDetail, openEnrollDevice } = useModals();
+  const { openDeviceDetail, openEnrollDevice, openForensicStudio } = useModals();
 
   const getRiskColor = (score: number) => {
     if (score >= 80) return 'text-rose-600 dark:text-rose-400';
@@ -115,12 +115,22 @@ export const DevicesTableCard: React.FC<DevicesTableCardProps> = ({
                     <StatusBadge status={d.status} />
                   </td>
                   <td className="py-2.5 px-3 text-right rounded-r-sm">
-                    <button
-                      onClick={() => openDeviceDetail(d.id)}
-                      className="px-2.5 py-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 font-medium text-[11px] transition shadow-xs cursor-pointer"
-                    >
-                      Inspect
-                    </button>
+                    <div className="flex items-center justify-end space-x-1.5">
+                      <button
+                        onClick={() => openDeviceDetail(d.id)}
+                        className="px-2.5 py-1 rounded-sm bg-slate-100 dark:bg-cyber-700/60 hover:bg-slate-200 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 font-medium text-[11px] transition shadow-xs cursor-pointer"
+                        title="Inspect Endpoint Directives & Live Feed"
+                      >
+                        Inspect
+                      </button>
+                      <button
+                        onClick={() => openForensicStudio(d.id)}
+                        className="p-1 rounded-sm bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 transition cursor-pointer"
+                        title="Launch Digital Forensics Bridge"
+                      >
+                        <Microscope className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
