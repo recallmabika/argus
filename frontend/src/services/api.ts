@@ -78,6 +78,40 @@ export const api = {
     return handleResponse<DeviceCommand[]>(res);
   },
 
+  async enrollDevice(payload: {
+    hostname: string;
+    os_type?: string;
+    ip_address?: string;
+    current_user?: string;
+    branch_name?: string;
+    status?: string;
+  }): Promise<Device> {
+    const res = await fetch(`${BASE_URL}/api/v1/devices`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return handleResponse<Device>(res);
+  },
+
+  async detectLocalHost(): Promise<{
+    hostname: string;
+    username: string;
+    os_type: string;
+    ip_address: string;
+    suggested_id: string;
+  }> {
+    const res = await fetch(`${BASE_URL}/api/v1/devices/local-host/detect`);
+    return handleResponse(res);
+  },
+
+  async unenrollDevice(deviceId: string): Promise<{ status: string; message: string }> {
+    const res = await fetch(`${BASE_URL}/api/v1/devices/${encodeURIComponent(deviceId)}`, {
+      method: 'DELETE'
+    });
+    return handleResponse(res);
+  },
+
   // Users
   async getUserProfile(): Promise<UserProfile> {
     const res = await fetch(`${BASE_URL}/api/v1/users/me`);

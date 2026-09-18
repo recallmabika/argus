@@ -24,6 +24,18 @@ class TelemetryBatchIn(BaseModel):
     events: List[TelemetryEventIn]
 
 
+class DeviceCreateIn(BaseModel):
+    hostname: str
+    os_type: str = "windows"
+    ip_address: Optional[str] = "127.0.0.1"
+    current_user: Optional[str] = "analyst"
+    branch_name: Optional[str] = "Headquarters"
+    branch_id: Optional[str] = "BRANCH-HQ-01"
+    latitude: Optional[str] = "40.7128"
+    longitude: Optional[str] = "-74.0060"
+    status: Optional[str] = "ONLINE"
+
+
 class DeviceOut(BaseModel):
     id: str
     hostname: str
