@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, RefreshCw, HardDrive, Laptop, Smartphone, Eye, Download, X, Microscope } from 'lucide-react';
+import { Wifi, RefreshCw, HardDrive, Monitor, Smartphone, Eye, Download, X, Microscope } from 'lucide-react';
 import { api } from '../../services/api';
 import { ForensicDevice } from '../../types';
 import { useModals } from '../../context/ModalContext';

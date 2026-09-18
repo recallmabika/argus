@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, ShieldAlert, Laptop, CheckCircle2 } from 'lucide-react';
+import { Copy, Check, ShieldAlert, Monitor, CheckCircle2 } from 'lucide-react';
 import { Alert } from '../../types';
 import { SeverityBadge } from '../common/Badge';
 import { useModals } from '../../context/ModalContext';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, Laptop, Flame, Building, ClipboardCheck } from 'lucide-react';
+import { ShieldAlert, Monitor, Flame, Building, ClipboardCheck } from 'lucide-react';
 import { AlertStats } from '../../types';
 
 interface MetricsRibbonProps {
@@ -37,7 +37,7 @@ export const MetricsRibbon: React.FC<MetricsRibbonProps> = ({ stats, deviceCount
           <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             Monitored Fleet
           </span>
-          <Laptop className="w-4 h-4 text-slate-400" />
+          <Monitor className="w-4 h-4 text-slate-400" />
         </div>
         <div className="mt-2 flex items-baseline justify-between">
           <h3 className="text-2xl sm:text-3xl font-light text-slate-900 dark:text-white font-sans tracking-tight">
