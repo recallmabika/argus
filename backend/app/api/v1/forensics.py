@@ -6,14 +6,20 @@ real-time visual screen streaming, remote touch/key navigation,
 file system exploration, evidence acquisition, and triage shell execution.
 """
 
-from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect, Response
+from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect, Response, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
+from datetime import datetime, timezone
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 import io
 import asyncio
 import json
 
+from app.core.database import get_db
+from app.models import Device
+from app.services.websocket_manager import ws_manager
 from app.services.forensics_manager import forensics_manager
 
 router = APIRouter()
@@ -25,6 +31,7 @@ class WirelessConnectRequest(BaseModel):
     mac: Optional[str] = Field(default=None, description="MAC address of target device")
     port: Optional[int] = Field(default=5555, description="Port for ADB over TCP/IP or remote agent")
     alias: Optional[str] = Field(default=None, description="Optional friendly name for the endpoint")
+    branch_name: Optional[str] = Field(default=None, description="Branch/site location, e.g. Harare Branch, Gweru HQ, Bulawayo Regional Office")
 
 
 class InputControlRequest(BaseModel):
@@ -80,20 +87,86 @@ async def list_device_windows(device_id: str):
     }
 
 
-@router.post("/connect-wireless", summary="Connect to a device wirelessly via Wi-Fi IP or MAC address")
-async def connect_wireless_device(req: WirelessConnectRequest):
+@router.post("/connect-wireless", summary="Connect to a device wirelessly via Wi-Fi IP or MAC address across LAN/WAN")
+async def connect_wireless_device(
+    req: WirelessConnectRequest,
+    db: AsyncSession = Depends(get_db)
+):
     """
-    Pairs with a wireless target (e.g. Android phone or endpoint over Wi-Fi).
-    Accepts IP address OR MAC address.
+    Pairs with a wireless or remote branch target (e.g. Android phone or endpoint in Harare monitored from Gweru HQ).
+    Accepts IP address OR MAC address across local subnets or enterprise WAN.
     Zero-ADB requirement: works whether ADB is enabled or disabled.
     """
     target_val = req.target or req.ip or req.mac
     if not target_val:
         raise HTTPException(status_code=400, detail="Must provide target IP address or MAC address.")
 
-    result = forensics_manager.connect_wireless(target_val, req.port or 5555, alias=req.alias)
+    result = forensics_manager.connect_wireless(
+        target_val,
+        req.port or 5555,
+        alias=req.alias,
+        branch_name=req.branch_name
+    )
     if not result.get("success"):
         raise HTTPException(status_code=400, detail=result.get("message"))
+
+    paired = result.get("device", {})
+    dev_id = paired.get("id")
+    details = paired.get("details", {})
+
+    # Synchronize to Device fleet table in database so it appears on the Geolocation Map and Devices List
+    if dev_id:
+        try:
+            stmt = select(Device).where(Device.id == dev_id)
+            db_res = await db.execute(stmt)
+            existing_dev = db_res.scalar_one_or_none()
+
+            now_utc = datetime.now(timezone.utc)
+            b_name = details.get("branch_name", "Harare Branch")
+            b_id = details.get("branch_id", "BR-HRE")
+            lat = details.get("latitude", "-17.824858")
+            lng = details.get("longitude", "31.053028")
+
+            if existing_dev:
+                existing_dev.status = "ONLINE"
+                existing_dev.last_seen = now_utc
+                existing_dev.branch_name = b_name
+                existing_dev.branch_id = b_id
+                existing_dev.latitude = lat
+                existing_dev.longitude = lng
+                existing_dev.meta_info = details
+            else:
+                new_dev = Device(
+                    id=dev_id,
+                    hostname=paired.get("name", f"Target {dev_id}"),
+                    os_type="android" if paired.get("type") == "ANDROID_MOBILE" else "linux",
+                    ip_address=details.get("ip"),
+                    branch_id=b_id,
+                    branch_name=b_name,
+                    latitude=lat,
+                    longitude=lng,
+                    status="ONLINE",
+                    risk_score=20,
+                    last_seen=now_utc,
+                    meta_info=details
+                )
+                db.add(new_dev)
+
+            await db.commit()
+
+            # Broadcast live WebSocket update
+            await ws_manager.broadcast_json({
+                "type": "DEVICE_UPDATE",
+                "data": {
+                    "id": dev_id,
+                    "hostname": paired.get("name"),
+                    "status": "ONLINE",
+                    "branch_name": b_name
+                }
+            })
+        except Exception as dbe:
+            print(f"[Forensics API] Device DB sync warning: {dbe}")
+
     return result
 
 
@@ -124,6 +197,36 @@ async def get_screen_frame(
     return Response(content=frame_bytes, media_type="image/jpeg", headers=headers)
 
 
+@router.get("/devices/{device_id}/camera", summary="Capture live optical hardware camera frame")
+async def get_camera_frame(
+    device_id: str,
+    index: int = Query(default=0, description="Camera index (0 for default, 1 for secondary)"),
+    quality: int = Query(default=90, description="JPEG quality (75-95)")
+):
+    """
+    Returns a real-time JPEG optical frame captured directly from the physical hardware camera
+    connected to the machine or target endpoint. Allows SOC investigators to authenticate physical presence.
+    """
+    frame_bytes = forensics_manager.get_camera_frame(device_id, camera_index=index, quality=quality)
+    if not frame_bytes:
+        raise HTTPException(status_code=404, detail="Hardware optical camera unavailable or sensor offline.")
+    
+    headers = {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "X-Camera-Index": str(index),
+        "X-Sensor-Type": "HARDWARE_OPTICAL_SENSOR"
+    }
+    return Response(content=frame_bytes, media_type="image/jpeg", headers=headers)
+
+
+@router.post("/devices/{device_id}/camera/release", summary="Release hardware camera resource")
+async def release_camera(device_id: str):
+    """Releases the physical camera handle."""
+    forensics_manager.release_camera()
+    return {"success": True, "message": "Camera hardware released."}
+
+
 @router.post("/devices/{device_id}/input", summary="Send visual remote control input (mouse/touch/keys)")
 async def send_device_input(device_id: str, req: InputControlRequest):
     """
@@ -141,10 +244,24 @@ async def send_device_input(device_id: str, req: InputControlRequest):
 async def list_device_files(device_id: str, path: str = Query(default="", description="Directory path")):
     """Lists files and folders on the device storage."""
     files = forensics_manager.list_files(device_id, path)
+
+    actual_path = path
+    if device_id.startswith("USB-DRIVE-"):
+        drive_letter = device_id.replace("USB-DRIVE-", "") + ":\\"
+        if not path or path in ["/", "\\", "/sdcard", "/sdcard/"]:
+            actual_path = drive_letter
+    elif device_id == "HOST-LOCAL-BRIDGE":
+        if not path or path in ["/", "\\"]:
+            actual_path = "C:\\"
+    elif not actual_path:
+        actual_path = "/sdcard"
+
     return {
         "device_id": device_id,
-        "current_path": path or ("/" if device_id != "HOST-LOCAL-BRIDGE" else "C:\\"),
-        "files": files
+        "current_path": actual_path,
+        "path": actual_path,
+        "files": files,
+        "items": files
     }
 
 

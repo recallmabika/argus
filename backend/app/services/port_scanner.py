@@ -96,17 +96,93 @@ class PortScannerService:
             pass
         return None
 
+    def resolve_domain_name(self, target: str) -> Dict[str, str]:
+        """
+        Resolves domain name / reverse DNS PTR and the IP address.
+        Handles:
+        - '127.0.0.1' -> 'localhost (Local Loopback)'
+        - '8.8.8.8' -> 'dns.google (Google Public DNS)'
+        - 'google.com' -> resolved_ip: 142.250.x.x, domain_name: 'google.com'
+        """
+        target_clean = target.strip()
+        resolved_ip = target_clean
+        domain_name = ""
+
+        # Loopback resolution
+        if target_clean in ("127.0.0.1", "::1", "localhost", "0.0.0.0"):
+            return {
+                "resolved_ip": "127.0.0.1",
+                "domain_name": "localhost (Local Loopback)"
+            }
+
+        # If user supplied a domain name (contains letters)
+        has_letters = any(c.isalpha() for c in target_clean)
+        if has_letters:
+            domain_name = target_clean
+            try:
+                resolved_ip = socket.gethostbyname(target_clean)
+            except Exception:
+                resolved_ip = target_clean
+            return {
+                "resolved_ip": resolved_ip,
+                "domain_name": domain_name
+            }
+
+        # Known public infrastructure DNS mappings
+        KNOWN_INFRASTRUCTURE = {
+            "8.8.8.8": "dns.google (Google Public DNS)",
+            "8.8.4.4": "dns.google (Google Public DNS)",
+            "1.1.1.1": "one.one.one.one (Cloudflare Public DNS)",
+            "1.0.0.1": "one.one.one.one (Cloudflare Public DNS)",
+            "9.9.9.9": "dns.quad9.net (Quad9 Secure DNS)",
+            "208.67.222.222": "resolver1.opendns.com (Cisco OpenDNS)",
+            "208.67.220.220": "resolver2.opendns.com (Cisco OpenDNS)"
+        }
+        if target_clean in KNOWN_INFRASTRUCTURE:
+            return {
+                "resolved_ip": target_clean,
+                "domain_name": KNOWN_INFRASTRUCTURE[target_clean]
+            }
+
+        # Reverse DNS lookup via PTR record
+        try:
+            old_timeout = socket.getdefaulttimeout()
+            socket.setdefaulttimeout(1.5)
+            host_info = socket.gethostbyaddr(target_clean)
+            socket.setdefaulttimeout(old_timeout)
+            if host_info and host_info[0]:
+                raw_domain = host_info[0]
+                if "google" in raw_domain.lower():
+                    domain_name = f"{raw_domain} (Google)"
+                elif "cloudflare" in raw_domain.lower():
+                    domain_name = f"{raw_domain} (Cloudflare)"
+                elif "amazon" in raw_domain.lower() or "aws" in raw_domain.lower():
+                    domain_name = f"{raw_domain} (AWS)"
+                else:
+                    domain_name = raw_domain
+        except Exception:
+            pass
+
+        if not domain_name:
+            if target_clean.endswith(".1"):
+                domain_name = f"gateway.local ({target_clean})"
+            else:
+                domain_name = f"{target_clean} (Unresolved Host)"
+
+        return {
+            "resolved_ip": resolved_ip,
+            "domain_name": domain_name
+        }
+
     def scan_target(self, target: str, custom_ports: Optional[List[int]] = None, timeout: float = 0.6) -> Dict[str, Any]:
         """
         Executes a fast concurrent socket port scan against target IP or hostname.
         Uses ThreadPoolExecutor for high throughput.
         """
-        # Resolve hostname to IP
-        resolved_ip = target.strip()
-        try:
-            resolved_ip = socket.gethostbyname(target.strip())
-        except socket.gaierror:
-            pass
+        # Resolve target domain and IP
+        dns_info = self.resolve_domain_name(target)
+        resolved_ip = dns_info["resolved_ip"]
+        domain_name = dns_info["domain_name"]
 
         ports_to_scan = custom_ports if custom_ports else sorted(list(PORT_DEFINITIONS.keys()))
         start_time = time.time()
@@ -135,6 +211,8 @@ class PortScannerService:
             "id": f"scan_{int(time.time())}_{target.replace('.', '_')}",
             "target": target,
             "resolved_ip": resolved_ip,
+            "domain_name": domain_name,
+            "hostname": domain_name,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "ports_scanned": len(ports_to_scan),
             "open_ports_count": len(open_ports),
