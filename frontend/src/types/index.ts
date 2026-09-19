@@ -286,3 +286,13 @@ export interface PortScanResult {
   device_id?: string;
   hostname?: string;
 }
+
+export interface NetworkTarget {
+  ip: string;
+  mac: string;
+  type: string;
+  interface: string;
+  vendor: string;
+  is_gateway?: boolean;
+  is_online: boolean;
+}

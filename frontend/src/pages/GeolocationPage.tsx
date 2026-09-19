@@ -13,7 +13,8 @@ import {
   ChevronRight,
   Crosshair,
   ExternalLink,
-  Eye
+  Eye,
+  Microscope
 } from 'lucide-react';
 import { Device } from '../types';
 import { api } from '../services/api';
@@ -28,12 +29,14 @@ interface BranchSummary {
   lng: number;
   devices: Device[];
   maxRisk: number;
+  avgRisk: number;
   onlineCount: number;
+  offlineCount: number;
 }
 
 export const GeolocationPage: React.FC = () => {
   const { isDark } = useTheme();
-  const { openDeviceDetail } = useModals();
+  const { openDeviceDetail, openForensicStudio } = useModals();
 
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -96,6 +99,9 @@ export const GeolocationPage: React.FC = () => {
         existing.devices.push(d);
         existing.maxRisk = Math.max(existing.maxRisk, d.risk_score || 0);
         if (d.status === 'ONLINE') existing.onlineCount += 1;
+        else existing.offlineCount += 1;
+        const totalRisk = existing.devices.reduce((acc, cur) => acc + (cur.risk_score || 0), 0);
+        existing.avgRisk = Math.round(totalRisk / existing.devices.length);
       } else {
         branchMap.set(name, {
           name,
@@ -103,7 +109,9 @@ export const GeolocationPage: React.FC = () => {
           lng,
           devices: [d],
           maxRisk: d.risk_score || 0,
-          onlineCount: d.status === 'ONLINE' ? 1 : 0
+          avgRisk: d.risk_score || 0,
+          onlineCount: d.status === 'ONLINE' ? 1 : 0,
+          offlineCount: d.status === 'ONLINE' ? 0 : 1
         });
       }
     });
@@ -546,14 +554,24 @@ export const GeolocationPage: React.FC = () => {
                         {dev.current_user || 'system'} &bull; {dev.ip_address || 'DHCP'}
                       </div>
                     </div>
-                    <button
-                      onClick={() => openDeviceDetail(dev.id)}
-                      className="px-2 py-1 rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-[10px] font-bold transition flex items-center space-x-1 cursor-pointer flex-shrink-0 shadow-xs"
-                      title="Inspect Endpoint Telemetry"
-                    >
-                      <Eye className="w-3 h-3" />
-                      <span>Inspect</span>
-                    </button>
+                    <div className="flex items-center space-x-1.5 flex-shrink-0">
+                      <button
+                        onClick={() => openDeviceDetail(dev.id)}
+                        className="px-2 py-1 rounded-sm bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black text-[10px] font-bold transition flex items-center space-x-1 cursor-pointer shadow-xs"
+                        title="Inspect Endpoint Telemetry"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Inspect</span>
+                      </button>
+                      <button
+                        onClick={() => openForensicStudio(dev.id)}
+                        className="px-2 py-1 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold transition flex items-center space-x-1 cursor-pointer shadow-xs"
+                        title="Launch Optical Surveillance & Forensics Bridge"
+                      >
+                        <Microscope className="w-3 h-3" />
+                        <span>Forensics</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

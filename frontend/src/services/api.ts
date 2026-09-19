@@ -20,7 +20,8 @@ import {
   UsbHistoryEntry,
   TimelineEvent,
   PortScanResult,
-  ScannedPort
+  ScannedPort,
+  NetworkTarget
 } from '../types';
 
 const BASE_URL = ''; // Relative URL handled by Vite proxy or FastAPI in production
@@ -189,11 +190,16 @@ export const api = {
     return handleResponse(res);
   },
 
-  async connectWireless(ip: string, port: number = 5555): Promise<{ status: string; message: string }> {
+  async getNetworkTargets(): Promise<{ count: number; targets: NetworkTarget[] }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/network-targets`);
+    return handleResponse(res);
+  },
+
+  async connectWireless(target: string, port: number = 5555, alias?: string): Promise<{ success: boolean; message: string; device?: ForensicDevice; adb_connected?: boolean }> {
     const res = await fetch(`${BASE_URL}/api/v1/forensics/connect-wireless`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ip, port })
+      body: JSON.stringify({ target, port, alias })
     });
     return handleResponse(res);
   },
