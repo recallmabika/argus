@@ -49,3 +49,9 @@
   z-index: 20 !important;
 }
 
+/* Dark theme styling for OpenStreetMap tiles without any watermarks */
+.dark .leaflet-tile {
+  filter: brightness(0.65) invert(1) contrast(2.8) hue-rotate(200deg) saturate(0.3) !important;
+}
+
+

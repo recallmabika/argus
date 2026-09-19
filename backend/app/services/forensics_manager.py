@@ -117,9 +117,12 @@ class ForensicsManager:
                         serial = parts[0]
                         state = parts[1]
                         
-                        # Determine connection type: IP:port indicates Wireless Wi-Fi, otherwise USB Cable
+                        # Strictly USB Cable connected devices
                         is_wireless = bool(re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$", serial))
-                        conn_type = "Wireless (Wi-Fi)" if is_wireless else "USB Cable"
+                        if is_wireless:
+                            continue
+
+                        conn_type = "USB Cable"
 
                         # Parse metadata tags (model, product, device, transport_id)
                         meta = {}
@@ -189,22 +192,6 @@ class ForensicsManager:
                     })
         except Exception as e:
             print(f"[Forensics] Error querying storage drives: {e}")
-
-        # 3. Local Host Forensic Analysis Bridge (Always genuine host telemetry)
-        devices.append({
-            "id": "HOST-LOCAL-BRIDGE",
-            "type": "HOST_WORKSTATION",
-            "name": f"Local Host Workstation ({os.environ.get('COMPUTERNAME', 'Host-PC')})",
-            "connection": "Local Direct Bus",
-            "status": "ONLINE",
-            "serial": os.environ.get("COMPUTERNAME", "HOST-01"),
-            "battery": "AC Power",
-            "details": {
-                "os": f"{sys.platform} (Win32)",
-                "cpu_count": psutil.cpu_count(logical=True),
-                "ram_gb": round(psutil.virtual_memory().total / (1024**3), 1)
-            }
-        })
 
         return devices
 
