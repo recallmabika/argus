@@ -14,7 +14,13 @@ import {
   ForensicWindow,
   ForensicFile,
   ForensicTriage,
-  DeviceCommand
+  DeviceCommand,
+  SystemHealth,
+  NetworkConnection,
+  UsbHistoryEntry,
+  TimelineEvent,
+  PortScanResult,
+  ScannedPort
 } from '../types';
 
 const BASE_URL = ''; // Relative URL handled by Vite proxy or FastAPI in production
@@ -230,5 +236,62 @@ export const api = {
       body: JSON.stringify({ command })
     });
     return handleResponse(res);
+  },
+
+  // System Monitor
+  async getSystemHealth(): Promise<SystemHealth> {
+    const res = await fetch(`${BASE_URL}/api/v1/system/health`);
+    return handleResponse<SystemHealth>(res);
+  },
+
+  async getNetworkConnections(status?: string, protocol?: string): Promise<{ total: number; connections: NetworkConnection[] }> {
+    const params = new URLSearchParams();
+    if (status) params.set('status', status);
+    if (protocol) params.set('protocol', protocol);
+    const res = await fetch(`${BASE_URL}/api/v1/system/connections?${params.toString()}`);
+    return handleResponse(res);
+  },
+
+  async getUsbHistory(): Promise<{ count: number; devices: UsbHistoryEntry[] }> {
+    const res = await fetch(`${BASE_URL}/api/v1/system/usb-history`);
+    return handleResponse(res);
+  },
+
+  // Incident Timeline
+  async getIncidentTimeline(params?: { device_id?: string; username?: string; time_range?: string; limit?: number }): Promise<{ total: number; events: TimelineEvent[] }> {
+    const searchParams = new URLSearchParams();
+    if (params?.device_id) searchParams.set('device_id', params.device_id);
+    if (params?.username) searchParams.set('username', params.username);
+    if (params?.time_range) searchParams.set('time_range', params.time_range);
+    if (params?.limit) searchParams.set('limit', String(params.limit));
+    const res = await fetch(`${BASE_URL}/api/v1/timeline?${searchParams.toString()}`);
+    return handleResponse(res);
+  },
+
+  // Network Intelligence & Port Scanner
+  async executePortScan(target?: string, deviceId?: string, ports?: number[]): Promise<PortScanResult> {
+    const res = await fetch(`${BASE_URL}/api/v1/network-intel/scan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target, device_id: deviceId, ports })
+    });
+    return handleResponse<PortScanResult>(res);
+  },
+
+  async getPortScanHistory(): Promise<PortScanResult[]> {
+    const res = await fetch(`${BASE_URL}/api/v1/network-intel/history`);
+    return handleResponse<PortScanResult[]>(res);
+  },
+
+  async getPortScanDetail(scanId: string): Promise<PortScanResult> {
+    const res = await fetch(`${BASE_URL}/api/v1/network-intel/history/${encodeURIComponent(scanId)}`);
+    return handleResponse<PortScanResult>(res);
+  },
+
+  async scanDevicePorts(deviceId: string): Promise<PortScanResult> {
+    const res = await fetch(`${BASE_URL}/api/v1/network-intel/scan-device/${encodeURIComponent(deviceId)}`, {
+      method: 'POST'
+    });
+    return handleResponse<PortScanResult>(res);
   }
 };

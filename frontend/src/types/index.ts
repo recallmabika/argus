@@ -188,3 +188,101 @@ export interface ForensicTriage {
   battery?: any;
   network?: any;
 }
+
+// System Monitor Types
+export interface SystemHealth {
+  cpu: {
+    overall: number;
+    per_core: number[];
+  };
+  memory: {
+    total: number;
+    used: number;
+    available: number;
+    percent: number;
+  };
+  disks: Array<{
+    device: string;
+    mountpoint: string;
+    fstype: string;
+    total: number;
+    used: number;
+    free: number;
+    percent: number;
+  }>;
+  network: {
+    bytes_sent: number;
+    bytes_recv: number;
+    packets_sent: number;
+    packets_recv: number;
+  };
+  uptime_seconds: number;
+  processes: Array<{
+    pid: number;
+    name: string;
+    cpu_percent: number;
+    memory_mb: number;
+    status: string;
+    username?: string;
+  }>;
+  timestamp: string;
+}
+
+export interface NetworkConnection {
+  local_address: string;
+  local_port: number;
+  remote_address: string;
+  remote_port: number;
+  status: string;
+  protocol: string;
+  pid: number;
+  process_name: string;
+}
+
+export interface UsbHistoryEntry {
+  vid: string;
+  pid: string;
+  serial: string;
+  friendly_name: string;
+  device_class: string;
+  first_installed?: string;
+  last_connected?: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  timestamp: string;
+  source_type: 'telemetry' | 'alert' | 'audit' | 'command';
+  title: string;
+  description: string;
+  severity?: SeverityLevel | string;
+  device_id?: string;
+  hostname?: string;
+  username?: string;
+  details?: Record<string, any>;
+}
+
+export interface ScannedPort {
+  port: number;
+  protocol: string;
+  state: string;
+  service: string;
+  risk: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
+  description: string;
+  banner?: string;
+}
+
+export interface PortScanResult {
+  id: string;
+  target: string;
+  resolved_ip: string;
+  timestamp: string;
+  ports_scanned: number;
+  open_ports_count: number;
+  open_ports: ScannedPort[];
+  duration_ms: number;
+  security_score: number;
+  status: string;
+  device_id?: string;
+  hostname?: string;
+}
