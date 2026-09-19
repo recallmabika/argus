@@ -93,7 +93,8 @@ async def download_report(report_id: str, db: AsyncSession = Depends(get_db)):
 
 @router.post("/verify")
 async def verify_report_file(
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Verifies chain of custody and cryptographic integrity of an uploaded PDF report.
@@ -101,15 +102,37 @@ async def verify_report_file(
     """
     content = await file.read()
     computed_sha256 = signer.calculate_sha256(content)
-    
-    # Look up report by sha256 in DB or verify directly
-    is_valid = signer.verify(content, signer.sign(content)) # Verify keypair validity
+    public_key = signer.get_public_key_pem().strip()
 
-    return {
-        "verified": True,
-        "filename": file.filename,
-        "sha256_checksum": computed_sha256,
-        "public_key_fingerprint": signer.get_public_key_pem()[:80] + "...",
-        "status": "VALID_AUTHENTIC_DOCUMENT",
-        "message": "Cryptographic integrity intact. Document has not been altered since generation."
-    }
+    # Query registry by sha256
+    stmt = select(IncidentReport).where(IncidentReport.sha256_hash == computed_sha256)
+    result = await db.execute(stmt)
+    report = result.scalar_one_or_none()
+
+    if report:
+        # Validate cryptographic signature against document bytes
+        sig_valid = signer.verify(content, report.signature_hex)
+        return {
+            "verified": sig_valid,
+            "sha256_hash": computed_sha256,
+            "expected_hash": report.sha256_hash,
+            "signer_public_key": public_key,
+            "signature_valid": sig_valid,
+            "timestamp": report.generated_at.isoformat() if report.generated_at else None,
+            "report_title": report.title,
+            "generated_by": report.generated_by,
+            "status": "VALID_AUTHENTIC_DOCUMENT" if sig_valid else "CORRUPTED_SIGNATURE",
+            "message": "Cryptographic integrity intact. Document verified authentic against Argus root authority." if sig_valid else "Signature verification failed. Document content has been modified."
+        }
+    else:
+        return {
+            "verified": False,
+            "sha256_hash": computed_sha256,
+            "expected_hash": None,
+            "signer_public_key": public_key,
+            "signature_valid": False,
+            "timestamp": None,
+            "status": "UNREGISTERED_DOCUMENT",
+            "error": "Document hash not found in Argus SOC audit registry. Not an authentic report.",
+            "message": "No matching cryptographically signed incident report found."
+        }
