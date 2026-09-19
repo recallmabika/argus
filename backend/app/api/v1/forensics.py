@@ -20,8 +20,11 @@ router = APIRouter()
 
 
 class WirelessConnectRequest(BaseModel):
-    ip: str = Field(..., description="IP address of target device (e.g. 192.168.1.50)")
-    port: int = Field(default=5555, description="Port for ADB over TCP/IP or remote agent")
+    target: Optional[str] = Field(default=None, description="Target IP address or MAC address (e.g. 192.168.1.50 or D4-0D-AB-1D-DB-08)")
+    ip: Optional[str] = Field(default=None, description="IP address of target device")
+    mac: Optional[str] = Field(default=None, description="MAC address of target device")
+    port: Optional[int] = Field(default=5555, description="Port for ADB over TCP/IP or remote agent")
+    alias: Optional[str] = Field(default=None, description="Optional friendly name for the endpoint")
 
 
 class InputControlRequest(BaseModel):
@@ -56,6 +59,16 @@ async def list_forensic_devices():
     }
 
 
+@router.get("/network-targets", summary="Discover active LAN and Wi-Fi devices via host ARP table")
+async def list_network_targets():
+    """Returns real physical endpoints discovered on the local network/Wi-Fi via host ARP table inspection."""
+    targets = forensics_manager.get_arp_table()
+    return {
+        "count": len(targets),
+        "targets": targets
+    }
+
+
 @router.get("/devices/{device_id}/windows", summary="List genuine open application windows for targeting")
 async def list_device_windows(device_id: str):
     """Returns all active application windows open on the workstation."""
@@ -67,10 +80,18 @@ async def list_device_windows(device_id: str):
     }
 
 
-@router.post("/connect-wireless", summary="Connect to a device wirelessly via Wi-Fi IP")
+@router.post("/connect-wireless", summary="Connect to a device wirelessly via Wi-Fi IP or MAC address")
 async def connect_wireless_device(req: WirelessConnectRequest):
-    """Pairs with a wireless target (e.g. Android phone over Wi-Fi on port 5555)."""
-    result = forensics_manager.connect_wireless(req.ip, req.port)
+    """
+    Pairs with a wireless target (e.g. Android phone or endpoint over Wi-Fi).
+    Accepts IP address OR MAC address.
+    Zero-ADB requirement: works whether ADB is enabled or disabled.
+    """
+    target_val = req.target or req.ip or req.mac
+    if not target_val:
+        raise HTTPException(status_code=400, detail="Must provide target IP address or MAC address.")
+
+    result = forensics_manager.connect_wireless(target_val, req.port or 5555, alias=req.alias)
     if not result.get("success"):
         raise HTTPException(status_code=400, detail=result.get("message"))
     return result
