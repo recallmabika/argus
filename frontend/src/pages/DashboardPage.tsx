@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MetricsRibbon } from '../components/dashboard/MetricsRibbon';
 import { MitreChartCard } from '../components/dashboard/MitreChartCard';
 import { DevicesTableCard } from '../components/dashboard/DevicesTableCard';
@@ -26,6 +27,7 @@ const DEFAULT_LAYOUT: LayoutSlots = {
 };
 
 export const DashboardPage: React.FC = () => {
+  const location = useLocation();
   const [stats, setStats] = useState<AlertStats | null>(null);
   const [devices, setDevices] = useState<Device[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -91,6 +93,22 @@ export const DashboardPage: React.FC = () => {
       loadData();
     }
   });
+
+  // Smooth scroll and pulse target panel when hash is present
+  useEffect(() => {
+    if (!location.hash) return;
+    const targetId = location.hash.replace('#', '');
+    const element = document.getElementById(targetId);
+    if (element) {
+      setTimeout(() => {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.classList.add('ring-2', 'ring-blue-500/60', 'transition-all');
+        setTimeout(() => {
+          element.classList.remove('ring-2', 'ring-blue-500/60');
+        }, 1500);
+      }, 150);
+    }
+  }, [location.hash]);
 
   // Pull any card into Slot 1 (the main 2-col primary stage)
   const pullToMain = (cardId: CardId) => {

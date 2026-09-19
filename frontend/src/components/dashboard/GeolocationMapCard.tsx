@@ -91,14 +91,12 @@ export const GeolocationMapCard: React.FC<GeolocationMapCardProps> = ({
       map.removeLayer(tileLayerRef.current);
     }
 
-    // High performance CartoDB tile servers (DarkMatter for dark mode, Voyager for light mode)
-    const tileUrl = isDark
-      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    // Clean watermark-free OpenStreetMap tile server with dark-mode CSS inversion
+    const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
     const tiles = L.tileLayer(tileUrl, {
-      subdomains: 'abcd',
-      maxZoom: 19
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     tileLayerRef.current = tiles;

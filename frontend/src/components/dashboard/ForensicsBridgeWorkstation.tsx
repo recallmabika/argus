@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, RefreshCw, HardDrive, Monitor, Smartphone, Eye, Download, X, Microscope } from 'lucide-react';
+import { RefreshCw, HardDrive, Monitor, Smartphone, Eye, Download, X, Microscope } from 'lucide-react';
 import { api } from '../../services/api';
 import { ForensicDevice } from '../../types';
 import { useModals } from '../../context/ModalContext';
 import { DeviceForensicBadge } from '../common/DeviceForensicBadge';
 
 export const ForensicsBridgeWorkstation: React.FC = () => {
-  const { openWirelessConnect, openForensicStudio, confirm, alert } = useModals();
+  const { openForensicStudio, confirm, alert } = useModals();
   const [devices, setDevices] = useState<ForensicDevice[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,31 +62,24 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
             <div className="flex items-center space-x-1.5">
               <Microscope className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 flex-shrink-0" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                Digital Forensics Device Bridge
+                USB Digital Forensics Device Bridge
               </h2>
             </div>
-            <DeviceForensicBadge variant="listener" />
+            <DeviceForensicBadge variant="listener" label="USB HARDWARE BUS ACTIVE" />
           </div>
           <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
-            Plug in a device via USB cable or pair wirelessly (Wi-Fi ADB) to control the screen, navigate apps, and acquire evidence
+            Plug in a device via USB cable to access live screen control, file extraction, and evidence acquisition
           </p>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
           <button
-            onClick={openWirelessConnect}
-            className="px-3 py-1.5 rounded-sm bg-transparent border border-slate-300 dark:border-cyber-600 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all flex items-center space-x-1.5 shadow-xs whitespace-nowrap cursor-pointer hover:border-slate-800 dark:hover:border-slate-100 hover:text-slate-900 dark:hover:text-white hover:ring-1 hover:ring-slate-800 dark:hover:ring-slate-100 focus:outline-none"
-          >
-            <Wifi className="w-3.5 h-3.5 text-cyan-500 flex-shrink-0" />
-            <span>Pair Wireless (Wi-Fi)</span>
-          </button>
-          <button
             onClick={fetchDevices}
             className="px-3 py-1.5 rounded-sm bg-transparent border border-cyan-600/80 dark:border-cyan-500/80 text-xs font-semibold text-cyan-600 dark:text-cyan-400 transition-all flex items-center space-x-1.5 whitespace-nowrap cursor-pointer hover:border-cyan-600 dark:hover:border-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:ring-1 hover:ring-cyan-600 dark:hover:ring-cyan-400 focus:outline-none"
           >
             <RefreshCw className={`w-3.5 h-3.5 flex-shrink-0 ${loading ? 'animate-spin' : ''}`} />
-            <span>Scan Attached Hardware</span>
+            <span>Scan USB Bus</span>
           </button>
         </div>
       </div>
@@ -117,10 +110,10 @@ export const ForensicsBridgeWorkstation: React.FC = () => {
         ) : devices.length === 0 ? (
           <div className="p-6 text-center text-slate-400 text-xs col-span-full bg-slate-50/50 dark:bg-cyber-800/20 rounded-sm space-y-2">
             <p className="font-semibold text-slate-600 dark:text-slate-300">
-              No hardware targets currently attached to USB bus or Wi-Fi ports
+              No hardware targets currently attached via USB cable
             </p>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Connect an Android phone via USB cable (with USB debugging), plug in a USB drive, or click "Pair Wireless" to connect over Wi-Fi.
+              Connect an Android device via USB cable (with USB debugging enabled) or insert a USB storage drive to automatically access screen control and extract evidence.
             </p>
           </div>
         ) : (

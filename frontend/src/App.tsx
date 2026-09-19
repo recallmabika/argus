@@ -9,6 +9,8 @@ import { AppLayout } from './components/layout/AppLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ThreatStreamPage } from './pages/ThreatStreamPage';
 import { DevicesPage } from './pages/DevicesPage';
+import { GeolocationPage } from './pages/GeolocationPage';
+import { ForensicsPage } from './pages/ForensicsPage';
 import { LandingPage } from './pages/LandingPage';
 
 export const App: React.FC = () => {
@@ -30,6 +32,9 @@ export const App: React.FC = () => {
                 <Route path="/console" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/threats" element={<ThreatStreamPage />} />
                 <Route path="/devices" element={<DevicesPage />} />
+                <Route path="/branches" element={<GeolocationPage />} />
+                <Route path="/map" element={<Navigate to="/branches" replace />} />
+                <Route path="/forensics" element={<ForensicsPage />} />
               </Route>
 
               {/* Catch-All Fallback */}

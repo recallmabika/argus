@@ -268,17 +268,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Device Forensics Bridge */}
             <Link
-              to="/dashboard#forensics"
+              to="/forensics"
               className={`rounded-sm transition group focus:outline-none relative ${
                 isCollapsed
                   ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
                   : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
               } ${
-                isHashActive('#forensics')
+                isActive('/forensics') || isHashActive('#forensics')
                   ? 'bg-slate-100 dark:bg-cyber-700/80 text-cyan-600 dark:text-cyan-400 font-bold shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-cyan-600 dark:hover:text-cyan-400 focus:text-cyan-600 dark:focus:text-cyan-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
               }`}
-              title="Device Forensics Bridge"
+              title="USB Digital Forensics Bridge"
             >
               <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
                 <Microscope className="w-5 h-5 flex-shrink-0 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 group-focus:text-cyan-600 dark:group-focus:text-cyan-400 transition-colors" />

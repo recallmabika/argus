@@ -79,6 +79,22 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout, 
       };
     }
 
+    if (path.startsWith('/branches') || path.startsWith('/map')) {
+      return {
+        root: { label: 'SOC', path: '/dashboard' },
+        category: 'Perimeter',
+        leaf: 'Geolocation Map'
+      };
+    }
+
+    if (path.startsWith('/forensics')) {
+      return {
+        root: { label: 'SOC', path: '/dashboard' },
+        category: 'Forensics',
+        leaf: 'USB Device Bridge'
+      };
+    }
+
     if (path.startsWith('/landing') || path === '/') {
       return {
         root: { label: 'ARGUS', path: '/' },
