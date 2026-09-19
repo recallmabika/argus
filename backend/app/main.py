@@ -16,6 +16,11 @@ from app.api.v1.audit import router as audit_router
 from app.api.v1.users import router as users_router
 from app.api.v1.forensics import router as forensics_router
 from app.api.v1.spatial import router as spatial_router
+from app.api.v1.system import router as system_router
+from app.api.v1.timeline import router as timeline_router
+from app.api.v1.hunting import router as hunting_router
+from app.api.v1.webhooks import router as webhooks_router
+from app.api.v1.network_intel import router as network_intel_router
 from app.services.websocket_manager import ws_manager
 
 
@@ -67,6 +72,11 @@ app.include_router(audit_router, prefix=f"{settings.API_V1_STR}/audit", tags=["A
 app.include_router(users_router, prefix=f"{settings.API_V1_STR}/users", tags=["Users"])
 app.include_router(forensics_router, prefix=f"{settings.API_V1_STR}/forensics", tags=["Digital Forensics"])
 app.include_router(spatial_router, prefix=f"{settings.API_V1_STR}/spatial", tags=["Spatial Intelligence & Telemetry"])
+app.include_router(system_router, prefix=f"{settings.API_V1_STR}/system", tags=["System Monitor"])
+app.include_router(timeline_router, prefix=f"{settings.API_V1_STR}/timeline", tags=["Incident Timeline"])
+app.include_router(hunting_router, prefix=f"{settings.API_V1_STR}/hunting", tags=["Threat Hunting"])
+app.include_router(webhooks_router, prefix=f"{settings.API_V1_STR}/webhooks", tags=["Webhooks & SIEM"])
+app.include_router(network_intel_router, prefix=f"{settings.API_V1_STR}/network-intel", tags=["Network Intelligence & Port Scanner"])
 
 
 @app.get("/favicon.ico", include_in_schema=False)
