@@ -71,7 +71,7 @@ export const ForensicStudioModal: React.FC = () => {
   const autoStreamIntervalRef = useRef<any>(null);
 
   // Files Tab State
-  const [currentPath, setCurrentPath] = useState<string>('/sdcard');
+  const [currentPath, setCurrentPath] = useState<string>('/');
   const [files, setFiles] = useState<ForensicFile[]>([]);
   const [filesLoading, setFilesLoading] = useState<boolean>(false);
 
@@ -300,17 +300,16 @@ export const ForensicStudioModal: React.FC = () => {
       if (found) {
         setDevice(found);
         const isStorageDev = found.type === 'storage' || found.type === 'USB_STORAGE' || found.id.startsWith('USB-DRIVE-');
+        let initialPath = '/';
         if (isStorageDev) {
-          const driveLetter = found.id.replace('USB-DRIVE-', '') + ':\\';
-          setCurrentPath(driveLetter);
+          initialPath = found.id.replace('USB-DRIVE-', '') + ':\\';
           setActiveTab('files');
         } else if (found.type === 'host' || found.type === 'HOST_WORKSTATION' || found.id.includes('HOST')) {
-          setCurrentPath('C:\\');
-        } else if (found.id.startsWith('WPD-')) {
-          setCurrentPath('');
+          initialPath = 'C:\\';
         } else {
-          setCurrentPath('/sdcard');
+          initialPath = '/';
         }
+        setCurrentPath(initialPath);
       } else {
         const isStorageDev = activeForensicDeviceId.startsWith('USB-DRIVE-');
         const isHostDev = activeForensicDeviceId.includes('HOST');
@@ -320,8 +319,9 @@ export const ForensicStudioModal: React.FC = () => {
           type: isHostDev ? 'host' : isStorageDev ? 'storage' : 'android',
           status: 'ONLINE'
         });
+        const initialPath = isStorageDev ? (activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\') : isHostDev ? 'C:\\' : '/';
+        setCurrentPath(initialPath);
         if (isStorageDev) {
-          setCurrentPath(activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\');
           setActiveTab('files');
         }
       }
@@ -535,17 +535,32 @@ export const ForensicStudioModal: React.FC = () => {
         loadFiles(parts.join('\\'));
       }
     } else {
+      if (!currentPath || currentPath === '/' || currentPath === 'Root') {
+        return; // Already at root
+      }
       const parts = currentPath.split('/').filter(Boolean);
       parts.pop();
-      const parent = '/' + parts.join('/');
-      loadFiles(parent || '/');
+      const parent = parts.length === 0 ? '/' : '/' + parts.join('/');
+      loadFiles(parent);
     }
   };
 
   // Automatically refresh directory files when tab switches to files or device changes
   useEffect(() => {
     if (activeForensicDeviceId && activeTab === 'files') {
-      loadFiles(currentPath);
+      const isStorageDev = activeForensicDeviceId.startsWith('USB-DRIVE-');
+      const isHostDev = activeForensicDeviceId.includes('HOST');
+      
+      const isMatchingStorage = isStorageDev && currentPath.startsWith(activeForensicDeviceId.replace('USB-DRIVE-', ''));
+      const isMatchingHost = isHostDev && (currentPath.includes('\\') || /^[A-Za-z]:/.test(currentPath));
+      const isMatchingMobile = !isStorageDev && !isHostDev && (!currentPath.includes('\\') && !/^[A-Za-z]:/.test(currentPath));
+
+      const targetPath = (isMatchingStorage || isMatchingHost || isMatchingMobile) && currentPath
+        ? currentPath
+        : isStorageDev ? (activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\') : isHostDev ? 'C:\\' : '/';
+
+      setCurrentPath(targetPath);
+      loadFiles(targetPath);
     }
   }, [activeTab, activeForensicDeviceId]);
 
@@ -1381,15 +1396,16 @@ export const ForensicStudioModal: React.FC = () => {
 
                 {/* Quick Directory Jump Chips */}
                 <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
-                  <span className="text-slate-400 font-sans mr-1">Quick Roots:</span>
+                  <span className="text-slate-400 font-sans mr-1 font-semibold">Quick Roots:</span>
                   {isStorage ? (
                     <>
                       <button
                         type="button"
                         onClick={() => loadFiles(activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\')}
-                        className="px-2 py-0.5 rounded-sm bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition cursor-pointer"
+                        className="px-2.5 py-1 rounded-sm bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold transition cursor-pointer flex items-center space-x-1"
                       >
-                        Root ({activeForensicDeviceId.replace('USB-DRIVE-', '')}:\)
+                        <Folder className="w-3 h-3" />
+                        <span>Root ({activeForensicDeviceId.replace('USB-DRIVE-', '')}:\)</span>
                       </button>
                     </>
                   ) : isHost ? (
@@ -1397,9 +1413,10 @@ export const ForensicStudioModal: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => loadFiles('C:\\')}
-                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                        className="px-2.5 py-1 rounded-sm bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 font-bold transition cursor-pointer flex items-center space-x-1"
                       >
-                        C:\
+                        <Folder className="w-3 h-3" />
+                        <span>Root (C:\)</span>
                       </button>
                       <button
                         type="button"
@@ -1415,9 +1432,63 @@ export const ForensicStudioModal: React.FC = () => {
                       >
                         Desktop
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('C:\\Users\\recal\\Downloads')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        Downloads
+                      </button>
+                    </>
+                  ) : isWpd ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('/')}
+                        className="px-2.5 py-1 rounded-sm bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 font-bold transition cursor-pointer flex items-center space-x-1"
+                      >
+                        <Folder className="w-3 h-3" />
+                        <span>Root (/)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('Internal storage')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        Internal Storage
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('Internal storage/DCIM')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        DCIM / Camera
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('Internal storage/Download')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        Download
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('Internal storage/Documents')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        Documents
+                      </button>
                     </>
                   ) : (
                     <>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('/')}
+                        className="px-2.5 py-1 rounded-sm bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 font-bold transition cursor-pointer flex items-center space-x-1"
+                      >
+                        <Folder className="w-3 h-3" />
+                        <span>Root (/)</span>
+                      </button>
                       <button
                         type="button"
                         onClick={() => loadFiles('/sdcard')}
@@ -1467,8 +1538,31 @@ export const ForensicStudioModal: React.FC = () => {
                       ))
                     ) : files.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400 font-sans">
-                          No items found or directory empty. Click Browse to refresh.
+                        <td colSpan={5} className="py-8 text-center font-sans">
+                          <div className="flex flex-col items-center justify-center space-y-2">
+                            <Folder className="w-8 h-8 text-amber-500/80 mb-1" />
+                            <p className="text-slate-700 dark:text-slate-300 font-medium text-xs">
+                              No files or partitions enumerated in this directory.
+                            </p>
+                            {isWpd ? (
+                              <p className="text-slate-500 dark:text-slate-400 text-[11px] max-w-md">
+                                Target is a physical USB mobile phone ({device?.name || 'Galaxy A12'}).
+                                If storage appears empty, ensure the phone screen is <strong>unlocked</strong> and USB mode is set to <strong>"Transferring files" (MTP)</strong> on the device.
+                              </p>
+                            ) : (
+                              <p className="text-slate-400 text-[11px]">
+                                Directory is empty or inaccessible. Click "Root" above to return to top-level storage.
+                              </p>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => loadFiles(isWpd ? '/' : isStorage ? (activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\') : 'C:\\')}
+                              className="mt-2 px-3 py-1 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-[11px] transition flex items-center space-x-1 cursor-pointer shadow-xs"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>Go to Root Directory</span>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ) : (

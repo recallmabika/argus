@@ -248,11 +248,14 @@ async def list_device_files(device_id: str, path: str = Query(default="", descri
     actual_path = path
     if device_id.startswith("USB-DRIVE-"):
         drive_letter = device_id.replace("USB-DRIVE-", "") + ":\\"
-        if not path or path in ["/", "\\", "/sdcard", "/sdcard/"]:
+        if not path or path in ["/", "\\", "/sdcard", "/sdcard/", "Root", "root"]:
             actual_path = drive_letter
     elif device_id == "HOST-LOCAL-BRIDGE":
-        if not path or path in ["/", "\\"]:
+        if not path or path in ["/", "\\", "Root", "root"]:
             actual_path = "C:\\"
+    elif device_id.startswith("WPD-"):
+        if not path or path in ["/", "\\", "Root", "root", "/sdcard", "/sdcard/"]:
+            actual_path = "/"
     elif not actual_path:
         actual_path = "/sdcard"
 

@@ -1649,8 +1649,9 @@ class ForensicsManager:
                     curr = dev_folder
                     
                     # Traverse subpath if provided
-                    if path and path.strip("/\\"):
-                        parts = [p for p in path.replace("\\", "/").split("/") if p]
+                    clean_path = path.strip("/\\")
+                    if clean_path and clean_path.lower() not in ("root", "none"):
+                        parts = [p for p in path.replace("\\", "/").split("/") if p and p.lower() != "root"]
                         for part in parts:
                             found = False
                             for child in curr.Items():
@@ -1658,6 +1659,13 @@ class ForensicsManager:
                                     curr = child.GetFolder
                                     found = True
                                     break
+                            if not found and part.lower() in ("sdcard", "storage", "internal", "phone"):
+                                for child in curr.Items():
+                                    cname = child.Name.lower()
+                                    if ("internal" in cname or "phone" in cname or "storage" in cname) and child.GetFolder:
+                                        curr = child.GetFolder
+                                        found = True
+                                        break
                             if not found:
                                 break
 
@@ -1668,9 +1676,10 @@ class ForensicsManager:
                             item_size = int(item.Size)
                         except Exception:
                             pass
+                        item_path = f"{path.rstrip('/')}/{item.Name}" if (path and path not in ("/", "\\", "Root", "root")) else item.Name
                         files.append({
                             "name": item.Name,
-                            "path": f"{path.rstrip('/')}/{item.Name}" if path else item.Name,
+                            "path": item_path,
                             "is_dir": is_directory,
                             "type": "dir" if is_directory else "file",
                             "size": item_size,
