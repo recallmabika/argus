@@ -12,6 +12,11 @@ import { DevicesPage } from './pages/DevicesPage';
 import { GeolocationPage } from './pages/GeolocationPage';
 import { ForensicsPage } from './pages/ForensicsPage';
 import { LandingPage } from './pages/LandingPage';
+import { SystemHealthPage } from './pages/SystemHealthPage';
+import { NetworkConnectionsPage } from './pages/NetworkConnectionsPage';
+import { UsbHistoryPage } from './pages/UsbHistoryPage';
+import { IncidentTimelinePage } from './pages/IncidentTimelinePage';
+import { NetworkScannerPage } from './pages/NetworkScannerPage';
 
 export const App: React.FC = () => {
   return (
@@ -35,6 +40,11 @@ export const App: React.FC = () => {
                 <Route path="/branches" element={<GeolocationPage />} />
                 <Route path="/map" element={<Navigate to="/branches" replace />} />
                 <Route path="/forensics" element={<ForensicsPage />} />
+                <Route path="/system" element={<SystemHealthPage />} />
+                <Route path="/connections" element={<NetworkConnectionsPage />} />
+                <Route path="/scanner" element={<NetworkScannerPage />} />
+                <Route path="/usb-history" element={<UsbHistoryPage />} />
+                <Route path="/timeline" element={<IncidentTimelinePage />} />
               </Route>
 
               {/* Catch-All Fallback */}

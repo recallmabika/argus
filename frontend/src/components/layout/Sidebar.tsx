@@ -14,7 +14,12 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Cpu,
+  Network,
+  Usb,
+  Clock,
+  Radar
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useModals } from '../../context/ModalContext';
@@ -387,6 +392,127 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
             </button>
+          </div>
+
+          {/* Intelligence & Monitoring Section */}
+          <div className="space-y-1.5 mt-5">
+            {!isCollapsed ? (
+              <div className="px-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Intelligence &amp; Monitoring
+              </div>
+            ) : (
+              <div className="border-t border-slate-200 dark:border-cyber-700/60 my-1 mx-2"></div>
+            )}
+
+            {/* System Health */}
+            <Link
+              to="/system"
+              className={`rounded-sm transition group focus:outline-none ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
+                isActive('/system')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
+              title="System Health"
+            >
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Cpu className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'System' : 'System Health'}
+                </span>
+              </div>
+            </Link>
+
+            {/* Network Connections */}
+            <Link
+              to="/connections"
+              className={`rounded-sm transition group focus:outline-none ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
+                isActive('/connections')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
+              title="Network Connections"
+            >
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Network className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'Network' : 'Network Connections'}
+                </span>
+              </div>
+            </Link>
+
+            {/* Port Scanner */}
+            <Link
+              to="/scanner"
+              className={`rounded-sm transition group focus:outline-none ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
+                isActive('/scanner')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
+              title="Network Port Scanner"
+            >
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Radar className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'Scanner' : 'Port Scanner'}
+                </span>
+              </div>
+            </Link>
+
+            {/* USB History */}
+            <Link
+              to="/usb-history"
+              className={`rounded-sm transition group focus:outline-none ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
+                isActive('/usb-history')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
+              title="USB Device History"
+            >
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Usb className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'USB Hist' : 'USB History'}
+                </span>
+              </div>
+            </Link>
+
+            {/* Incident Timeline */}
+            <Link
+              to="/timeline"
+              className={`rounded-sm transition group focus:outline-none ${
+                isCollapsed
+                  ? 'flex flex-col items-center justify-center py-2.5 px-1 min-h-[52px] text-center'
+                  : 'flex items-center justify-between px-3.5 py-3 min-h-[46px] text-xs font-semibold'
+              } ${
+                isActive('/timeline')
+                  ? 'bg-slate-100 dark:bg-cyber-700/80 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-cyber-700/40 hover:text-blue-600 dark:hover:text-blue-400 focus:text-blue-600 dark:focus:text-blue-400 focus:bg-slate-50 dark:focus:bg-cyber-700/40'
+              }`}
+              title="Incident Timeline"
+            >
+              <div className={`flex items-center min-w-0 ${isCollapsed ? 'flex-col space-y-1' : 'space-x-3'}`}>
+                <Clock className="w-5 h-5 flex-shrink-0 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-focus:text-blue-600 dark:group-focus:text-blue-400 transition-colors" />
+                <span className={isCollapsed ? 'text-[9.5px] font-medium leading-none' : 'text-xs truncate'}>
+                  {isCollapsed ? 'Timeline' : 'Incident Timeline'}
+                </span>
+              </div>
+            </Link>
           </div>
         </nav>
 

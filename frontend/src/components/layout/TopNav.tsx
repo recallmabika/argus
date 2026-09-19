@@ -103,6 +103,22 @@ export const TopNav: React.FC<TopNavProps> = ({ onToggleSidebar, onResetLayout, 
       };
     }
 
+    if (path.startsWith('/system')) {
+      return { root: { label: 'SOC', path: '/dashboard' }, category: 'Monitoring', leaf: 'System Health' };
+    }
+    if (path.startsWith('/connections')) {
+      return { root: { label: 'SOC', path: '/dashboard' }, category: 'Monitoring', leaf: 'Network Connections' };
+    }
+    if (path.startsWith('/scanner')) {
+      return { root: { label: 'SOC', path: '/dashboard' }, category: 'Monitoring', leaf: 'Port Scanner' };
+    }
+    if (path.startsWith('/usb-history')) {
+      return { root: { label: 'SOC', path: '/dashboard' }, category: 'Forensics', leaf: 'USB Device History' };
+    }
+    if (path.startsWith('/timeline')) {
+      return { root: { label: 'SOC', path: '/dashboard' }, category: 'Intelligence', leaf: 'Incident Timeline' };
+    }
+
     let leaf = 'Overview';
     if (hash === '#devices') leaf = 'Endpoint Fleet';
     else if (hash === '#forensics') leaf = 'Forensics Bridge';
