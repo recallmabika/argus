@@ -238,7 +238,7 @@ export const NetworkScannerPage: React.FC = () => {
                   type="text"
                   value={customIp}
                   onChange={(e) => setCustomIp(e.target.value)}
-                  placeholder="e.g. 127.0.0.1, 192.168.1.1, gateway"
+                  placeholder="e.g. 127.0.0.1 (localhost), 8.8.8.8 (dns.google), google.com, 192.168.1.1"
                   className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-cyber-900 border border-slate-300 dark:border-cyber-700 rounded-sm text-xs font-mono text-slate-900 dark:text-white focus:outline-none"
                 />
               </div>
@@ -307,10 +307,16 @@ export const NetworkScannerPage: React.FC = () => {
                   <span className="font-mono font-bold text-slate-900 dark:text-white">{currentScan.target}</span>
                 </div>
                 <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-cyber-800">
+                  <span className="text-slate-500 dark:text-slate-400">Resolved Domain</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 truncate max-w-[210px] text-right" title={currentScan.domain_name || currentScan.hostname || 'Unresolved'}>
+                    {currentScan.domain_name || currentScan.hostname || (currentScan.target === '127.0.0.1' ? 'localhost' : 'Unresolved')}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-cyber-800">
                   <span className="text-slate-500 dark:text-slate-400">Resolved IP</span>
                   <span className="font-mono text-slate-700 dark:text-slate-300">{currentScan.resolved_ip}</span>
                 </div>
-                {currentScan.hostname && (
+                {currentScan.hostname && currentScan.hostname !== currentScan.domain_name && (
                   <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-cyber-800">
                     <span className="text-slate-500 dark:text-slate-400">Device Node</span>
                     <span className="font-mono text-blue-600 dark:text-blue-400">{currentScan.hostname}</span>
@@ -379,7 +385,14 @@ export const NetworkScannerPage: React.FC = () => {
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <div className="font-mono font-semibold truncate">{item.target}</div>
+                        <div className="font-mono font-semibold truncate flex items-center space-x-1">
+                          <span>{item.target}</span>
+                          {(item.domain_name || item.target === '127.0.0.1') && (
+                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-sans truncate max-w-[130px]">
+                              ({item.domain_name || 'localhost'})
+                            </span>
+                          )}
+                        </div>
                         <div className="text-[10px] text-slate-400">{new Date(item.timestamp).toLocaleTimeString()}</div>
                       </div>
                       <div className="flex items-center space-x-1.5 flex-shrink-0">
@@ -398,10 +411,15 @@ export const NetworkScannerPage: React.FC = () => {
             <div className="bg-white dark:bg-cyber-card border border-slate-200 dark:border-cyber-700/60 rounded-sm p-5 shadow-xs">
               {/* Filter Strip */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-cyber-700/60 pb-3 mb-4">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 flex-wrap">
                   <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                     Open Port Vectors ({filteredPorts.length})
                   </span>
+                  {(currentScan.domain_name || currentScan.target === '127.0.0.1') && (
+                    <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-sm">
+                      {currentScan.domain_name || 'localhost (Local Loopback)'}
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">

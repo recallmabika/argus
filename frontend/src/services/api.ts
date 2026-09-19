@@ -195,11 +195,11 @@ export const api = {
     return handleResponse(res);
   },
 
-  async connectWireless(target: string, port: number = 5555, alias?: string): Promise<{ success: boolean; message: string; device?: ForensicDevice; adb_connected?: boolean }> {
+  async connectWireless(target: string, port: number = 5555, alias?: string, branch_name?: string): Promise<{ success: boolean; message: string; device?: ForensicDevice; adb_connected?: boolean }> {
     const res = await fetch(`${BASE_URL}/api/v1/forensics/connect-wireless`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ target, port, alias })
+      body: JSON.stringify({ target, port, alias, branch_name })
     });
     return handleResponse(res);
   },
@@ -225,7 +225,7 @@ export const api = {
     return handleResponse(res);
   },
 
-  async listForensicFiles(deviceId: string, path: string): Promise<{ path: string; items: ForensicFile[] }> {
+  async listForensicFiles(deviceId: string, path: string): Promise<{ path?: string; current_path?: string; items?: ForensicFile[]; files?: ForensicFile[] }> {
     const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/files?path=${encodeURIComponent(path)}`);
     return handleResponse(res);
   },
@@ -240,6 +240,13 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ command })
+    });
+    return handleResponse(res);
+  },
+
+  async releaseForensicCamera(deviceId: string): Promise<{ success: boolean }> {
+    const res = await fetch(`${BASE_URL}/api/v1/forensics/devices/${encodeURIComponent(deviceId)}/camera/release`, {
+      method: 'POST'
     });
     return handleResponse(res);
   },

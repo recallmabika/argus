@@ -276,6 +276,8 @@ export interface PortScanResult {
   id: string;
   target: string;
   resolved_ip: string;
+  domain_name?: string;
+  hostname?: string;
   timestamp: string;
   ports_scanned: number;
   open_ports_count: number;
@@ -284,7 +286,6 @@ export interface PortScanResult {
   security_score: number;
   status: string;
   device_id?: string;
-  hostname?: string;
 }
 
 export interface NetworkTarget {

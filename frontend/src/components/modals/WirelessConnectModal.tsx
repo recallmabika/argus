@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, X, Info, RefreshCw, Cpu, CheckCircle2, Search } from 'lucide-react';
+import { Wifi, X, Info, RefreshCw, Cpu, CheckCircle2, Search, Globe } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
 import { NetworkTarget } from '../../types';
+
+const BRANCH_OPTIONS = [
+  { id: 'Harare Branch', label: 'Harare Branch (Remote WAN / -17.8249, 31.0530)', code: 'BR-HRE' },
+  { id: 'Gweru Midlands HQ', label: 'Gweru Midlands HQ (National SOC / -19.4586, 29.8117)', code: 'HQ-GWR' },
+  { id: 'Bulawayo Regional Office', label: 'Bulawayo Regional Office (Western Node / -20.1500, 28.5833)', code: 'BR-BYO' },
+  { id: 'Mutare Eastern Node', label: 'Mutare Eastern Node (Eastern Border / -18.9728, 32.6694)', code: 'BR-MTR' },
+];
 
 export const WirelessConnectModal: React.FC = () => {
   const { isWirelessConnectOpen, closeWirelessConnect } = useModals();
   const [target, setTarget] = useState('');
   const [alias, setAlias] = useState('');
   const [port, setPort] = useState('5555');
+  const [branchName, setBranchName] = useState('Harare Branch');
   const [loading, setLoading] = useState(false);
   const [discoveredTargets, setDiscoveredTargets] = useState<NetworkTarget[]>([]);
   const [discoveryLoading, setDiscoveryLoading] = useState(false);
@@ -44,16 +52,22 @@ export const WirelessConnectModal: React.FC = () => {
     }
 
     setLoading(true);
-    setStatusMsg({ text: `Resolving target ${targetVal} & establishing forensic Wi-Fi bridge...` });
+    setStatusMsg({ text: `Resolving target ${targetVal} (${branchName}) & establishing cross-network WAN bridge to Gweru HQ...` });
 
     try {
-      const res = await api.connectWireless(targetVal, parseInt(port) || 5555, alias.trim() || undefined);
+      const res = await api.connectWireless(
+        targetVal,
+        parseInt(port) || 5555,
+        alias.trim() || undefined,
+        branchName
+      );
       setStatusMsg({ text: res.message || 'Target paired successfully!' });
       setTimeout(() => {
         closeWirelessConnect();
         setStatusMsg(null);
         setTarget('');
         setAlias('');
+        setBranchName('Harare Branch');
       }, 1400);
     } catch (err: any) {
       setStatusMsg({ text: err.message || 'Failed to establish wireless forensic bridge.', error: true });
@@ -78,10 +92,10 @@ export const WirelessConnectModal: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
-                Pair Wireless Forensic Target
+                Pair Wireless & WAN Forensic Target
               </h3>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                Connect via IP Address or MAC Address &bull; Zero-ADB Agentless Network Mode
+                Cross-Network & Inter-Branch WAN Bridge &bull; Gweru HQ Monitoring
               </p>
             </div>
           </div>
@@ -96,14 +110,14 @@ export const WirelessConnectModal: React.FC = () => {
         {/* Body */}
         <form onSubmit={handleSubmit}>
           <div className="p-5 space-y-4">
-            {/* Zero-ADB Explanatory Banner */}
+            {/* Cross-Network & Zero-ADB Explanatory Banner */}
             <div className="p-3 bg-cyan-50/50 dark:bg-cyan-950/20 border border-cyan-500/20 rounded-sm space-y-1.5 text-[11px] text-slate-600 dark:text-slate-400">
               <p className="font-semibold text-cyan-700 dark:text-cyan-400 flex items-center space-x-1.5 font-mono text-[10px] uppercase">
                 <Info className="w-3.5 h-3.5 flex-shrink-0" />
-                <span>Zero-Configuration Forensic Wi-Fi Bridge:</span>
+                <span>Inter-Branch Cross-Network Forensic Bridge:</span>
               </p>
               <p className="text-[10.5px] leading-relaxed">
-                Connect by <b>IP Address</b> or <b>MAC Address</b>. If ADB/developer options are disabled (e.g., lost or stolen company phone, dead screen, locked device), ARTIS automatically creates an <b>Agentless Network Forensic Bridge</b> to maintain device traceability, latency tracking, and surveillance.
+                Connect devices located across <b>separate networks or branches</b> (e.g., target in <b>Harare</b> monitored live by HQ in <b>Gweru</b>) using either an <b>IP Address</b> or <b>MAC Address</b>. Even if ADB or developer options are disabled (e.g., lost or stolen company phone, dead screen, locked device), ARTIS automatically provisions an <b>Agentless Network Forensic Bridge</b> to trace, geolocate, and monitor the device in real-time.
               </p>
             </div>
 
@@ -174,11 +188,36 @@ export const WirelessConnectModal: React.FC = () => {
               </label>
               <input
                 type="text"
-                placeholder="e.g. 192.168.1.97 or D4-0D-AB-1D-DB-08"
+                placeholder="e.g. 192.168.1.97, 10.20.0.15 (Harare WAN), or D4-0D-AB-1D-DB-08"
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
                 className="w-full px-3 py-2 rounded-sm bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 text-slate-900 dark:text-white font-mono text-xs"
               />
+            </div>
+
+            {/* Target Branch / Remote Subnet Location */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="font-semibold text-slate-700 dark:text-slate-300 flex items-center space-x-1.5">
+                  <Globe className="w-3.5 h-3.5 text-cyan-500" />
+                  <span>Target Branch & Routing (Cross-Network Geolocation)</span>
+                </label>
+                <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400">HQ: Gweru National SOC</span>
+              </div>
+              <select
+                value={branchName}
+                onChange={(e) => setBranchName(e.target.value)}
+                className="w-full px-3 py-2 rounded-sm bg-slate-50 dark:bg-cyber-800 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 text-slate-900 dark:text-white font-mono text-xs cursor-pointer"
+              >
+                {BRANCH_OPTIONS.map((b) => (
+                  <option key={b.id} value={b.id} className="bg-white dark:bg-cyber-900 text-slate-900 dark:text-white">
+                    {b.label}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                Targets in Harare, Bulawayo, or separate subnets are tunneled back to Gweru HQ and plotted on the Geolocation map with authentic coordinates.
+              </p>
             </div>
 
             {/* Optional Device Name / Alias */}

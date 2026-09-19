@@ -23,19 +23,30 @@ import {
   VideoOff,
   SwitchCamera,
   Eye,
-  Monitor
+  Monitor,
+  Wifi
 } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
 import { ForensicDevice, ForensicWindow, ForensicFile, ForensicTriage } from '../../types';
 
 export const ForensicStudioModal: React.FC = () => {
-  const { activeForensicDeviceId, closeForensicStudio, alert } = useModals();
+  const { activeForensicDeviceId, openForensicStudio, closeForensicStudio, alert } = useModals();
 
   const [device, setDevice] = useState<ForensicDevice | null>(null);
+  const [availableDevices, setAvailableDevices] = useState<ForensicDevice[]>([]);
   const [activeTab, setActiveTab] = useState<'screen' | 'camera' | 'files' | 'triage'>('screen');
 
-  // Camera Tab State
+  // Camera Tab State (Dual Mode: Hardware Sensor via OpenCV or Browser WebRTC)
+  const [cameraSource, setCameraSource] = useState<'hardware' | 'browser'>('hardware');
+  const [hardwareCamIndex, setHardwareCamIndex] = useState<number>(0);
+  const [hardwareCamActive, setHardwareCamActive] = useState<boolean>(true);
+  const [hardwareCamLoading, setHardwareCamLoading] = useState<boolean>(false);
+  const [hardwareCamError, setHardwareCamError] = useState<string | null>(null);
+  const [hardwareResolution, setHardwareResolution] = useState<string>('1280x720');
+  const hardwareCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const hardwareCamIntervalRef = useRef<any>(null);
+
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   const [cameraLoading, setCameraLoading] = useState<boolean>(false);
@@ -54,6 +65,7 @@ export const ForensicStudioModal: React.FC = () => {
   const [remoteText, setRemoteText] = useState<string>('');
   const [screenResolution, setScreenResolution] = useState<string>('1920x1080');
   const [snapshotDigest, setSnapshotDigest] = useState<string | null>(null);
+  const [lastDispatchedKey, setLastDispatchedKey] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const autoStreamIntervalRef = useRef<any>(null);
@@ -79,6 +91,55 @@ export const ForensicStudioModal: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Hardware Camera Polling
+  const fetchHardwareCamFrame = () => {
+    if (!activeForensicDeviceId) return;
+    const devId = activeForensicDeviceId;
+    const url = `/api/v1/forensics/devices/${encodeURIComponent(devId)}/camera?index=${hardwareCamIndex}&quality=90&t=${Date.now()}`;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      if (hardwareCanvasRef.current) {
+        const canvas = hardwareCanvasRef.current;
+        canvas.width = img.naturalWidth || 1280;
+        canvas.height = img.naturalHeight || 720;
+        setHardwareResolution(`${canvas.width}x${canvas.height}`);
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+        }
+      }
+      setHardwareCamLoading(false);
+      setHardwareCamError(null);
+    };
+    img.onerror = () => {
+      setHardwareCamLoading(false);
+      setHardwareCamError('Hardware camera sensor offline or hardware busy.');
+    };
+    img.src = url;
+  };
+
+  useEffect(() => {
+    if (hardwareCamIntervalRef.current) {
+      clearInterval(hardwareCamIntervalRef.current);
+      hardwareCamIntervalRef.current = null;
+    }
+    if (activeTab === 'camera' && cameraSource === 'hardware' && hardwareCamActive && activeForensicDeviceId) {
+      setHardwareCamLoading(true);
+      fetchHardwareCamFrame();
+      hardwareCamIntervalRef.current = setInterval(() => {
+        fetchHardwareCamFrame();
+      }, 500); // 2 FPS smooth polling
+    }
+    return () => {
+      if (hardwareCamIntervalRef.current) {
+        clearInterval(hardwareCamIntervalRef.current);
+        hardwareCamIntervalRef.current = null;
+      }
+    };
+  }, [activeTab, cameraSource, hardwareCamActive, hardwareCamIndex, activeForensicDeviceId]);
+
+  // WebRTC Camera Controls
   const stopCameraStream = () => {
     if (cameraStreamRef.current) {
       cameraStreamRef.current.getTracks().forEach((t) => t.stop());
@@ -111,6 +172,9 @@ export const ForensicStudioModal: React.FC = () => {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(() => {});
+        };
         await videoRef.current.play().catch(() => {});
       }
 
@@ -125,21 +189,54 @@ export const ForensicStudioModal: React.FC = () => {
     }
   };
 
+  // Ensure video element always binds stream once mounted
+  useEffect(() => {
+    if (cameraSource === 'browser' && isCameraActive && videoRef.current && cameraStreamRef.current) {
+      const v = videoRef.current;
+      if (v.srcObject !== cameraStreamRef.current) {
+        v.srcObject = cameraStreamRef.current;
+      }
+      v.onloadedmetadata = () => {
+        v.play().catch(() => {});
+      };
+      v.play().catch(() => {});
+    }
+  }, [isCameraActive, cameraSource]);
+
   const toggleFacingMode = () => {
     const nextMode = facingMode === 'user' ? 'environment' : 'user';
     startCamera(nextMode);
   };
 
   const captureEvidenceFrame = () => {
-    if (!videoRef.current || !isCameraActive) return;
-    const video = videoRef.current;
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 1280;
-    canvas.height = video.videoHeight || 720;
+    let sourceWidth = 1280;
+    let sourceHeight = 720;
+
+    if (cameraSource === 'hardware') {
+      if (!hardwareCanvasRef.current) return;
+      const hw = hardwareCanvasRef.current;
+      sourceWidth = hw.width || 1280;
+      sourceHeight = hw.height || 720;
+      canvas.width = sourceWidth;
+      canvas.height = sourceHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(hw, 0, 0);
+    } else {
+      if (!videoRef.current || !isCameraActive) return;
+      const video = videoRef.current;
+      sourceWidth = video.videoWidth || 1280;
+      sourceHeight = video.videoHeight || 720;
+      canvas.width = sourceWidth;
+      canvas.height = sourceHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0, sourceWidth, sourceHeight);
+    }
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Tactical HUD watermark
     ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
@@ -148,7 +245,8 @@ export const ForensicStudioModal: React.FC = () => {
     ctx.fillStyle = '#10b981';
     ctx.font = 'bold 12px monospace';
     const timestampStr = new Date().toISOString();
-    const tag = `ARTIS OPTICAL RECON // TARGET: ${device?.name || activeForensicDeviceId} // SENSOR: ${facingMode.toUpperCase()} // ${timestampStr}`;
+    const sensorLabel = cameraSource === 'hardware' ? `DIRECT_HW_CAM_${hardwareCamIndex}` : `WEBRTC_${facingMode.toUpperCase()}`;
+    const tag = `ARTIS OPTICAL RECON // TARGET: ${device?.name || activeForensicDeviceId} // SENSOR: ${sensorLabel} // ${timestampStr}`;
     ctx.fillText(tag, 16, canvas.height - 15);
 
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
@@ -162,7 +260,7 @@ export const ForensicStudioModal: React.FC = () => {
       url: dataUrl,
       hash,
       timestamp: new Date().toLocaleTimeString(),
-      facing: facingMode === 'user' ? 'Front / Webcam' : 'Back Camera'
+      facing: cameraSource === 'hardware' ? `Host Cam #${hardwareCamIndex}` : (facingMode === 'user' ? 'Front / Webcam' : 'Back Camera')
     };
 
     setCameraSnapshots((prev) => [newSnapshot, ...prev]);
@@ -177,6 +275,13 @@ export const ForensicStudioModal: React.FC = () => {
 
   const handleCloseStudio = () => {
     stopCameraStream();
+    if (hardwareCamIntervalRef.current) {
+      clearInterval(hardwareCamIntervalRef.current);
+      hardwareCamIntervalRef.current = null;
+    }
+    if (activeForensicDeviceId) {
+      api.releaseForensicCamera(activeForensicDeviceId).catch(() => {});
+    }
     closeForensicStudio();
   };
 
@@ -189,21 +294,36 @@ export const ForensicStudioModal: React.FC = () => {
     }
 
     api.getForensicDevices().then((res) => {
-      const found = res.devices.find((d) => d.id === activeForensicDeviceId);
+      const devs = res.devices || [];
+      setAvailableDevices(devs);
+      const found = devs.find((d) => d.id === activeForensicDeviceId);
       if (found) {
         setDevice(found);
-        if (found.type === 'host' || found.type === 'HOST_WORKSTATION') {
+        const isStorageDev = found.type === 'storage' || found.type === 'USB_STORAGE' || found.id.startsWith('USB-DRIVE-');
+        if (isStorageDev) {
+          const driveLetter = found.id.replace('USB-DRIVE-', '') + ':\\';
+          setCurrentPath(driveLetter);
+          setActiveTab('files');
+        } else if (found.type === 'host' || found.type === 'HOST_WORKSTATION' || found.id.includes('HOST')) {
           setCurrentPath('C:\\');
+        } else if (found.id.startsWith('WPD-')) {
+          setCurrentPath('');
         } else {
           setCurrentPath('/sdcard');
         }
       } else {
+        const isStorageDev = activeForensicDeviceId.startsWith('USB-DRIVE-');
+        const isHostDev = activeForensicDeviceId.includes('HOST');
         setDevice({
           id: activeForensicDeviceId,
-          name: 'Target Device',
-          type: activeForensicDeviceId.includes('HOST') ? 'host' : 'android',
+          name: isStorageDev ? 'Removable USB Storage' : isHostDev ? 'Local Host Workstation' : 'Target Device',
+          type: isHostDev ? 'host' : isStorageDev ? 'storage' : 'android',
           status: 'ONLINE'
         });
+        if (isStorageDev) {
+          setCurrentPath(activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\');
+          setActiveTab('files');
+        }
       }
     });
 
@@ -315,6 +435,8 @@ export const ForensicStudioModal: React.FC = () => {
 
   const sendHardwareKey = async (key: string) => {
     if (!activeForensicDeviceId) return;
+    setLastDispatchedKey(key);
+    setTimeout(() => setLastDispatchedKey(null), 2000);
     try {
       await api.sendForensicInput(activeForensicDeviceId, {
         action: 'key',
@@ -362,14 +484,30 @@ export const ForensicStudioModal: React.FC = () => {
     });
   };
 
+  // Format bytes helper for files display
+  const formatBytes = (bytes: number): string => {
+    if (bytes <= 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
   // Files Tab Logic
   const loadFiles = async (targetPath = currentPath) => {
     if (!activeForensicDeviceId) return;
     setFilesLoading(true);
     try {
       const res = await api.listForensicFiles(activeForensicDeviceId, targetPath);
-      setFiles(res.items || []);
-      setCurrentPath(res.path || targetPath);
+      const rawList = res.items || (res as any).files || [];
+      const normalized: ForensicFile[] = rawList.map((item: any) => ({
+        ...item,
+        type: item.type || (item.is_dir ? 'dir' : 'file'),
+        size_formatted: item.size_formatted || (item.size != null ? (item.size > 0 ? formatBytes(item.size) : '-') : '-')
+      }));
+      setFiles(normalized);
+      const resolvedPath = res.path || (res as any).current_path || targetPath;
+      setCurrentPath(resolvedPath);
     } catch (err: any) {
       alert({
         title: 'Directory Read Error',
@@ -382,12 +520,20 @@ export const ForensicStudioModal: React.FC = () => {
   };
 
   const navigateUp = () => {
-    const isWindows = currentPath.includes('\\');
+    const isWindows = currentPath.includes('\\') || /^[A-Za-z]:/.test(currentPath);
     if (isWindows) {
-      const parts = currentPath.split('\\').filter(Boolean);
+      const cleanPath = currentPath.replace(/\//g, '\\');
+      if (/^[A-Za-z]:\\?$/.test(cleanPath)) {
+        return; // Already at root of drive e.g. D:\ or C:\
+      }
+      const parts = cleanPath.split('\\').filter(Boolean);
       parts.pop();
-      const parent = parts.length > 0 ? parts.join('\\') : 'C:\\';
-      loadFiles(parent);
+      if (parts.length <= 1) {
+        const drive = parts[0]?.replace(':', '') || 'C';
+        loadFiles(`${drive}:\\`);
+      } else {
+        loadFiles(parts.join('\\'));
+      }
     } else {
       const parts = currentPath.split('/').filter(Boolean);
       parts.pop();
@@ -395,6 +541,13 @@ export const ForensicStudioModal: React.FC = () => {
       loadFiles(parent || '/');
     }
   };
+
+  // Automatically refresh directory files when tab switches to files or device changes
+  useEffect(() => {
+    if (activeForensicDeviceId && activeTab === 'files') {
+      loadFiles(currentPath);
+    }
+  }, [activeTab, activeForensicDeviceId]);
 
   // Triage Tab Logic
   const loadTriage = async () => {
@@ -425,8 +578,19 @@ export const ForensicStudioModal: React.FC = () => {
   if (!activeForensicDeviceId) return null;
 
   const isHost = device?.type === 'host' || device?.type === 'HOST_WORKSTATION' || activeForensicDeviceId.includes('HOST');
-  const isStorage = device?.type === 'storage' || device?.type === 'USB_STORAGE';
-  const isWireless = device?.connection && (device.connection.toLowerCase().includes('wireless') || device.connection.toLowerCase().includes('wi-fi'));
+  const isStorage = device?.type === 'storage' || device?.type === 'USB_STORAGE' || activeForensicDeviceId.startsWith('USB-DRIVE-');
+  const isWpd = activeForensicDeviceId.startsWith('WPD-');
+  const isWireless = (device?.connection && (device.connection.toLowerCase().includes('wireless') || device.connection.toLowerCase().includes('wi-fi') || device.connection.toLowerCase().includes('wan'))) || activeForensicDeviceId.startsWith('NET-');
+
+  const protocolName = isHost
+    ? 'Windows Native OS Bridge'
+    : isStorage
+    ? 'Direct USB Mass Storage (FAT32/NTFS)'
+    : isWpd
+    ? 'Windows Portable Device (MTP/PTP)'
+    : isWireless
+    ? 'Agentless Network Bridge / Enterprise WAN'
+    : 'Android ADB Protocol';
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
@@ -434,24 +598,55 @@ export const ForensicStudioModal: React.FC = () => {
         {/* Studio Titlebar */}
         <div className="px-5 py-3.5 border-b border-slate-100 dark:border-cyber-700/60 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-cyber-800/30">
           <div className="flex items-center space-x-3 min-w-0">
-            {!isHost && (
-              <div className="w-8 h-8 rounded-sm bg-slate-100 dark:bg-cyber-700/60 flex items-center justify-center flex-shrink-0 text-cyan-500">
-                {isStorage ? <HardDrive className="w-4 h-4" /> : <Smartphone className="w-4 h-4" />}
-              </div>
-            )}
+            <div className="w-8 h-8 rounded-sm bg-slate-100 dark:bg-cyber-700/60 flex items-center justify-center flex-shrink-0 text-cyan-500">
+              {isHost ? (
+                <Monitor className="w-4 h-4 text-cyan-500" />
+              ) : isStorage ? (
+                <HardDrive className="w-4 h-4 text-amber-500" />
+              ) : isWireless ? (
+                <Wifi className="w-4 h-4 text-cyan-400" />
+              ) : (
+                <Smartphone className="w-4 h-4 text-cyan-500" />
+              )}
+            </div>
+
             <div className="min-w-0">
               <div className="flex items-center space-x-2">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                  {isHost ? 'Local Host Workstation' : device?.model || device?.name || 'Target Device'}
-                </h3>
+                {availableDevices.length > 0 ? (
+                  <div className="flex items-center space-x-1.5">
+                    <label className="text-[10px] font-mono text-slate-400 uppercase font-semibold hidden sm:inline">
+                      Target Asset:
+                    </label>
+                    <select
+                      value={activeForensicDeviceId}
+                      onChange={(e) => {
+                        const newId = e.target.value;
+                        if (newId && newId !== activeForensicDeviceId) {
+                          openForensicStudio(newId);
+                        }
+                      }}
+                      className="bg-slate-100 dark:bg-cyber-800 text-slate-900 dark:text-white font-bold text-xs rounded-sm px-2 py-1 border border-slate-300 dark:border-cyber-600 focus:outline-none focus:border-cyan-500 cursor-pointer font-sans"
+                    >
+                      {availableDevices.map((d) => (
+                        <option key={d.id} value={d.id} className="bg-white dark:bg-cyber-900 text-slate-900 dark:text-white font-mono text-xs">
+                          {d.name || d.model || d.id} ({d.id})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                    {isHost ? 'Local Host Workstation' : device?.model || device?.name || 'Target Device'}
+                  </h3>
+                )}
                 <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-semibold whitespace-nowrap">
-                  {isHost ? 'LOCAL HOST' : isWireless ? 'WI-FI ADB' : 'USB CABLE'}
+                  {isHost ? 'LOCAL HOST' : isStorage ? 'USB STORAGE' : isWireless ? 'WAN / WI-FI' : 'USB CABLE'}
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                 <span>ID: {activeForensicDeviceId}</span>
                 <span>•</span>
-                <span>{isHost ? 'Windows Native OS Bridge' : 'Android ADB Protocol'}</span>
+                <span>{protocolName}</span>
               </div>
             </div>
           </div>
@@ -535,6 +730,14 @@ export const ForensicStudioModal: React.FC = () => {
                     <span className="font-mono font-semibold text-slate-200">LIVE INTERACTIVE DECK</span>
                     <span className="text-slate-600">•</span>
                     <span className="font-mono text-cyan-400">{screenResolution}</span>
+                    {lastDispatchedKey && (
+                      <>
+                        <span className="text-slate-600">•</span>
+                        <span className="font-mono text-[9px] text-cyan-300 bg-cyan-950/90 border border-cyan-500/50 px-2 py-0.5 rounded-sm animate-pulse">
+                          SENT: {lastDispatchedKey}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   {/* Target Window Selector */}
@@ -738,6 +941,12 @@ export const ForensicStudioModal: React.FC = () => {
                       <button onClick={() => sendHardwareKey('VOLUME_UP')} className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 transition cursor-pointer">VOL +</button>
                       <button onClick={() => sendHardwareKey('VOLUME_DOWN')} className="py-1.5 px-1 rounded-sm bg-slate-100 dark:bg-cyber-700 hover:bg-slate-200 transition cursor-pointer">VOL -</button>
                     </div>
+                    {lastDispatchedKey && (
+                      <div className="pt-2 border-t border-slate-200/60 dark:border-cyber-700/40 flex items-center justify-between text-[10px] font-mono text-cyan-400">
+                        <span className="text-slate-400">DISPATCHED:</span>
+                        <span className="font-bold bg-cyan-950/80 border border-cyan-500/40 px-2 py-0.5 rounded-sm animate-pulse">{lastDispatchedKey}</span>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -803,89 +1012,166 @@ export const ForensicStudioModal: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-between px-3 py-2 text-[10px] text-slate-400 bg-slate-900/90 rounded-sm mb-2 z-10 select-none gap-2">
                   <div className="flex items-center space-x-2">
                     <span className="relative flex h-2 w-2 flex-shrink-0">
-                      {isCameraActive && (
+                      {(cameraSource === 'hardware' ? hardwareCamActive : isCameraActive) && (
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       )}
-                      <span className={`relative inline-flex rounded-full h-2 w-2 ${isCameraActive ? 'bg-emerald-500' : 'bg-slate-600'}`}></span>
+                      <span
+                        className={`relative inline-flex rounded-full h-2 w-2 ${
+                          (cameraSource === 'hardware' ? hardwareCamActive : isCameraActive) ? 'bg-emerald-500' : 'bg-slate-600'
+                        }`}
+                      ></span>
                     </span>
                     <span className="font-mono text-white uppercase tracking-wider font-bold">
-                      {isCameraActive ? 'OPTICAL FEED LIVE' : 'SENSOR STANDBY'}
+                      {(cameraSource === 'hardware' ? hardwareCamActive : isCameraActive) ? 'OPTICAL FEED LIVE' : 'SENSOR STANDBY'}
                     </span>
-                    <span className="text-[10px] font-mono text-emerald-400">
-                      {facingMode === 'user' ? 'FRONT / WEBCAM' : 'BACK CAMERA'}
-                    </span>
+                    <span className="text-slate-600">•</span>
+                    {/* Sensor Source Selector */}
+                    <div className="flex items-center space-x-1 bg-slate-800 p-0.5 rounded-sm">
+                      <button
+                        onClick={() => {
+                          setCameraSource('hardware');
+                          setHardwareCamActive(true);
+                          stopCameraStream();
+                        }}
+                        className={`px-2 py-0.5 rounded-xs text-[10px] font-mono transition cursor-pointer ${
+                          cameraSource === 'hardware' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        Host PC Hardware Cam
+                      </button>
+                      <button
+                        onClick={() => {
+                          setCameraSource('browser');
+                          if (hardwareCamIntervalRef.current) clearInterval(hardwareCamIntervalRef.current);
+                          startCamera('user');
+                        }}
+                        className={`px-2 py-0.5 rounded-xs text-[10px] font-mono transition cursor-pointer ${
+                          cameraSource === 'browser' ? 'bg-cyan-600 text-white font-bold' : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        Browser WebRTC
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-2 font-mono">
                     <span className="text-slate-400">{cameraHudTime}</span>
-                    <button
-                      onClick={toggleFacingMode}
-                      disabled={!isCameraActive || cameraLoading}
-                      className="px-2.5 py-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1 cursor-pointer disabled:opacity-50"
-                      title="Switch Front/Back Camera"
-                    >
-                      <SwitchCamera className="w-3 h-3 text-cyan-400" />
-                      <span>Switch Camera</span>
-                    </button>
-                    {isCameraActive ? (
-                      <button
-                        onClick={stopCameraStream}
-                        className="px-2.5 py-1 rounded-sm bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 transition flex items-center space-x-1 cursor-pointer"
-                        title="Deactivate Camera Sensor"
-                      >
-                        <VideoOff className="w-3 h-3 text-rose-400" />
-                        <span>Turn Off</span>
-                      </button>
+                    {cameraSource === 'hardware' ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setHardwareCamIndex((prev) => (prev === 0 ? 1 : 0));
+                          }}
+                          className="px-2.5 py-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1 cursor-pointer"
+                          title="Switch Hardware Camera Device Index"
+                        >
+                          <SwitchCamera className="w-3 h-3 text-cyan-400" />
+                          <span>Cam #{hardwareCamIndex}</span>
+                        </button>
+                        {hardwareCamActive ? (
+                          <button
+                            onClick={() => {
+                              setHardwareCamActive(false);
+                              if (hardwareCamIntervalRef.current) clearInterval(hardwareCamIntervalRef.current);
+                              if (activeForensicDeviceId) api.releaseForensicCamera(activeForensicDeviceId).catch(() => {});
+                            }}
+                            className="px-2.5 py-1 rounded-sm bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 transition flex items-center space-x-1 cursor-pointer"
+                            title="Deactivate Hardware Camera Sensor"
+                          >
+                            <VideoOff className="w-3 h-3 text-rose-400" />
+                            <span>Turn Off</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setHardwareCamActive(true)}
+                            className="px-2.5 py-1 rounded-sm bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center space-x-1 cursor-pointer font-bold"
+                            title="Activate Hardware Camera Sensor"
+                          >
+                            <Video className="w-3 h-3 text-white" />
+                            <span>Turn On</span>
+                          </button>
+                        )}
+                      </>
                     ) : (
-                      <button
-                        onClick={() => startCamera('user')}
-                        disabled={cameraLoading}
-                        className="px-2.5 py-1 rounded-sm bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center space-x-1 cursor-pointer font-bold disabled:opacity-50"
-                        title="Activate Camera Sensor"
-                      >
-                        <Video className="w-3 h-3 text-white" />
-                        <span>{cameraLoading ? 'Starting...' : 'Turn On Feed'}</span>
-                      </button>
+                      <>
+                        <button
+                          onClick={toggleFacingMode}
+                          disabled={!isCameraActive || cameraLoading}
+                          className="px-2.5 py-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+                          title="Switch Front/Back Camera"
+                        >
+                          <SwitchCamera className="w-3 h-3 text-cyan-400" />
+                          <span>{facingMode === 'user' ? 'Front' : 'Back'}</span>
+                        </button>
+                        {isCameraActive ? (
+                          <button
+                            onClick={stopCameraStream}
+                            className="px-2.5 py-1 rounded-sm bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 transition flex items-center space-x-1 cursor-pointer"
+                            title="Deactivate WebRTC Sensor"
+                          >
+                            <VideoOff className="w-3 h-3 text-rose-400" />
+                            <span>Turn Off</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => startCamera('user')}
+                            disabled={cameraLoading}
+                            className="px-2.5 py-1 rounded-sm bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center space-x-1 cursor-pointer font-bold disabled:opacity-50"
+                            title="Activate WebRTC Sensor"
+                          >
+                            <Video className="w-3 h-3 text-white" />
+                            <span>{cameraLoading ? 'Starting...' : 'Turn On'}</span>
+                          </button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
 
-                {/* Main Video Screen Area */}
-                <div className="flex-1 flex items-center justify-center relative overflow-hidden bg-black/60 rounded-sm border border-slate-800">
-                  {isCameraActive ? (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        muted
-                        className="w-full h-full object-contain rounded-sm"
+                {/* Main Optical Sensor Area */}
+                <div className="flex-1 flex items-center justify-center relative overflow-hidden bg-black/80 rounded-sm border border-slate-800">
+                  {cameraSource === 'hardware' ? (
+                    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+                      {hardwareCamLoading && !hardwareCanvasRef.current && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-20">
+                          <div className="flex items-center space-x-2 text-cyan-400 font-mono text-xs">
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            <span>Streaming physical hardware sensor...</span>
+                          </div>
+                        </div>
+                      )}
+                      <canvas
+                        ref={hardwareCanvasRef}
+                        className="max-h-full max-w-full rounded-sm object-contain bg-black shadow-2xl transition-all"
                       />
 
-                      {/* Tactical HUD Overlay */}
+                      {hardwareCamError && (
+                        <div className="absolute bottom-6 left-6 right-6 p-3 bg-rose-950/80 border border-rose-500/50 rounded-sm text-rose-200 text-xs font-mono text-center shadow-lg">
+                          {hardwareCamError}
+                        </div>
+                      )}
+
+                      {/* Tactical HUD Overlay for Hardware Sensor */}
                       <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 select-none">
-                        {/* Top HUD */}
                         <div className="flex items-center justify-between text-[11px] font-mono font-bold text-emerald-400 drop-shadow">
                           <div className="flex items-center space-x-2 bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
                             <Eye className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                            <span>ARTIS OPTICAL SURVEILLANCE // TARGET: {device?.name || 'NODE'}</span>
+                            <span>ARTIS HARDWARE OPTICAL SENSOR // TARGET: {device?.name || activeForensicDeviceId}</span>
                           </div>
                           <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
-                            <span>FPS: 30 &bull; 1280x720</span>
+                            <span>HW SENSOR #{hardwareCamIndex} &bull; {hardwareResolution}</span>
                           </div>
                         </div>
 
-                        {/* Tactical Crosshair Center */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-35">
                           <div className="w-24 h-24 border border-cyan-500/50 rounded-full flex items-center justify-center">
                             <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
                           </div>
                         </div>
 
-                        {/* Bottom HUD */}
                         <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400 drop-shadow">
                           <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
-                            <span>OPERATOR: SEC_ANALYST_L3 // SENSOR: {facingMode.toUpperCase()}</span>
+                            <span>OPERATOR: SEC_ANALYST_L3 // DIRECT HARDWARE CMOS CAPTURE</span>
                           </div>
                           <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
                             <span>{new Date().toISOString()}</span>
@@ -894,41 +1180,91 @@ export const ForensicStudioModal: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center p-8 space-y-4 max-w-md">
-                      <div className="w-16 h-16 rounded-full bg-slate-900 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400 shadow-lg">
-                        <Video className="w-8 h-8" />
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-                          Optical Surveillance Camera Sensor Standby
-                        </h4>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">
-                          Activate the device's optical sensor (front camera/webcam or back camera) to stream live video, observe physical presence at the station, and capture cryptographically hashed reconnaissance frames.
-                        </p>
-                      </div>
-                      {cameraError && (
-                        <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-sm text-rose-400 text-[10.5px] font-mono">
-                          {cameraError}
+                    /* Browser WebRTC View */
+                    <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+                      {isCameraActive ? (
+                        <div className="relative w-full h-full flex items-center justify-center">
+                          <video
+                            ref={(el) => {
+                              videoRef.current = el;
+                              if (el && cameraStreamRef.current && el.srcObject !== cameraStreamRef.current) {
+                                el.srcObject = cameraStreamRef.current;
+                                el.onloadedmetadata = () => { el.play().catch(() => {}); };
+                                el.play().catch(() => {});
+                              }
+                            }}
+                            autoPlay
+                            playsInline
+                            muted
+                            className="w-full h-full object-contain rounded-sm"
+                          />
+
+                          {/* Tactical HUD Overlay for WebRTC */}
+                          <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 select-none">
+                            <div className="flex items-center justify-between text-[11px] font-mono font-bold text-emerald-400 drop-shadow">
+                              <div className="flex items-center space-x-2 bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                                <Eye className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                                <span>ARTIS OPTICAL WEBRTC // TARGET: {device?.name || 'NODE'}</span>
+                              </div>
+                              <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                                <span>FPS: 30 &bull; 1280x720</span>
+                              </div>
+                            </div>
+
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-35">
+                              <div className="w-24 h-24 border border-cyan-500/50 rounded-full flex items-center justify-center">
+                                <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400 drop-shadow">
+                              <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                                <span>OPERATOR: SEC_ANALYST_L3 // SENSOR: {facingMode.toUpperCase()}</span>
+                              </div>
+                              <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                                <span>{new Date().toISOString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center p-8 space-y-4 max-w-md">
+                          <div className="w-16 h-16 rounded-full bg-slate-900 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400 shadow-lg">
+                            <Video className="w-8 h-8" />
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                              Browser WebRTC Optical Sensor Standby
+                            </h4>
+                            <p className="text-[11px] text-slate-400 leading-relaxed">
+                              Activate the browser webcam/camera sensor to stream client video feed.
+                            </p>
+                          </div>
+                          {cameraError && (
+                            <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-sm text-rose-400 text-[10.5px] font-mono">
+                              {cameraError}
+                            </div>
+                          )}
+                          <div className="flex justify-center space-x-2 pt-2">
+                            <button
+                              onClick={() => startCamera('user')}
+                              disabled={cameraLoading}
+                              className="px-4 py-2 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-50"
+                            >
+                              <Video className="w-4 h-4" />
+                              <span>{cameraLoading ? 'Initializing Sensor...' : 'Activate Front / Webcam'}</span>
+                            </button>
+                            <button
+                              onClick={() => startCamera('environment')}
+                              disabled={cameraLoading}
+                              className="px-4 py-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-50"
+                            >
+                              <SwitchCamera className="w-4 h-4 text-cyan-400" />
+                              <span>Activate Back Camera</span>
+                            </button>
+                          </div>
                         </div>
                       )}
-                      <div className="flex justify-center space-x-2 pt-2">
-                        <button
-                          onClick={() => startCamera('user')}
-                          disabled={cameraLoading}
-                          className="px-4 py-2 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-50"
-                        >
-                          <Video className="w-4 h-4" />
-                          <span>{cameraLoading ? 'Initializing Sensor...' : 'Activate Front / Webcam'}</span>
-                        </button>
-                        <button
-                          onClick={() => startCamera('environment')}
-                          disabled={cameraLoading}
-                          className="px-4 py-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-50"
-                        >
-                          <SwitchCamera className="w-4 h-4 text-cyan-400" />
-                          <span>Activate Back Camera</span>
-                        </button>
-                      </div>
                     </div>
                   )}
                 </div>
@@ -950,7 +1286,7 @@ export const ForensicStudioModal: React.FC = () => {
                   </p>
                   <button
                     onClick={captureEvidenceFrame}
-                    disabled={!isCameraActive}
+                    disabled={cameraSource === 'hardware' ? !hardwareCamActive : !isCameraActive}
                     className="w-full py-2 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition text-xs flex items-center justify-center space-x-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                   >
                     <Camera className="w-3.5 h-3.5" />
@@ -1013,33 +1349,99 @@ export const ForensicStudioModal: React.FC = () => {
           {activeTab === 'files' && (
             <div className="h-full flex flex-col p-4 space-y-3 overflow-hidden">
               {/* Path Navigation Bar */}
-              <div className="flex items-center space-x-2 bg-slate-50 dark:bg-cyber-800/60 p-2 rounded-sm shadow-xs">
-                <button
-                  onClick={navigateUp}
-                  title="Go Up Directory"
-                  className="p-1.5 rounded-sm bg-white dark:bg-cyber-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
-                >
-                  <CornerLeftUp className="w-4 h-4" />
-                </button>
-                <div className="flex-1 flex items-center space-x-1 font-mono text-xs text-slate-800 dark:text-slate-200 bg-white dark:bg-cyber-900 px-3 py-1.5 rounded-sm shadow-xs">
-                  <span className="text-slate-400 select-none">Path:</span>
-                  <input
-                    type="text"
-                    value={currentPath}
-                    onChange={(e) => setCurrentPath(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') loadFiles(currentPath);
-                    }}
-                    className="flex-1 bg-transparent focus:outline-none font-mono text-xs"
-                  />
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2 bg-slate-50 dark:bg-cyber-800/60 p-2 rounded-sm shadow-xs">
+                  <button
+                    onClick={navigateUp}
+                    title="Go Up Directory"
+                    className="p-1.5 rounded-sm bg-white dark:bg-cyber-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 transition cursor-pointer shadow-xs"
+                  >
+                    <CornerLeftUp className="w-4 h-4" />
+                  </button>
+                  <div className="flex-1 flex items-center space-x-1 font-mono text-xs text-slate-800 dark:text-slate-200 bg-white dark:bg-cyber-900 px-3 py-1.5 rounded-sm shadow-xs">
+                    <span className="text-slate-400 select-none">Path:</span>
+                    <input
+                      type="text"
+                      value={currentPath}
+                      onChange={(e) => setCurrentPath(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') loadFiles(currentPath);
+                      }}
+                      className="flex-1 bg-transparent focus:outline-none font-mono text-xs"
+                    />
+                  </div>
+                  <button
+                    onClick={() => loadFiles(currentPath)}
+                    className="px-3 py-1.5 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-1 cursor-pointer shadow-xs"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${filesLoading ? 'animate-spin' : ''}`} />
+                    <span>Browse</span>
+                  </button>
                 </div>
-                <button
-                  onClick={() => loadFiles(currentPath)}
-                  className="px-3 py-1.5 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-1 cursor-pointer shadow-xs"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${filesLoading ? 'animate-spin' : ''}`} />
-                  <span>Browse</span>
-                </button>
+
+                {/* Quick Directory Jump Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                  <span className="text-slate-400 font-sans mr-1">Quick Roots:</span>
+                  {isStorage ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles(activeForensicDeviceId.replace('USB-DRIVE-', '') + ':\\')}
+                        className="px-2 py-0.5 rounded-sm bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition cursor-pointer"
+                      >
+                        Root ({activeForensicDeviceId.replace('USB-DRIVE-', '')}:\)
+                      </button>
+                    </>
+                  ) : isHost ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('C:\\')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        C:\
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('C:\\Users')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        C:\Users
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('C:\\Users\\recal\\Desktop')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        Desktop
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('/sdcard')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        /sdcard
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('/sdcard/Download')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        Download
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => loadFiles('/sdcard/DCIM')}
+                        className="px-2 py-0.5 rounded-sm bg-slate-200 dark:bg-cyber-700 hover:bg-slate-300 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 transition cursor-pointer"
+                      >
+                        DCIM / Photos
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Files Table */}
