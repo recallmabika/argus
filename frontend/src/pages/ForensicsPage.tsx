@@ -13,7 +13,8 @@ import {
   CheckCircle2,
   Terminal,
   FileSearch,
-  ExternalLink
+  ExternalLink,
+  Wifi
 } from 'lucide-react';
 import { api } from '../services/api';
 import { ForensicDevice } from '../types';
@@ -21,7 +22,7 @@ import { useModals } from '../context/ModalContext';
 import { DeviceForensicBadge } from '../components/common/DeviceForensicBadge';
 
 export const ForensicsPage: React.FC = () => {
-  const { openForensicStudio, alert } = useModals();
+  const { openForensicStudio, openWirelessConnect, alert } = useModals();
   const [devices, setDevices] = useState<ForensicDevice[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -134,6 +135,14 @@ export const ForensicsPage: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2 flex-shrink-0">
+            <button
+              onClick={openWirelessConnect}
+              className="px-3 py-1.5 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs shadow-cyan-500/20 cursor-pointer"
+              title="Pair mobile device or endpoint wirelessly via IP or MAC address"
+            >
+              <Wifi className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>Pair Wireless Target</span>
+            </button>
             <button
               onClick={fetchDevices}
               className="px-3 py-1.5 rounded-sm bg-transparent border border-cyan-600/80 dark:border-cyan-500/80 text-xs font-semibold text-cyan-600 dark:text-cyan-400 transition-all flex items-center space-x-1.5 whitespace-nowrap cursor-pointer hover:border-cyan-600 dark:hover:border-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:ring-1 hover:ring-cyan-600 dark:hover:ring-cyan-400 focus:outline-none"

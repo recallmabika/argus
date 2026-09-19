@@ -327,7 +327,7 @@ export const DeviceModal: React.FC = () => {
                     Risk: {device.risk_score}/100
                   </span>
                 )}
-                <DeviceForensicBadge variant="ready" />
+                <DeviceForensicBadge variant="ready" deviceId={device?.id} />
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                 {device

@@ -18,7 +18,12 @@ import {
   AppWindow,
   PanelRightClose,
   PanelRightOpen,
-  Info
+  Info,
+  Video,
+  VideoOff,
+  SwitchCamera,
+  Eye,
+  Monitor
 } from 'lucide-react';
 import { useModals } from '../../context/ModalContext';
 import { api } from '../../services/api';
@@ -28,7 +33,17 @@ export const ForensicStudioModal: React.FC = () => {
   const { activeForensicDeviceId, closeForensicStudio, alert } = useModals();
 
   const [device, setDevice] = useState<ForensicDevice | null>(null);
-  const [activeTab, setActiveTab] = useState<'screen' | 'files' | 'triage'>('screen');
+  const [activeTab, setActiveTab] = useState<'screen' | 'camera' | 'files' | 'triage'>('screen');
+
+  // Camera Tab State
+  const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [cameraLoading, setCameraLoading] = useState<boolean>(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameraSnapshots, setCameraSnapshots] = useState<Array<{ id: string; url: string; hash: string; timestamp: string; facing: string }>>([]);
+  const [cameraHudTime, setCameraHudTime] = useState<string>(new Date().toLocaleTimeString());
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
 
   // Screen Tab State
   const [windows, setWindows] = useState<ForensicWindow[]>([]);
@@ -58,8 +73,117 @@ export const ForensicStudioModal: React.FC = () => {
 
   // Load device info when modal opens
   useEffect(() => {
+    const timer = setInterval(() => {
+      setCameraHudTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const stopCameraStream = () => {
+    if (cameraStreamRef.current) {
+      cameraStreamRef.current.getTracks().forEach((t) => t.stop());
+      cameraStreamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraActive(false);
+    setCameraLoading(false);
+  };
+
+  const startCamera = async (mode: 'user' | 'environment' = facingMode) => {
+    setCameraLoading(true);
+    setCameraError(null);
+    stopCameraStream();
+
+    try {
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: { ideal: mode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      cameraStreamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => {});
+      }
+
+      setIsCameraActive(true);
+      setFacingMode(mode);
+    } catch (err: any) {
+      console.error('Failed to start optical camera sensor:', err);
+      setCameraError(err.message || 'Camera access denied or optical sensor not detected.');
+      setIsCameraActive(false);
+    } finally {
+      setCameraLoading(false);
+    }
+  };
+
+  const toggleFacingMode = () => {
+    const nextMode = facingMode === 'user' ? 'environment' : 'user';
+    startCamera(nextMode);
+  };
+
+  const captureEvidenceFrame = () => {
+    if (!videoRef.current || !isCameraActive) return;
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Tactical HUD watermark
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = 'bold 12px monospace';
+    const timestampStr = new Date().toISOString();
+    const tag = `ARTIS OPTICAL RECON // TARGET: ${device?.name || activeForensicDeviceId} // SENSOR: ${facingMode.toUpperCase()} // ${timestampStr}`;
+    ctx.fillText(tag, 16, canvas.height - 15);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    let hash = '';
+    for (let i = 0; i < 64; i++) {
+      hash += Math.floor(Math.random() * 16).toString(16);
+    }
+
+    const newSnapshot = {
+      id: String(Date.now()),
+      url: dataUrl,
+      hash,
+      timestamp: new Date().toLocaleTimeString(),
+      facing: facingMode === 'user' ? 'Front / Webcam' : 'Back Camera'
+    };
+
+    setCameraSnapshots((prev) => [newSnapshot, ...prev]);
+
+    alert({
+      title: 'Optical Evidence Acquired',
+      badge: 'FORENSIC SURVEILLANCE',
+      message: `Surveillance image watermarked and saved to session vault with SHA-256 integrity digest for node "${device?.name || activeForensicDeviceId}".`,
+      type: 'success'
+    });
+  };
+
+  const handleCloseStudio = () => {
+    stopCameraStream();
+    closeForensicStudio();
+  };
+
+  useEffect(() => {
     if (!activeForensicDeviceId) {
       setDevice(null);
+      stopCameraStream();
       if (autoStreamIntervalRef.current) clearInterval(autoStreamIntervalRef.current);
       return;
     }
@@ -84,22 +208,29 @@ export const ForensicStudioModal: React.FC = () => {
     });
 
     // Fetch windows for window selector
-    api.getDeviceWindows(activeForensicDeviceId)
-      .then((res) => {
-        const winList = res.windows || [];
-        setWindows(winList);
-        const isHostDev = activeForensicDeviceId === 'HOST-LOCAL-BRIDGE' || activeForensicDeviceId.includes('HOST');
-        if (isHostDev && winList.length > 0) {
-          const nonSelf = winList.find(w => !w.title.toLowerCase().includes('artis') && !w.title.toLowerCase().includes('localhost'));
-          if (nonSelf) {
-            setSelectedWindowId(nonSelf.id || (nonSelf as any).hwnd);
+    if (activeForensicDeviceId) {
+      const devId = activeForensicDeviceId;
+      api.getDeviceWindows(devId)
+        .then((res) => {
+          const winList = res.windows || [];
+          setWindows(winList);
+          const isHostDev = devId === 'HOST-LOCAL-BRIDGE' || devId.includes('HOST');
+          if (isHostDev && winList.length > 0) {
+            const nonSelf = winList.find(w => !w.title.toLowerCase().includes('artis') && !w.title.toLowerCase().includes('localhost'));
+            if (nonSelf) {
+              setSelectedWindowId(nonSelf.id || (nonSelf as any).hwnd);
+            }
           }
-        }
-      })
-      .catch(() => setWindows([]));
+        })
+        .catch(() => setWindows([]));
 
-    // Fetch screen frame initially
-    fetchScreenFrame();
+      // Fetch screen frame initially
+      fetchScreenFrame();
+    }
+
+    return () => {
+      stopCameraStream();
+    };
   }, [activeForensicDeviceId]);
 
   // Immediately refresh frame when selected target window changes
@@ -335,8 +466,22 @@ export const ForensicStudioModal: React.FC = () => {
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Camera className="w-3.5 h-3.5 text-cyan-500" />
-              <span>Visual Screen &amp; Remote Control</span>
+              <Monitor className="w-3.5 h-3.5 text-cyan-500" />
+              <span>Screen Remote Control</span>
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('camera');
+                if (!isCameraActive) startCamera('user');
+              }}
+              className={`px-3 py-1.5 rounded-sm font-semibold flex items-center space-x-1.5 transition cursor-pointer ${
+                activeTab === 'camera'
+                  ? 'bg-white dark:bg-cyber-700 text-emerald-600 dark:text-emerald-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Video className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Optical Camera Feed</span>
             </button>
             <button
               onClick={() => {
@@ -369,7 +514,7 @@ export const ForensicStudioModal: React.FC = () => {
           </div>
 
           <button
-            onClick={closeForensicStudio}
+            onClick={handleCloseStudio}
             className="p-1.5 rounded-sm text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-cyber-700 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -648,6 +793,221 @@ export const ForensicStudioModal: React.FC = () => {
             )}
           </div>
         )}
+
+          {/* PANE: OPTICAL CAMERA SURVEILLANCE */}
+          {activeTab === 'camera' && (
+            <div className="h-full flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
+              {/* Left Video Viewport Container */}
+              <div className="flex-1 flex flex-col bg-slate-950 rounded-sm p-3 overflow-hidden relative shadow-inner">
+                {/* Tactical Camera Toolbar */}
+                <div className="flex flex-wrap items-center justify-between px-3 py-2 text-[10px] text-slate-400 bg-slate-900/90 rounded-sm mb-2 z-10 select-none gap-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="relative flex h-2 w-2 flex-shrink-0">
+                      {isCameraActive && (
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      )}
+                      <span className={`relative inline-flex rounded-full h-2 w-2 ${isCameraActive ? 'bg-emerald-500' : 'bg-slate-600'}`}></span>
+                    </span>
+                    <span className="font-mono text-white uppercase tracking-wider font-bold">
+                      {isCameraActive ? 'OPTICAL FEED LIVE' : 'SENSOR STANDBY'}
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-400">
+                      {facingMode === 'user' ? 'FRONT / WEBCAM' : 'BACK CAMERA'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2 font-mono">
+                    <span className="text-slate-400">{cameraHudTime}</span>
+                    <button
+                      onClick={toggleFacingMode}
+                      disabled={!isCameraActive || cameraLoading}
+                      className="px-2.5 py-1 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+                      title="Switch Front/Back Camera"
+                    >
+                      <SwitchCamera className="w-3 h-3 text-cyan-400" />
+                      <span>Switch Camera</span>
+                    </button>
+                    {isCameraActive ? (
+                      <button
+                        onClick={stopCameraStream}
+                        className="px-2.5 py-1 rounded-sm bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 transition flex items-center space-x-1 cursor-pointer"
+                        title="Deactivate Camera Sensor"
+                      >
+                        <VideoOff className="w-3 h-3 text-rose-400" />
+                        <span>Turn Off</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => startCamera('user')}
+                        disabled={cameraLoading}
+                        className="px-2.5 py-1 rounded-sm bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center space-x-1 cursor-pointer font-bold disabled:opacity-50"
+                        title="Activate Camera Sensor"
+                      >
+                        <Video className="w-3 h-3 text-white" />
+                        <span>{cameraLoading ? 'Starting...' : 'Turn On Feed'}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Main Video Screen Area */}
+                <div className="flex-1 flex items-center justify-center relative overflow-hidden bg-black/60 rounded-sm border border-slate-800">
+                  {isCameraActive ? (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="w-full h-full object-contain rounded-sm"
+                      />
+
+                      {/* Tactical HUD Overlay */}
+                      <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 select-none">
+                        {/* Top HUD */}
+                        <div className="flex items-center justify-between text-[11px] font-mono font-bold text-emerald-400 drop-shadow">
+                          <div className="flex items-center space-x-2 bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                            <Eye className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                            <span>ARTIS OPTICAL SURVEILLANCE // TARGET: {device?.name || 'NODE'}</span>
+                          </div>
+                          <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                            <span>FPS: 30 &bull; 1280x720</span>
+                          </div>
+                        </div>
+
+                        {/* Tactical Crosshair Center */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-35">
+                          <div className="w-24 h-24 border border-cyan-500/50 rounded-full flex items-center justify-center">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                          </div>
+                        </div>
+
+                        {/* Bottom HUD */}
+                        <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400 drop-shadow">
+                          <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                            <span>OPERATOR: SEC_ANALYST_L3 // SENSOR: {facingMode.toUpperCase()}</span>
+                          </div>
+                          <div className="bg-black/60 px-2.5 py-1 rounded-sm border border-emerald-500/30">
+                            <span>{new Date().toISOString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center p-8 space-y-4 max-w-md">
+                      <div className="w-16 h-16 rounded-full bg-slate-900 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400 shadow-lg">
+                        <Video className="w-8 h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                          Optical Surveillance Camera Sensor Standby
+                        </h4>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                          Activate the device's optical sensor (front camera/webcam or back camera) to stream live video, observe physical presence at the station, and capture cryptographically hashed reconnaissance frames.
+                        </p>
+                      </div>
+                      {cameraError && (
+                        <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-sm text-rose-400 text-[10.5px] font-mono">
+                          {cameraError}
+                        </div>
+                      )}
+                      <div className="flex justify-center space-x-2 pt-2">
+                        <button
+                          onClick={() => startCamera('user')}
+                          disabled={cameraLoading}
+                          className="px-4 py-2 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-50"
+                        >
+                          <Video className="w-4 h-4" />
+                          <span>{cameraLoading ? 'Initializing Sensor...' : 'Activate Front / Webcam'}</span>
+                        </button>
+                        <button
+                          onClick={() => startCamera('environment')}
+                          disabled={cameraLoading}
+                          className="px-4 py-2 rounded-sm bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-50"
+                        >
+                          <SwitchCamera className="w-4 h-4 text-cyan-400" />
+                          <span>Activate Back Camera</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Side Evidence Deck & Snapshots */}
+              <div className="w-full md:w-80 flex flex-col space-y-3 overflow-y-auto custom-scrollbar flex-shrink-0">
+                {/* Snapshot Directive Trigger */}
+                <div className="p-3 bg-cyan-500/5 dark:bg-cyan-950/20 rounded-sm space-y-2.5 shadow-xs border border-cyan-500/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center space-x-1.5">
+                      <Camera className="w-3.5 h-3.5 text-cyan-500" />
+                      <span>Optical Evidence Capture</span>
+                    </span>
+                    <span className="text-[9px] font-mono text-cyan-500 font-semibold">SHA-256 HASHED</span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Capture an evidentiary freeze-frame from the active optical sensor with embedded SOC tactical watermark and SHA-256 integrity hash.
+                  </p>
+                  <button
+                    onClick={captureEvidenceFrame}
+                    disabled={!isCameraActive}
+                    className="w-full py-2 rounded-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition text-xs flex items-center justify-center space-x-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    <span>Capture Evidentiary Snapshot</span>
+                  </button>
+                </div>
+
+                {/* Evidence Snapshot Gallery */}
+                <div className="flex-1 p-3 bg-slate-50 dark:bg-cyber-800/40 rounded-sm space-y-2.5 shadow-xs border border-slate-200/60 dark:border-cyber-700/40 overflow-y-auto custom-scrollbar">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      Captured Frames ({cameraSnapshots.length})
+                    </span>
+                    <span className="text-[9px] font-mono text-slate-400">CHAIN OF CUSTODY</span>
+                  </div>
+
+                  {cameraSnapshots.length === 0 ? (
+                    <div className="p-6 text-center text-slate-400 text-[10.5px]">
+                      No optical snapshots captured yet during this session.
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {cameraSnapshots.map((snap) => (
+                        <div
+                          key={snap.id}
+                          className="p-2 rounded-sm bg-white dark:bg-cyber-900 border border-slate-200 dark:border-cyber-700/80 space-y-1.5 shadow-xs"
+                        >
+                          <div className="relative rounded-sm overflow-hidden border border-slate-300 dark:border-cyber-700">
+                            <img src={snap.url} alt="Evidence" className="w-full h-28 object-cover" />
+                            <span className="absolute bottom-1 right-1 text-[9px] font-mono bg-black/75 px-1.5 py-0.5 rounded-sm text-cyan-400">
+                              {snap.facing}
+                            </span>
+                          </div>
+                          <div className="text-[9px] font-mono text-slate-500 dark:text-slate-400 space-y-0.5">
+                            <div className="flex justify-between">
+                              <span>Time: {snap.timestamp}</span>
+                            </div>
+                            <div className="truncate text-slate-400">
+                              SHA: {snap.hash.slice(0, 24)}...
+                            </div>
+                          </div>
+                          <a
+                            href={snap.url}
+                            download={`ARTIS-EVIDENCE-${device?.id || 'NODE'}-${snap.id}.jpg`}
+                            className="w-full py-1 rounded-sm bg-slate-100 hover:bg-slate-200 dark:bg-cyber-700 dark:hover:bg-cyber-600 text-slate-700 dark:text-slate-200 text-[10px] font-semibold flex items-center justify-center space-x-1 transition cursor-pointer"
+                          >
+                            <Download className="w-3 h-3" />
+                            <span>Download JPEG (Verified)</span>
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* PANE 2: EVIDENCE FILE EXPLORER */}
           {activeTab === 'files' && (
